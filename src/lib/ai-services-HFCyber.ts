@@ -9,6 +9,8 @@ import {
   KieVideoResponse,
   KieVideoResultResponse,
   AspectRatio,
+  LegacyAspectRatio,
+  normalizeAspectRatio,
   TextToImageModel,
   ImageToImageModel,
   VideoModel,
@@ -20,8 +22,9 @@ const KIE_API_KEY = process.env.KIE_API_KEY!
 const KIE_BASE_URL = 'https://api.kie.ai/api/v1'
 
 // Utility functions
-function aspectRatioToSize(aspectRatio: AspectRatio): string {
-  switch (aspectRatio) {
+function aspectRatioToSize(aspectRatio: LegacyAspectRatio): string {
+  const normalized = normalizeAspectRatio(aspectRatio)
+  switch (normalized) {
     case 'SQUARE':
       return '1024*1024'
     case 'PORTRAIT':
@@ -30,27 +33,23 @@ function aspectRatioToSize(aspectRatio: AspectRatio): string {
       return '1024*768'
     case 'WIDE':
       return '1792*1024'
-    case 'ULTRAWIDE':
-      return '2048*896'
     default:
       return '1024*1024'
   }
 }
 
-function aspectRatioToVideoRatio(aspectRatio: AspectRatio): string {
-  switch (aspectRatio) {
-    case 'SQUARE':
-      return '1:1'
+function aspectRatioToVideoRatio(aspectRatio: LegacyAspectRatio): string {
+  // Video models only support 16:9 and 9:16 aspect ratios
+  // Force 16:9 by default, and 9:16 only for portrait
+  const normalized = normalizeAspectRatio(aspectRatio)
+  switch (normalized) {
     case 'PORTRAIT':
-      return '3:4'
+      return '9:16'  // Portrait becomes 9:16 for video
+    case 'SQUARE':
     case 'LANDSCAPE':
-      return '4:3'
     case 'WIDE':
-      return '16:9'
-    case 'ULTRAWIDE':
-      return '21:9'
     default:
-      return '16:9'
+      return '16:9'  // Everything else becomes 16:9 for video
   }
 }
 
@@ -100,7 +99,7 @@ export class WavespeedService {
   static async textToImage(
     prompt: string, 
     model: TextToImageModel = 'SEEDREAM_V4',
-    aspectRatio: AspectRatio = 'SQUARE'
+    aspectRatio: LegacyAspectRatio = 'SQUARE'
   ): Promise<string> {
     try {
       const size = aspectRatioToSize(aspectRatio)
@@ -139,7 +138,7 @@ export class WavespeedService {
     prompt: string, 
     imageUrls: string[], 
     model: ImageToImageModel = 'SEEDREAM_V4_EDIT',
-    aspectRatio: AspectRatio = 'SQUARE'
+    aspectRatio: LegacyAspectRatio = 'SQUARE'
   ): Promise<string> {
     try {
       const size = aspectRatioToSize(aspectRatio)
@@ -237,7 +236,7 @@ export class KieService {
     prompt: string,
     imageUrls?: string[],
     model: VideoModel = 'VEO3_FAST',
-    aspectRatio: AspectRatio = 'WIDE'
+    aspectRatio: LegacyAspectRatio = 'WIDE'
   ): Promise<string> {
     try {
       const videoAspectRatio = aspectRatioToVideoRatio(aspectRatio)

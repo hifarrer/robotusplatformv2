@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { WavespeedService, KieService } from '@/lib/ai-services'
 import { downloadAndSaveImage, downloadAndSaveVideo } from '@/lib/media-storage'
+import { GenerationStatus, GenerationType } from '@/types'
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
     try {
       let resultUrl: string | undefined
       let resultUrls: string[] = []
-      let status = generation.status
+      let status: GenerationStatus = generation.status
       let error: string | undefined
 
       if (generation.provider === 'wavespeed' && generation.requestId) {
@@ -92,7 +93,7 @@ export async function GET(request: NextRequest) {
         
         if (result.code === 200) {
           // Check new response structure with successFlag and response.resultUrls
-          if (result.data.successFlag === 1 && result.data.response?.resultUrls?.length > 0) {
+          if (result.data.successFlag === 1 && result.data.response?.resultUrls && result.data.response.resultUrls.length > 0) {
             status = 'COMPLETED'
             resultUrl = result.data.response.resultUrls[0]
             resultUrls = result.data.response.resultUrls
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest) {
       const updatedGeneration = await prisma.generation.update({
         where: { id: generation.id },
         data: {
-          status: status as any,
+          status,
           resultUrl,
           resultUrls,
           error,
@@ -198,7 +199,7 @@ export async function POST(request: NextRequest) {
       try {
         let resultUrl: string | undefined
         let resultUrls: string[] = []
-        let status = generation.status
+        let status: GenerationStatus = generation.status
         let error: string | undefined
 
         if (generation.provider === 'wavespeed' && generation.requestId) {
@@ -212,7 +213,7 @@ export async function POST(request: NextRequest) {
               
               // Save to permanent storage - check if it's a lipsync video or image
               try {
-                if (generation.type === 'LIPSYNC') {
+                if (generation.type === 'LIPSYNC' as GenerationType) {
                   // Save lipsync result as video
                   for (const videoUrl of result.data.outputs) {
                     await downloadAndSaveVideo(
@@ -250,7 +251,7 @@ export async function POST(request: NextRequest) {
           
           if (result.code === 200) {
             // Check new response structure with successFlag and response.resultUrls
-            if (result.data.successFlag === 1 && result.data.response?.resultUrls?.length > 0) {
+            if (result.data.successFlag === 1 && result.data.response?.resultUrls && result.data.response.resultUrls.length > 0) {
               status = 'COMPLETED'
               resultUrl = result.data.response.resultUrls[0]
               resultUrls = result.data.response.resultUrls
@@ -288,7 +289,7 @@ export async function POST(request: NextRequest) {
           const updatedGeneration = await prisma.generation.update({
             where: { id: generation.id },
             data: {
-              status: status as any,
+              status,
               resultUrl,
               resultUrls,
               error,

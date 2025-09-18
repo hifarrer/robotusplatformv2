@@ -158,7 +158,9 @@ export interface FileUpload {
 }
 
 // User Preferences Types
-export type AspectRatio = 'SQUARE' | 'PORTRAIT' | 'LANDSCAPE' | 'WIDE' | 'ULTRAWIDE'
+export type AspectRatio = 'SQUARE' | 'PORTRAIT' | 'LANDSCAPE' | 'WIDE'
+// Legacy type for database migration - remove after migration complete
+export type LegacyAspectRatio = AspectRatio | 'ULTRAWIDE'
 export type TextToImageModel = 'SEEDREAM_V4' | 'FLUX_1_1_PRO' | 'FLUX_1_SCHNELL' | 'NANO_BANANA'
 export type ImageToImageModel = 'SEEDREAM_V4_EDIT' | 'FLUX_1_1_PRO_EDIT' | 'NANO_BANANA_EDIT'
 export type VideoModel = 'VEO3_FAST' | 'VEO3_STANDARD' | 'RUNWAY_ML'
@@ -166,12 +168,20 @@ export type VideoModel = 'VEO3_FAST' | 'VEO3_STANDARD' | 'RUNWAY_ML'
 export interface UserPreferences {
   id: string
   userId: string
-  aspectRatio: AspectRatio
+  aspectRatio: LegacyAspectRatio // Temporarily allow legacy values
   textToImageModel: TextToImageModel
   imageToImageModel: ImageToImageModel
   videoModel: VideoModel
   createdAt: Date
   updatedAt: Date
+}
+
+// Utility function to convert legacy aspect ratios
+export function normalizeAspectRatio(aspectRatio: LegacyAspectRatio): AspectRatio {
+  if (aspectRatio === 'ULTRAWIDE') {
+    return 'WIDE' // Convert ULTRAWIDE to WIDE
+  }
+  return aspectRatio as AspectRatio
 }
 
 export interface PreferencesUpdateRequest {
@@ -192,8 +202,7 @@ export const ASPECT_RATIO_OPTIONS: ModelOption[] = [
   { value: 'SQUARE', label: '1:1 Square', description: 'Perfect for social media posts' },
   { value: 'PORTRAIT', label: '3:4 Portrait', description: 'Great for profile pictures' },
   { value: 'LANDSCAPE', label: '4:3 Landscape', description: 'Classic photo format' },
-  { value: 'WIDE', label: '16:9 Wide', description: 'Perfect for wallpapers' },
-  { value: 'ULTRAWIDE', label: '21:9 Ultrawide', description: 'Cinematic format' }
+  { value: 'WIDE', label: '16:9 Wide', description: 'Perfect for wallpapers' }
 ]
 
 export const TEXT_TO_IMAGE_MODEL_OPTIONS: ModelOption[] = [
