@@ -42,13 +42,13 @@ function aspectRatioToVideoRatio(aspectRatio: AspectRatio): string {
     case 'SQUARE':
       return '1:1'
     case 'PORTRAIT':
-      return '3:4'
+      return '9:16'  // Changed from 3:4 to 9:16 for video
     case 'LANDSCAPE':
       return '4:3'
     case 'WIDE':
       return '16:9'
     case 'ULTRAWIDE':
-      return '21:9'
+      return '16:9'  // Map ultrawide to 16:9 since 21:9 is not supported for video
     default:
       return '16:9'
   }
