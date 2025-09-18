@@ -9,6 +9,8 @@ import {
   KieVideoResponse,
   KieVideoResultResponse,
   AspectRatio,
+  LegacyAspectRatio,
+  normalizeAspectRatio,
   TextToImageModel,
   ImageToImageModel,
   VideoModel,
@@ -20,8 +22,9 @@ const KIE_API_KEY = process.env.KIE_API_KEY!
 const KIE_BASE_URL = 'https://api.kie.ai/api/v1'
 
 // Utility functions
-function aspectRatioToSize(aspectRatio: AspectRatio): string {
-  switch (aspectRatio) {
+function aspectRatioToSize(aspectRatio: LegacyAspectRatio): string {
+  const normalized = normalizeAspectRatio(aspectRatio)
+  switch (normalized) {
     case 'SQUARE':
       return '1024*1024'
     case 'PORTRAIT':
@@ -35,10 +38,11 @@ function aspectRatioToSize(aspectRatio: AspectRatio): string {
   }
 }
 
-function aspectRatioToVideoRatio(aspectRatio: AspectRatio): string {
+function aspectRatioToVideoRatio(aspectRatio: LegacyAspectRatio): string {
   // Video models only support 16:9 and 9:16 aspect ratios
   // Force 16:9 by default, and 9:16 only for portrait
-  switch (aspectRatio) {
+  const normalized = normalizeAspectRatio(aspectRatio)
+  switch (normalized) {
     case 'PORTRAIT':
       return '9:16'  // Portrait becomes 9:16 for video
     case 'SQUARE':
@@ -95,7 +99,7 @@ export class WavespeedService {
   static async textToImage(
     prompt: string, 
     model: TextToImageModel = 'SEEDREAM_V4',
-    aspectRatio: AspectRatio = 'SQUARE'
+    aspectRatio: LegacyAspectRatio = 'SQUARE'
   ): Promise<string> {
     try {
       const size = aspectRatioToSize(aspectRatio)
@@ -134,7 +138,7 @@ export class WavespeedService {
     prompt: string, 
     imageUrls: string[], 
     model: ImageToImageModel = 'SEEDREAM_V4_EDIT',
-    aspectRatio: AspectRatio = 'SQUARE'
+    aspectRatio: LegacyAspectRatio = 'SQUARE'
   ): Promise<string> {
     try {
       const size = aspectRatioToSize(aspectRatio)
@@ -232,7 +236,7 @@ export class KieService {
     prompt: string,
     imageUrls?: string[],
     model: VideoModel = 'VEO3_FAST',
-    aspectRatio: AspectRatio = 'WIDE'
+    aspectRatio: LegacyAspectRatio = 'WIDE'
   ): Promise<string> {
     try {
       const videoAspectRatio = aspectRatioToVideoRatio(aspectRatio)

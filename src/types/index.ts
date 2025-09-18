@@ -159,6 +159,8 @@ export interface FileUpload {
 
 // User Preferences Types
 export type AspectRatio = 'SQUARE' | 'PORTRAIT' | 'LANDSCAPE' | 'WIDE'
+// Legacy type for database migration - remove after migration complete
+export type LegacyAspectRatio = AspectRatio | 'ULTRAWIDE'
 export type TextToImageModel = 'SEEDREAM_V4' | 'FLUX_1_1_PRO' | 'FLUX_1_SCHNELL' | 'NANO_BANANA'
 export type ImageToImageModel = 'SEEDREAM_V4_EDIT' | 'FLUX_1_1_PRO_EDIT' | 'NANO_BANANA_EDIT'
 export type VideoModel = 'VEO3_FAST' | 'VEO3_STANDARD' | 'RUNWAY_ML'
@@ -166,12 +168,20 @@ export type VideoModel = 'VEO3_FAST' | 'VEO3_STANDARD' | 'RUNWAY_ML'
 export interface UserPreferences {
   id: string
   userId: string
-  aspectRatio: AspectRatio
+  aspectRatio: LegacyAspectRatio // Temporarily allow legacy values
   textToImageModel: TextToImageModel
   imageToImageModel: ImageToImageModel
   videoModel: VideoModel
   createdAt: Date
   updatedAt: Date
+}
+
+// Utility function to convert legacy aspect ratios
+export function normalizeAspectRatio(aspectRatio: LegacyAspectRatio): AspectRatio {
+  if (aspectRatio === 'ULTRAWIDE') {
+    return 'WIDE' // Convert ULTRAWIDE to WIDE
+  }
+  return aspectRatio as AspectRatio
 }
 
 export interface PreferencesUpdateRequest {

@@ -182,7 +182,6 @@ enum AspectRatio {
   PORTRAIT        // 3:4
   LANDSCAPE       // 4:3
   WIDE            // 16:9
-  ULTRAWIDE       // 21:9
 }
 
 enum TextToImageModel {
