@@ -1,4 +1,4 @@
-export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC'
+export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'IMAGE_UPSCALE'
 export type GenerationStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
 export type MessageRole = 'USER' | 'ASSISTANT' | 'SYSTEM'
 
@@ -66,6 +66,15 @@ export interface WavespeedLipsyncRequest {
   prompt?: string
   resolution: string
   seed: number
+}
+
+export interface WavespeedUpscaleRequest {
+  creativity: number
+  enable_base64_output: boolean
+  enable_sync_mode: boolean
+  image: string
+  output_format: string
+  target_resolution: string
 }
 
 export interface WavespeedResponse {

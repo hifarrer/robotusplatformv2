@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { analyzeUserRequest } from '@/lib/ai-orchestrator'
 import { WavespeedService, KieService } from '@/lib/ai-services'
+import { GenerationType } from '@/types'
 import { z } from 'zod'
 
 const chatRequestSchema = z.object({
@@ -12,6 +13,81 @@ const chatRequestSchema = z.object({
   audio: z.array(z.string()).optional(),
   chatId: z.string().optional().nullable(),
 })
+
+const upscaleRequestSchema = z.object({
+  action: z.literal('upscale'),
+  imageUrl: z.string().min(1, 'Image URL is required'),
+  chatId: z.string().optional().nullable(),
+})
+
+async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: string | null) {
+  try {
+    console.log('🔍 Starting upscale process for:', imageUrl) // Debug log
+    
+    // Create or get chat
+    let chat
+    if (chatId) {
+      chat = await prisma.chat.findFirst({
+        where: {
+          id: chatId,
+          userId: session.user.id,
+        },
+      })
+    }
+    
+    if (!chat) {
+      chat = await prisma.chat.create({
+        data: {
+          userId: session.user.id,
+          title: 'Image Upscaling',
+        },
+      })
+    }
+
+    // Create assistant message for the upscale operation
+    const assistantMessage = await prisma.message.create({
+      data: {
+        chatId: chat.id,
+        role: 'ASSISTANT',
+        content: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
+      },
+    })
+
+    // Start the upscaling process
+    const requestId = await WavespeedService.upscaleImage(imageUrl)
+    
+    const generation = await prisma.generation.create({
+      data: {
+        messageId: assistantMessage.id,
+        type: 'IMAGE_UPSCALE' as any,
+        status: 'PROCESSING',
+        prompt: 'Image upscaling to 4K resolution',
+        provider: 'wavespeed',
+        model: 'image-upscaler',
+        requestId,
+      },
+    })
+
+    // Get the updated assistant message with generations
+    const updatedAssistantMessage = await prisma.message.findUnique({
+      where: { id: assistantMessage.id },
+      include: { generations: true },
+    })
+
+    return NextResponse.json({
+      response: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
+      chatId: chat.id,
+      messageId: assistantMessage.id,
+      generations: updatedAssistantMessage?.generations || [],
+    })
+  } catch (error: any) {
+    console.error('Upscale error:', error)
+    return NextResponse.json(
+      { error: 'Failed to start image upscaling', details: error?.message },
+      { status: 500 }
+    )
+  }
+}
 
 export async function POST(request: NextRequest) {
   console.log('🌟 === CHAT API STARTED ===') // Debug log
@@ -32,6 +108,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('📋 Raw request body:', body) // Debug log
     
+    // Check if this is an upscale request
+    if (body.action === 'upscale') {
+      const { imageUrl, chatId } = upscaleRequestSchema.parse(body)
+      console.log('🔍 Processing upscale request:', { imageUrl, chatId }) // Debug log
+      return await handleUpscaleRequest(session, imageUrl, chatId ?? null)
+    }
+    
+    // Handle regular chat request
     const { message, images = [], audio = [], chatId } = chatRequestSchema.parse(body)
     
     console.log('📝 Parsed request:', { message, images: images.length, audio: audio.length, chatId }) // Debug log

@@ -3,6 +3,7 @@ import {
   WavespeedTextToImageRequest,
   WavespeedImageToImageRequest,
   WavespeedLipsyncRequest,
+  WavespeedUpscaleRequest,
   WavespeedResponse,
   WavespeedResultResponse,
   KieVideoRequest,
@@ -209,6 +210,43 @@ export class WavespeedService {
       console.error('Wavespeed lipsync error:', error)
       console.error('Error response:', error.response?.data) // More detailed error
       throw new Error('Failed to start lipsync generation')
+    }
+  }
+
+  static async upscaleImage(
+    imageUrl: string,
+    targetResolution: string = '4k',
+    creativity: number = 2
+  ): Promise<string> {
+    try {
+      const request: WavespeedUpscaleRequest = {
+        creativity,
+        enable_base64_output: false,
+        enable_sync_mode: false,
+        image: imageUrl,
+        output_format: 'png',
+        target_resolution: targetResolution,
+      }
+
+      console.log('Sending upscale request to Wavespeed:', { request }) // Debug log
+
+      const response = await axios.post<WavespeedResponse>(
+        `${WAVESPEED_BASE_URL}/wavespeed-ai/image-upscaler`,
+        request,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${WAVESPEED_API_KEY}`,
+          },
+        }
+      )
+
+      console.log('Wavespeed upscale response:', response.data) // Debug log
+      return response.data.data.id
+    } catch (error: any) {
+      console.error('Wavespeed upscale error:', error)
+      console.error('Error response:', error.response?.data) // More detailed error
+      throw new Error('Failed to start image upscaling')
     }
   }
 

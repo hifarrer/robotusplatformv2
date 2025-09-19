@@ -21,7 +21,8 @@ import {
   Images,
   Plus,
   Music,
-  Dice6
+  Dice6,
+  ZoomIn
 } from 'lucide-react'
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -268,6 +269,69 @@ export function ChatInterface() {
         id: generateId(),
         role: 'ASSISTANT',
         content: `Sorry, there was an error regenerating your content: ${error?.message || 'Unknown error'}`,
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Upscale image
+  const upscaleImage = async (generation: any) => {
+    try {
+      setIsLoading(true)
+      
+      // Get the image URL to upscale
+      const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
+      if (!imageUrl) {
+        throw new Error('No image URL found to upscale')
+      }
+      
+      const requestBody = {
+        action: 'upscale',
+        imageUrl: imageUrl,
+        chatId: chatId,
+      }
+      
+      console.log('🔍 Upscaling image:', imageUrl)
+      
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Chat API failed: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      
+      // Store chatId from response if we don't have one
+      if (!chatId && result.chatId) {
+        setChatId(result.chatId)
+      }
+      
+      // Add AI response
+      const aiMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: result.response || 'Upscaling your image...',
+        timestamp: new Date(),
+        generations: result.generations || [],
+      }
+      
+      setMessages(prev => [...prev, aiMessage])
+    } catch (error: any) {
+      console.error('Error upscaling image:', error)
+      
+      const errorMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: `Sorry, there was an error upscaling your image: ${error?.message || 'Unknown error'}`,
         timestamp: new Date(),
       }
       setMessages(prev => [...prev, errorMessage])
@@ -644,8 +708,8 @@ export function ChatInterface() {
                                   ))}
                                 </div>
                                 
-                                {/* Generate New button */}
-                                <div className="flex justify-center">
+                                {/* Generate New and Upscale buttons */}
+                                <div className="flex justify-center space-x-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -656,6 +720,19 @@ export function ChatInterface() {
                                     <RefreshCw className="w-4 h-4 mr-2" />
                                     Generate New
                                   </Button>
+                                  {/* Show upscale button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => upscaleImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    >
+                                      <ZoomIn className="w-4 h-4 mr-2" />
+                                      Upscale
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -693,8 +770,8 @@ export function ChatInterface() {
                                   )}
                                 </div>
                                 
-                                {/* Generate New button */}
-                                <div className="flex justify-center">
+                                {/* Generate New and Upscale buttons */}
+                                <div className="flex justify-center space-x-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -705,6 +782,19 @@ export function ChatInterface() {
                                     <RefreshCw className="w-4 h-4 mr-2" />
                                     Generate New
                                   </Button>
+                                  {/* Show upscale button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => upscaleImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    >
+                                      <ZoomIn className="w-4 h-4 mr-2" />
+                                      Upscale
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             )}

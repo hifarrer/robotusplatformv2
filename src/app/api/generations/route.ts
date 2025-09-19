@@ -69,11 +69,15 @@ export async function GET(request: NextRequest) {
             
             // Save images to permanent storage
             try {
+              const title = generation.type === 'IMAGE_UPSCALE' as GenerationType 
+                ? `Upscaled Image - ${new Date().toLocaleDateString()}`
+                : generation.prompt
+              
               for (const imageUrl of result.data.outputs) {
                 await downloadAndSaveImage(
                   session.user.id,
                   imageUrl,
-                  generation.prompt,
+                  title,
                   generation.id
                 )
               }
@@ -231,12 +235,16 @@ export async function POST(request: NextRequest) {
                     )
                   }
                 } else {
-                  // Save regular image results
+                  // Save regular image results (including upscaled images)
+                  const title = generation.type === 'IMAGE_UPSCALE' as GenerationType 
+                    ? `Upscaled Image - ${new Date().toLocaleDateString()}`
+                    : generation.prompt
+                  
                   for (const imageUrl of result.data.outputs) {
                     await downloadAndSaveImage(
                       session.user.id,
                       imageUrl,
-                      generation.prompt,
+                      title,
                       generation.id
                     )
                   }
