@@ -69,12 +69,16 @@ export async function POST(request: NextRequest) {
       // Save file to disk
       await fs.writeFile(filePath, buffer)
       
+      // Construct the full URL properly
+      const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+      const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${publicUrl}` : `https://${baseUrl}${publicUrl}`
+      
       uploadedImages.push({
         name: file.name,
         size: file.size,
         type: mimeType,
         url: publicUrl, // Public URL for Wavespeed API
-        fullUrl: `${process.env.NEXTAUTH_URL || 'http://localhost:3002'}${publicUrl}`
+        fullUrl: fullUrl
       })
     }
 

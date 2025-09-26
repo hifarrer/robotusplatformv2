@@ -76,13 +76,31 @@ export async function POST(request: NextRequest) {
       
       const fileType = file.type.startsWith('audio/') ? 'audio' : 'image'
       
+      // Construct the full URL properly
+      const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+      const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${publicUrl}` : `https://${baseUrl}${publicUrl}`
+      
+      // For local development, we need a publicly accessible URL
+      // Check if we're in development and need to use a tunnel
+      const isLocalDev = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')
+      
+      console.log('📁 Uploaded file:', {
+        fileName,
+        publicUrl,
+        baseUrl,
+        fullUrl,
+        filePath,
+        isLocalDev,
+        warning: isLocalDev ? 'Local development - external APIs cannot access localhost URLs' : 'Production - URLs should be accessible'
+      })
+      
       uploadedFiles.push({
         name: file.name,
         size: file.size,
         type: mimeType,
         fileType,
         url: publicUrl, // Public URL for API
-        fullUrl: `${process.env.NEXTAUTH_URL || 'http://localhost:3002'}${publicUrl}`
+        fullUrl: fullUrl
       })
     }
 

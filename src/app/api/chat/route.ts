@@ -285,6 +285,8 @@ export async function POST(request: NextRequest) {
         } else {
           try {
             console.log('Sending images to Wavespeed:', imagesToUse) // Debug log
+            console.log('Image URLs being sent:', imagesToUse.map(url => ({ url, accessible: 'checking...' }))) // Debug log
+            
             const requestId = await WavespeedService.imageToImage(
               analysis.prompt,
               imagesToUse,
