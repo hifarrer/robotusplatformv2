@@ -431,23 +431,23 @@ export function ChatInterface() {
 
   // Upscale image
   const upscaleImage = async (generation: any) => {
+    // Get the image URL to upscale
+    const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
+    if (!imageUrl) {
+      throw new Error('No image URL found to upscale')
+    }
+    
+    // Add immediate feedback message
+    const loadingMessage: ChatMessage = {
+      id: generateId(),
+      role: 'ASSISTANT',
+      content: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, loadingMessage])
+    
     try {
       setIsLoading(true)
-      
-      // Get the image URL to upscale
-      const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
-      if (!imageUrl) {
-        throw new Error('No image URL found to upscale')
-      }
-      
-      // Add immediate feedback message
-      const loadingMessage: ChatMessage = {
-        id: generateId(),
-        role: 'ASSISTANT',
-        content: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
-        timestamp: new Date(),
-      }
-      setMessages(prev => [...prev, loadingMessage])
       
       const requestBody = {
         action: 'upscale',
