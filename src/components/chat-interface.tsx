@@ -961,7 +961,7 @@ export function ChatInterface() {
                                     variant="outline"
                                     size="icon"
                                     className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 border-white/20 hover:bg-black/70"
-                                    onClick={() => downloadGeneratedContent(generation.resultUrl, generation.type, 0)}
+                                    onClick={() => generation.resultUrl && downloadGeneratedContent(generation.resultUrl, generation.type, 0)}
                                     title="Download"
                                   >
                                     <Download className="w-4 h-4 text-white" />
