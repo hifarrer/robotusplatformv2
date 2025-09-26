@@ -85,10 +85,11 @@ export async function POST(request: NextRequest) {
           exists: true
         })
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
         console.error('❌ File creation failed:', {
           fileName,
           filePath,
-          error: error.message
+          error: message
         })
       }
       

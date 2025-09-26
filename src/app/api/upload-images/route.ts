@@ -89,7 +89,8 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Upload images error:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('Upload images error:', message)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
