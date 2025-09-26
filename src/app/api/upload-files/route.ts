@@ -70,15 +70,33 @@ export async function POST(request: NextRequest) {
       const fileName = `temp_${timestamp}_${randomId}.${extension}`
       const filePath = path.join(TEMP_UPLOADS_DIR, fileName)
       const publicUrl = `/temp-uploads/${fileName}`
+      const apiUrl = `/api/temp-files/${fileName}`
       
       // Save file to disk
       await fs.writeFile(filePath, buffer)
       
+      // Verify file was created
+      try {
+        const stats = await fs.stat(filePath)
+        console.log('✅ File created successfully:', {
+          fileName,
+          filePath,
+          size: stats.size,
+          exists: true
+        })
+      } catch (error) {
+        console.error('❌ File creation failed:', {
+          fileName,
+          filePath,
+          error: error.message
+        })
+      }
+      
       const fileType = file.type.startsWith('audio/') ? 'audio' : 'image'
       
-      // Construct the full URL properly
+      // Construct the full URL properly - use API route for better reliability
       const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
-      const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${publicUrl}` : `https://${baseUrl}${publicUrl}`
+      const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${apiUrl}` : `https://${baseUrl}${apiUrl}`
       
       // For local development, we need a publicly accessible URL
       // Check if we're in development and need to use a tunnel
@@ -86,11 +104,18 @@ export async function POST(request: NextRequest) {
       
       // If we're in production, make sure the URL is accessible
       if (!isLocalDev) {
-        // Test if the file is accessible
+        // Test if the file is accessible via API route
         try {
-          const testUrl = `${baseUrl}${publicUrl}`
-          console.log('🔍 Testing file accessibility:', testUrl)
-          // We'll add a test here later if needed
+          const testUrl = `${baseUrl}${apiUrl}`
+          console.log('🔍 Testing file accessibility via API:', testUrl)
+          
+          // Test the URL accessibility
+          const response = await fetch(testUrl, { method: 'HEAD' })
+          console.log('🌐 File accessibility test result:', {
+            url: testUrl,
+            status: response.status,
+            accessible: response.ok
+          })
         } catch (error) {
           console.error('❌ File accessibility test failed:', error)
         }
@@ -99,11 +124,12 @@ export async function POST(request: NextRequest) {
       console.log('📁 Uploaded file:', {
         fileName,
         publicUrl,
+        apiUrl,
         baseUrl,
         fullUrl,
         filePath,
         isLocalDev,
-        warning: isLocalDev ? 'Local development - external APIs cannot access localhost URLs' : 'Production - URLs should be accessible'
+        warning: isLocalDev ? 'Local development - external APIs cannot access localhost URLs' : 'Production - URLs should be accessible via API route'
       })
       
       uploadedFiles.push({

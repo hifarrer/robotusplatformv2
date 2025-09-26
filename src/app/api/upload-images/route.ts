@@ -65,20 +65,21 @@ export async function POST(request: NextRequest) {
       const fileName = `temp_${timestamp}_${randomId}.${extension}`
       const filePath = path.join(TEMP_UPLOADS_DIR, fileName)
       const publicUrl = `/temp-uploads/${fileName}`
+      const apiUrl = `/api/temp-files/${fileName}`
       
       // Save file to disk
       await fs.writeFile(filePath, buffer)
       
-      // Construct the full URL properly
+      // Construct the full URL properly - use API route for better reliability
       const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
-      const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${publicUrl}` : `https://${baseUrl}${publicUrl}`
+      const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${apiUrl}` : `https://${baseUrl}${apiUrl}`
       
       uploadedImages.push({
         name: file.name,
         size: file.size,
         type: mimeType,
         url: publicUrl, // Public URL for Wavespeed API
-        fullUrl: fullUrl
+        fullUrl: fullUrl // API route URL for better reliability
       })
     }
 
