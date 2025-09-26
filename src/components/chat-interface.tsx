@@ -219,23 +219,23 @@ export function ChatInterface() {
 
   // Generate video from image
   const generateVideoFromImage = async (generation: any) => {
+    // Get the image URL
+    const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
+    if (!imageUrl) {
+      throw new Error('No image URL found to generate video from')
+    }
+    
+    // Add immediate feedback message
+    const loadingMessage: ChatMessage = {
+      id: generateId(),
+      role: 'ASSISTANT',
+      content: 'I\'m analyzing your image and creating a video prompt. This will take a few moments...',
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, loadingMessage])
+    
     try {
       setIsLoading(true)
-      
-      // Get the image URL
-      const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
-      if (!imageUrl) {
-        throw new Error('No image URL found to generate video from')
-      }
-      
-      // Add immediate feedback message
-      const loadingMessage: ChatMessage = {
-        id: generateId(),
-        role: 'ASSISTANT',
-        content: 'I\'m analyzing your image and creating a video prompt. This will take a few moments...',
-        timestamp: new Date(),
-      }
-      setMessages(prev => [...prev, loadingMessage])
       
       // Analyze image and generate video prompt
       const analysisResponse = await fetch('/api/analyze-image', {
