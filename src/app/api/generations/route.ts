@@ -127,6 +127,11 @@ export async function GET(request: NextRequest) {
               // Still processing - successFlag 0 without error means in progress
               console.log('🎬 Video still processing...') // Debug log
             }
+          } else if (result.data.successFlag !== 1 && (result.data.errorCode || result.data.errorMessage)) {
+            // Handle any non-success status with error information
+            status = 'FAILED'
+            error = result.data.errorMessage || `Error code: ${result.data.errorCode}`
+            console.log('🎬 Video generation failed with error:', error) // Debug log
           } else {
             // Still processing
             console.log('🎬 Video still processing...') // Debug log
@@ -295,6 +300,11 @@ export async function POST(request: NextRequest) {
                 // Still processing - successFlag 0 without error means in progress
                 console.log('🎬 Batch video still processing...') // Debug log
               }
+            } else if (result.data.successFlag !== 1 && (result.data.errorCode || result.data.errorMessage)) {
+              // Handle any non-success status with error information
+              status = 'FAILED'
+              error = result.data.errorMessage || `Error code: ${result.data.errorCode}`
+              console.log('🎬 Batch video generation failed with error:', error) // Debug log
             } else {
               // Still processing
               console.log('🎬 Batch video still processing...') // Debug log

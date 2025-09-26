@@ -59,7 +59,7 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
     const generation = await prisma.generation.create({
       data: {
         messageId: assistantMessage.id,
-        type: 'IMAGE_UPSCALE' as any,
+        type: 'IMAGE_UPSCALE',
         status: 'PROCESSING',
         prompt: 'Image upscaling to 4K resolution',
         provider: 'wavespeed',

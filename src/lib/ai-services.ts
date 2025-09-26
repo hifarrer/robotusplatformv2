@@ -20,6 +20,7 @@ const WAVESPEED_BASE_URL = 'https://api.wavespeed.ai/api/v3'
 const KIE_API_KEY = process.env.KIE_API_KEY!
 const KIE_BASE_URL = 'https://api.kie.ai/api/v1'
 
+
 // Utility functions
 function aspectRatioToSize(aspectRatio: AspectRatio): string {
   switch (aspectRatio) {
@@ -278,6 +279,9 @@ export class KieService {
     aspectRatio: AspectRatio = 'WIDE'
   ): Promise<string> {
     try {
+      if (!KIE_API_KEY) {
+        throw new Error('KIE_API_KEY environment variable is not set')
+      }
       const videoAspectRatio = aspectRatioToVideoRatio(aspectRatio)
       const videoModel = getVideoModel(model)
       
@@ -304,7 +308,12 @@ export class KieService {
         }
       )
 
+      console.log('KIE API Response Status:', response.status)
+      console.log('KIE API Response Data:', response.data)
+
       if (response.data.code !== 200) {
+        console.error('KIE API Error Response:', response.data)
+        console.error('Full response:', response)
         throw new Error(response.data.msg || 'Failed to start video generation')
       }
 

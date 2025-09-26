@@ -22,7 +22,9 @@ import {
   Plus,
   Music,
   Dice6,
-  ZoomIn
+  ZoomIn,
+  Trash2,
+  Download
 } from 'lucide-react'
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -60,6 +62,7 @@ export function ChatInterface() {
   const [showImageLibrary, setShowImageLibrary] = useState(false)
   const [libraryImages, setLibraryImages] = useState<SavedImage[]>([])
   const [loadingLibrary, setLoadingLibrary] = useState(false)
+  const [deletingLibraryImageId, setDeletingLibraryImageId] = useState<string | null>(null)
   const [chatId, setChatId] = useState<string | null>(null)
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -184,6 +187,155 @@ export function ChatInterface() {
       })
   }
 
+  // Delete image from library
+  const deleteFromLibrary = async (e: React.MouseEvent, imageId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (deletingLibraryImageId) return
+    try {
+      setDeletingLibraryImageId(imageId)
+      const resp = await fetch(`/api/my-images?id=${encodeURIComponent(imageId)}`, {
+        method: 'DELETE',
+      })
+      if (!resp.ok) throw new Error('Failed to delete image')
+      setLibraryImages(prev => prev.filter(img => img.id !== imageId))
+    } catch (err) {
+      console.error('Error deleting library image:', err)
+    } finally {
+      setDeletingLibraryImageId(null)
+    }
+  }
+
+  // Download generated content
+  const downloadGeneratedContent = (url: string, type: string, index: number = 0) => {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `generated-${type.toLowerCase()}-${index + 1}.${type.includes('VIDEO') ? 'mp4' : 'png'}`
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Generate video from image
+  const generateVideoFromImage = async (generation: any) => {
+    try {
+      setIsLoading(true)
+      
+      // Get the image URL
+      const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
+      if (!imageUrl) {
+        throw new Error('No image URL found to generate video from')
+      }
+      
+      // Add immediate feedback message
+      const loadingMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: 'I\'m analyzing your image and creating a video prompt. This will take a few moments...',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, loadingMessage])
+      
+      // Analyze image and generate video prompt
+      const analysisResponse = await fetch('/api/analyze-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ imageUrl }),
+      })
+      
+      if (!analysisResponse.ok) {
+        throw new Error('Failed to analyze image')
+      }
+      
+      const analysisResult = await analysisResponse.json()
+      const videoPrompt = analysisResult.videoPrompt
+      
+      // Update loading message with the generated prompt
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: `I've analyzed your image and created this video prompt: "${videoPrompt}". Now generating the video...`,
+            }
+          : msg
+      ))
+      
+      // Generate video using the prompt and image
+      const videoResponse = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: videoPrompt,
+          imageUrls: [imageUrl],
+          model: userPreferences?.videoModel || 'VEO3_FAST',
+          aspectRatio: userPreferences?.aspectRatio || 'WIDE',
+        }),
+      })
+      
+      if (!videoResponse.ok) {
+        throw new Error('Failed to generate video')
+      }
+      
+      const videoResult = await videoResponse.json()
+      const taskId = videoResult.taskId
+      
+      // Create generation record
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `Generate video from image with prompt: ${videoPrompt}`,
+          images: [imageUrl],
+          audio: [],
+          chatId: chatId,
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Chat API failed: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      
+      // Store chatId from response if we don't have one
+      if (!chatId && result.chatId) {
+        setChatId(result.chatId)
+      }
+      
+      // Replace the loading message with the actual response
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: result.response || 'Generating video from your image...',
+              generations: result.generations || [],
+            }
+          : msg
+      ))
+    } catch (error: any) {
+      console.error('Error generating video from image:', error)
+      
+      // Replace the loading message with error message
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: `Sorry, there was an error generating a video from your image: ${error?.message || 'Unknown error'}`,
+            }
+          : msg
+      ))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Handle preferences change
   const handlePreferencesChange = (preferences: UserPreferences) => {
     setUserPreferences(preferences)
@@ -288,6 +440,15 @@ export function ChatInterface() {
         throw new Error('No image URL found to upscale')
       }
       
+      // Add immediate feedback message
+      const loadingMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, loadingMessage])
+      
       const requestBody = {
         action: 'upscale',
         imageUrl: imageUrl,
@@ -315,26 +476,28 @@ export function ChatInterface() {
         setChatId(result.chatId)
       }
       
-      // Add AI response
-      const aiMessage: ChatMessage = {
-        id: generateId(),
-        role: 'ASSISTANT',
-        content: result.response || 'Upscaling your image...',
-        timestamp: new Date(),
-        generations: result.generations || [],
-      }
-      
-      setMessages(prev => [...prev, aiMessage])
+      // Replace the loading message with the actual response
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: result.response || 'Upscaling your image...',
+              generations: result.generations || [],
+            }
+          : msg
+      ))
     } catch (error: any) {
       console.error('Error upscaling image:', error)
       
-      const errorMessage: ChatMessage = {
-        id: generateId(),
-        role: 'ASSISTANT',
-        content: `Sorry, there was an error upscaling your image: ${error?.message || 'Unknown error'}`,
-        timestamp: new Date(),
-      }
-      setMessages(prev => [...prev, errorMessage])
+      // Replace the loading message with error message
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: `Sorry, there was an error upscaling your image: ${error?.message || 'Unknown error'}`,
+            }
+          : msg
+      ))
     } finally {
       setIsLoading(false)
     }
@@ -676,7 +839,7 @@ export function ChatInterface() {
                               <div className="mt-2 space-y-3">
                                 <div className="grid grid-cols-1 gap-2">
                                   {generation.resultUrls.map((url, index) => (
-                                    <div key={index} className="relative">
+                                    <div key={index} className="relative group">
                                       {(generation.type === 'TEXT_TO_VIDEO' || generation.type === 'IMAGE_TO_VIDEO' || generation.type === 'LIPSYNC') ? (
                                         <video
                                           controls
@@ -704,11 +867,22 @@ export function ChatInterface() {
                                           }}
                                         />
                                       )}
+                                      
+                                      {/* Download button */}
+                                      <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 border-white/20 hover:bg-black/70"
+                                        onClick={() => downloadGeneratedContent(url, generation.type, index)}
+                                        title="Download"
+                                      >
+                                        <Download className="w-4 h-4 text-white" />
+                                      </Button>
                                     </div>
                                   ))}
                                 </div>
                                 
-                                {/* Generate New and Upscale buttons */}
+                                {/* Generate New, Upscale, and Generate Video buttons */}
                                 <div className="flex justify-center space-x-2">
                                   <Button
                                     variant="outline"
@@ -733,6 +907,19 @@ export function ChatInterface() {
                                       Upscale
                                     </Button>
                                   )}
+                                  {/* Show generate video button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => generateVideoFromImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    >
+                                      <Video className="w-4 h-4 mr-2" />
+                                      Generate Video
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -740,7 +927,7 @@ export function ChatInterface() {
                             {/* Fallback for single resultUrl */}
                             {generation.status === 'COMPLETED' && generation.resultUrl && (!generation.resultUrls || generation.resultUrls.length === 0) && (
                               <div className="mt-2 space-y-3">
-                                <div>
+                                <div className="relative group">
                                   {(generation.type === 'TEXT_TO_VIDEO' || generation.type === 'IMAGE_TO_VIDEO' || generation.type === 'LIPSYNC') ? (
                                     <video
                                       controls
@@ -768,9 +955,20 @@ export function ChatInterface() {
                                       }}
                                     />
                                   )}
+                                  
+                                  {/* Download button */}
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 border-white/20 hover:bg-black/70"
+                                    onClick={() => downloadGeneratedContent(generation.resultUrl, generation.type, 0)}
+                                    title="Download"
+                                  >
+                                    <Download className="w-4 h-4 text-white" />
+                                  </Button>
                                 </div>
                                 
-                                {/* Generate New and Upscale buttons */}
+                                {/* Generate New, Upscale, and Generate Video buttons */}
                                 <div className="flex justify-center space-x-2">
                                   <Button
                                     variant="outline"
@@ -793,6 +991,19 @@ export function ChatInterface() {
                                     >
                                       <ZoomIn className="w-4 h-4 mr-2" />
                                       Upscale
+                                    </Button>
+                                  )}
+                                  {/* Show generate video button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => generateVideoFromImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    >
+                                      <Video className="w-4 h-4 mr-2" />
+                                      Generate Video
                                     </Button>
                                   )}
                                 </div>
@@ -1006,7 +1217,7 @@ export function ChatInterface() {
                         className="object-cover"
                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                       />
-                      
+
                       {/* Hover overlay */}
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <div className="text-white text-center">
@@ -1016,6 +1227,22 @@ export function ChatInterface() {
                           <p className="text-xs">Select</p>
                         </div>
                       </div>
+                      
+                      {/* Delete button - positioned above overlay */}
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 w-7 h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        onClick={(e) => deleteFromLibrary(e, image.id)}
+                        disabled={deletingLibraryImageId === image.id}
+                        title="Delete image"
+                      >
+                        {deletingLibraryImageId === image.id ? (
+                          <div className="spinner w-3 h-3" />
+                        ) : (
+                          <Trash2 className="w-3 h-3" />
+                        )}
+                      </Button>
                     </div>
                     
                     {/* Image info */}

@@ -15,6 +15,12 @@ Available actions:
 5. "lipsync" - User wants to make an image speak/talk (requires image and audio)
 6. "chat" - General conversation that doesn't require image/video generation
 
+IMPORTANT WORKFLOW RULES:
+- If 2+ images are attached: ALWAYS choose "image_to_image" (even if user asks for video)
+- If 0-1 images attached: Can choose "text_to_video" for video requests
+- Video generation from images is available as a button AFTER image generation
+- This ensures image-to-image models get proper reference images for better results
+
 Context-Aware Intelligence:
 - IMPORTANT: If the user references "previous image", "that image", "the image", "it", or uses modification language without explicitly uploading new images, they are likely referring to a recently generated image in the conversation
 - Look for contextual clues like "change that to", "make it blue", "now add", "modify the", etc.
@@ -26,12 +32,12 @@ Keyword Guidelines:
 - Look for "edit", "modify", "change", "improve", "now", "also", "make it" for editing requests
 - Look for "video", "animation", "motion" for video requests
 - Look for "speak", "talk", "lipsync", "voice", "saying", "talking" for lipsync requests
-- If images are provided and user wants to edit/modify them, choose "image_to_image"
-- If images are provided and user wants to create video, choose "image_to_video"
-- If images and audio are provided and user wants talking/speaking, choose "lipsync"
-- If no images and user wants video, choose "text_to_video"
-- If no images and user wants image, choose "text_to_image"
-- For general questions or conversations, choose "chat"
+- If 2+ images are provided: ALWAYS choose "image_to_image" (video button will be available after)
+- If 1 image and user wants video: choose "image_to_video"
+- If 0 images and user wants video: choose "text_to_video"
+- If images and audio are provided and user wants talking/speaking: choose "lipsync"
+- If no images and user wants image: choose "text_to_image"
+- For general questions or conversations: choose "chat"
 
 Return your analysis as JSON with:
 {
@@ -211,28 +217,20 @@ Analyze this request and determine the appropriate action. Pay special attention
     }
     
     if (hasImages || hasContextualReference) {
-      if (lowerMessage.includes('video') || lowerMessage.includes('animation')) {
-        return {
-          action: 'image_to_video',
-          prompt: message,
-          requiresImages: true,
-          useRecentImage: hasContextualReference && !hasImages,
-          confidence: 0.7,
-          reasoning: 'Fallback: detected video request with images or recent context'
-        }
-      } else {
-        const fallbackResult = {
-          action: 'image_to_image' as const,
-          prompt: message,
-          requiresImages: true,
-          useRecentImage: hasContextualReference && !hasImages,
-          confidence: 0.7,
-          reasoning: hasContextualReference ? 'Fallback: detected reference to previous image' : 'Fallback: detected image editing request'
-        }
-        console.log('🎯 Fallback result (image_to_image):', fallbackResult) // Debug log
-        return fallbackResult
+      // With 2+ images, always generate an image (image-to-image models work better with reference images)
+      // Video generation will be available as a button after image generation
+      const fallbackResult = {
+        action: 'image_to_image' as const,
+        prompt: message,
+        requiresImages: true,
+        useRecentImage: hasContextualReference && !hasImages,
+        confidence: 0.8,
+        reasoning: hasContextualReference ? 'Fallback: detected reference to previous image - will generate image first, then video button available' : 'Fallback: detected image editing request with multiple images - will generate image first, then video button available'
       }
+      console.log('🎯 Fallback result (image_to_image):', fallbackResult) // Debug log
+      return fallbackResult
     } else {
+      // With 0-1 images, can generate video directly
       if (lowerMessage.includes('video') || lowerMessage.includes('animation')) {
         return {
           action: 'text_to_video',
@@ -240,7 +238,7 @@ Analyze this request and determine the appropriate action. Pay special attention
           requiresImages: false,
           useRecentImage: false,
           confidence: 0.7,
-          reasoning: 'Fallback: detected video request without images'
+          reasoning: 'Fallback: detected video request without images - can generate video directly'
         }
       } else if (
         lowerMessage.includes('create') || 
@@ -272,5 +270,64 @@ Analyze this request and determine the appropriate action. Pay special attention
         return fallbackResult
       }
     }
+  }
+}
+
+export async function analyzeImageForVideoPrompt(imageUrl: string): Promise<string> {
+  console.log('🎬 === IMAGE TO VIDEO ANALYSIS STARTED ===')
+  try {
+    console.log('🔍 Analyzing image for video prompt:', imageUrl)
+    
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured')
+    }
+
+    const systemPrompt = `You are an expert at analyzing images and creating compelling video prompts. Your job is to:
+
+1. Describe what you see in the image in detail
+2. Create a dynamic video prompt that would bring this image to life with motion, camera movement, and visual effects
+3. Focus on cinematic elements like camera angles, lighting changes, particle effects, or environmental dynamics
+4. Make the prompt engaging and suitable for AI video generation
+
+Return ONLY the video prompt, nothing else. Make it 1-2 sentences maximum.`
+
+    const userPrompt = `Analyze this image and create a video prompt that would animate it: ${imageUrl}`
+
+    console.log('🐤 Calling OpenAI Vision API...')
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { 
+          role: 'user', 
+          content: [
+            { type: 'text', text: userPrompt },
+            { 
+              type: 'image_url', 
+              image_url: { url: imageUrl } 
+            }
+          ]
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 200,
+    })
+
+    const response = completion.choices[0]?.message?.content
+    
+    if (!response) {
+      throw new Error('No response from OpenAI')
+    }
+
+    console.log('🎬 Generated video prompt:', response)
+    return response.trim()
+  } catch (error: any) {
+    console.error('💥 === IMAGE TO VIDEO ANALYSIS ERROR ===')
+    console.error('💥 Error:', error?.message)
+    
+    // Fallback prompt
+    const fallbackPrompt = "Cinematic camera movement with dynamic lighting and atmospheric effects"
+    console.log('🔄 Using fallback video prompt:', fallbackPrompt)
+    return fallbackPrompt
   }
 }
