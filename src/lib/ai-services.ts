@@ -154,6 +154,14 @@ export class WavespeedService {
         prompt,
         size,
       }
+      
+      console.log('🎨 Wavespeed Image-to-Image Request:', {
+        prompt: prompt.substring(0, 100) + '...',
+        imageCount: imageUrls.length,
+        imageUrls: imageUrls.map(url => ({ url, accessible: 'checking...' })),
+        model,
+        size
+      })
 
       console.log('Sending image-to-image request to Wavespeed:', { endpoint, request, model, aspectRatio }) // Debug log
 

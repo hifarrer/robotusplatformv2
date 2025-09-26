@@ -153,6 +153,12 @@ export async function getUserImages(userId: string, page = 1, limit = 20) {
             provider: true,
             model: true,
           },
+          // Filter out generations with invalid types
+          where: {
+            type: {
+              in: ['TEXT_TO_IMAGE', 'IMAGE_TO_IMAGE', 'VIDEO', 'LIPSYNC']
+            }
+          }
         },
       },
     }),

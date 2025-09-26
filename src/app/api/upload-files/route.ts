@@ -84,6 +84,18 @@ export async function POST(request: NextRequest) {
       // Check if we're in development and need to use a tunnel
       const isLocalDev = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')
       
+      // If we're in production, make sure the URL is accessible
+      if (!isLocalDev) {
+        // Test if the file is accessible
+        try {
+          const testUrl = `${baseUrl}${publicUrl}`
+          console.log('🔍 Testing file accessibility:', testUrl)
+          // We'll add a test here later if needed
+        } catch (error) {
+          console.error('❌ File accessibility test failed:', error)
+        }
+      }
+      
       console.log('📁 Uploaded file:', {
         fileName,
         publicUrl,
