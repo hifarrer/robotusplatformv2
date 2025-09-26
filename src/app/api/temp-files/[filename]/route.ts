@@ -63,8 +63,9 @@ export async function GET(
         break
     }
     
-    // Wrap Buffer in a Blob so the Response constructor accepts it
-    return new Response(new Blob([fileBuffer]), {
+    // Convert Node Buffer to a Uint8Array so Response accepts it
+    const body = new Uint8Array(fileBuffer)
+    return new Response(body, {
       status: 200,
       headers: {
         'Content-Type': contentType,
