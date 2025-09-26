@@ -63,7 +63,8 @@ export async function GET(
         break
     }
     
-    return new Response(fileBuffer, {
+    // Wrap Buffer in a Blob so the Response constructor accepts it
+    return new Response(new Blob([fileBuffer]), {
       status: 200,
       headers: {
         'Content-Type': contentType,
