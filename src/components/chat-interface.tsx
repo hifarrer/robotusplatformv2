@@ -24,7 +24,8 @@ import {
   Dice6,
   ZoomIn,
   Trash2,
-  Download
+  Download,
+  Edit
 } from 'lucide-react'
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -503,6 +504,29 @@ export function ChatInterface() {
     }
   }
 
+  // Edit image - send chatbot message and populate input
+  const editImage = (generation: any) => {
+    // Add chatbot response message
+    const chatbotMessage: ChatMessage = {
+      id: generateId(),
+      role: 'ASSISTANT',
+      content: 'You can edit anything you want in this image, the background, characters, clothes styles, colors, etc.',
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, chatbotMessage])
+    
+    // Populate input with edit prompt
+    const editPrompt = "Change the following on this image: "
+    setInput(editPrompt)
+    
+    // Auto-focus the input field so user can see the prompt
+    if (textareaRef.current) {
+      textareaRef.current.focus()
+      // Position cursor at the end of the text
+      textareaRef.current.setSelectionRange(editPrompt.length, editPrompt.length)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -882,7 +906,7 @@ export function ChatInterface() {
                                   ))}
                                 </div>
                                 
-                                {/* Generate New, Upscale, and Generate Video buttons */}
+                                {/* Generate New, Upscale, Edit, and Generate Video buttons */}
                                 <div className="flex justify-center space-x-2">
                                   <Button
                                     variant="outline"
@@ -905,6 +929,19 @@ export function ChatInterface() {
                                     >
                                       <ZoomIn className="w-4 h-4 mr-2" />
                                       Upscale
+                                    </Button>
+                                  )}
+                                  {/* Show edit button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => editImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    >
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Edit
                                     </Button>
                                   )}
                                   {/* Show generate video button only for completed image generations */}
@@ -968,7 +1005,7 @@ export function ChatInterface() {
                                   </Button>
                                 </div>
                                 
-                                {/* Generate New, Upscale, and Generate Video buttons */}
+                                {/* Generate New, Upscale, Edit, and Generate Video buttons */}
                                 <div className="flex justify-center space-x-2">
                                   <Button
                                     variant="outline"
@@ -991,6 +1028,19 @@ export function ChatInterface() {
                                     >
                                       <ZoomIn className="w-4 h-4 mr-2" />
                                       Upscale
+                                    </Button>
+                                  )}
+                                  {/* Show edit button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => editImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    >
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Edit
                                     </Button>
                                   )}
                                   {/* Show generate video button only for completed image generations */}
