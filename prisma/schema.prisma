@@ -203,4 +203,5 @@ enum VideoModel {
   VEO3_FAST
   VEO3_STANDARD
   RUNWAY_ML
+  WAN_2_5
 }

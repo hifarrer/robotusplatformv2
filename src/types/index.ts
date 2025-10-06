@@ -221,5 +221,6 @@ export const IMAGE_TO_IMAGE_MODEL_OPTIONS: ModelOption[] = [
 export const VIDEO_MODEL_OPTIONS: ModelOption[] = [
   { value: 'VEO3_FAST', label: 'Veo3 Fast', description: 'Quick video generation' },
   { value: 'VEO3_STANDARD', label: 'Veo3 Standard', description: 'Balanced speed and quality' },
-  { value: 'RUNWAY_ML', label: 'RunwayML', description: 'High-end video creation' }
+  { value: 'RUNWAY_ML', label: 'RunwayML', description: 'High-end video creation' },
+  { value: 'WAN_2_5', label: 'Alibaba WAN-2.5', description: 'Image-to-video generation with duration options' }
 ]

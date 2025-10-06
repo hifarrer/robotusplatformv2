@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { WavespeedService, KieService } from '@/lib/ai-services'
+import { WavespeedService, KieService, WanService } from '@/lib/ai-services'
 import { downloadAndSaveImage, downloadAndSaveVideo } from '@/lib/media-storage'
 import { GenerationStatus, GenerationType } from '@/types'
 
@@ -217,8 +217,9 @@ export async function POST(request: NextRequest) {
         let status: GenerationStatus = generation.status
         let error: string | undefined
 
-        if (generation.provider === 'wavespeed' && generation.requestId) {
-          const result = await WavespeedService.getResult(generation.requestId)
+        if (generation.provider === 'wavespeed' && generation.requestId && generation.model !== 'wan-2.5') {
+          try {
+            const result = await WavespeedService.getResult(generation.requestId)
           
           if (result.data.status === 'completed') {
             status = 'COMPLETED'
@@ -262,6 +263,49 @@ export async function POST(request: NextRequest) {
             status = 'FAILED'
             error = result.data.error || 'Generation failed'
           }
+          } catch (wavespeedError) {
+            console.error('Error checking Wavespeed generation:', wavespeedError)
+            // Don't update status if there's an error checking the result
+          }
+            } else if (generation.provider === 'wavespeed' && generation.model === 'wan-2.5' && generation.requestId) {
+              try {
+                console.log('🎬 Batch checking WAN-2.5 video result for requestId:', generation.requestId) // Debug log
+                const result = await WavespeedService.getResult(generation.requestId)
+                
+                console.log('🎬 Batch WAN-2.5 API response:', JSON.stringify(result, null, 2)) // Debug log
+                
+                if (result.data.status === 'completed' && result.data.outputs && result.data.outputs.length > 0) {
+                  status = 'COMPLETED'
+                  resultUrl = result.data.outputs[0]
+                  resultUrls = result.data.outputs
+                  
+                  console.log('🎬 Batch WAN-2.5 video completed! URLs:', resultUrls) // Debug log
+                  
+                  // Save video to permanent storage
+                  try {
+                    const savedVideoId = await downloadAndSaveVideo(
+                      session.user.id,
+                      resultUrl,
+                      generation.prompt,
+                      generation.id,
+                      `Generated Video - ${new Date().toLocaleDateString()}`
+                    )
+                    console.log('🎬 Batch WAN-2.5 video saved to storage with ID:', savedVideoId) // Debug log
+                  } catch (saveError) {
+                    console.error('Error saving generated WAN-2.5 video:', saveError)
+                  }
+                } else if (result.data.status === 'failed') {
+                  status = 'FAILED'
+                  error = result.data.error || 'WAN-2.5 video generation failed'
+                  console.log('🎬 Batch WAN-2.5 video generation failed:', error) // Debug log
+                } else {
+                  // Still processing
+                  console.log('🎬 Batch WAN-2.5 video still processing...') // Debug log
+                }
+              } catch (wanError) {
+                console.error('Error checking WAN-2.5 generation:', wanError)
+                // Don't update status if there's an error checking the result
+              }
         } else if (generation.provider === 'kie' && generation.taskId) {
           console.log('🎬 Batch checking KIE video result for taskId:', generation.taskId) // Debug log
           const result = await KieService.getVideoResult(generation.taskId)

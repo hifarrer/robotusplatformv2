@@ -20,6 +20,7 @@ IMPORTANT WORKFLOW RULES:
 - If 0-1 images attached: Can choose "text_to_video" for video requests
 - Video generation from images is available as a button AFTER image generation
 - This ensures image-to-image models get proper reference images for better results
+- Generate an image first if the user doesn't specify clearly what they want, only generate a video if the user explicitly asks for a video.
 
 Context-Aware Intelligence:
 - IMPORTANT: If the user references "previous image", "that image", "the image", "it", or uses modification language without explicitly uploading new images, they are likely referring to a recently generated image in the conversation

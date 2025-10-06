@@ -66,6 +66,9 @@ export function ChatInterface() {
   const [deletingLibraryImageId, setDeletingLibraryImageId] = useState<string | null>(null)
   const [chatId, setChatId] = useState<string | null>(null)
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null)
+  const [showDurationSelection, setShowDurationSelection] = useState(false)
+  const [selectedImageForVideo, setSelectedImageForVideo] = useState<any>(null)
+  const [videoPrompt, setVideoPrompt] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -224,6 +227,65 @@ export function ChatInterface() {
     const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
     if (!imageUrl) {
       throw new Error('No image URL found to generate video from')
+    }
+    
+    // Check if user's preferred video model is WAN-2.5
+    if (userPreferences?.videoModel === 'WAN_2_5') {
+      // Add immediate feedback message for WAN-2.5
+      const loadingMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: '🎬 Analyzing your image to create a video prompt...\n\n⏳ This may take a few moments. Please wait while I analyze the image.',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, loadingMessage])
+      
+      // Analyze image first to get video prompt
+      try {
+        setIsLoading(true)
+        
+        const analysisResponse = await fetch('/api/analyze-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imageUrl }),
+        })
+        
+        if (analysisResponse.ok) {
+          const analysisResult = await analysisResponse.json()
+          setVideoPrompt(analysisResult.videoPrompt)
+          
+          // Update loading message with the generated prompt
+          setMessages(prev => prev.map(msg => 
+            msg.id === loadingMessage.id 
+              ? {
+                  ...msg,
+                  content: `🎬 I've analyzed your image and created this video prompt: "${analysisResult.videoPrompt}"\n\nNow choose your video duration:`,
+                }
+              : msg
+          ))
+        }
+      } catch (error) {
+        console.error('Error analyzing image for video prompt:', error)
+        
+        // Update loading message with error
+        setMessages(prev => prev.map(msg => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                content: '❌ Sorry, there was an error analyzing your image. Please try again.',
+              }
+            : msg
+        ))
+      } finally {
+        setIsLoading(false)
+      }
+      
+      // Show duration selection for WAN-2.5 model
+      setSelectedImageForVideo(generation)
+      setShowDurationSelection(true)
+      return
     }
     
     // Add immediate feedback message
@@ -524,6 +586,90 @@ export function ChatInterface() {
       textareaRef.current.focus()
       // Position cursor at the end of the text
       textareaRef.current.setSelectionRange(editPrompt.length, editPrompt.length)
+    }
+  }
+
+  // Generate video with WAN-2.5 model and selected duration
+  const generateVideoWithDuration = async (duration: number) => {
+    if (!selectedImageForVideo) return
+    
+    const imageUrl = selectedImageForVideo.resultUrls?.[0] || selectedImageForVideo.resultUrl
+    if (!imageUrl) {
+      throw new Error('No image URL found to generate video from')
+    }
+    
+    // Create a real database message for the video generation
+    const messageResponse = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: `Generate ${duration}-second video from image using WAN-2.5 model`,
+        images: [imageUrl],
+        audio: [],
+        chatId: chatId,
+      }),
+    })
+    
+    if (!messageResponse.ok) {
+      throw new Error('Failed to create message')
+    }
+    
+    const messageResult = await messageResponse.json()
+    const loadingMessage: ChatMessage = {
+      id: messageResult.messageId,
+      role: 'ASSISTANT',
+      content: `🎬 Generating ${duration}-second video using Alibaba WAN-2.5 model...\n\n⏳ This may take a few minutes. Please wait while we create your video.`,
+      timestamp: new Date(),
+      generations: messageResult.generations || [],
+    }
+    setMessages(prev => [...prev, loadingMessage])
+    
+    try {
+      setIsLoading(true)
+      setShowDurationSelection(false)
+      
+      // Generate video using WAN-2.5 API
+      const videoResponse = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: videoPrompt || `Create a ${duration}-second video from this image`,
+          imageUrls: [imageUrl],
+          model: 'WAN_2_5',
+          aspectRatio: userPreferences?.aspectRatio || 'WIDE',
+          duration: duration,
+          messageId: messageResult.messageId, // Pass real message ID for generation record
+        }),
+      })
+      
+      if (!videoResponse.ok) {
+        throw new Error('Failed to generate video')
+      }
+      
+      const result = await videoResponse.json()
+      
+      // Keep the loading message as is - the video generation is happening asynchronously
+      // The polling system will update this message when the video is actually completed
+      console.log('🎬 Video generation request submitted successfully:', result)
+    } catch (error: any) {
+      console.error('Error generating video:', error)
+      
+      // Replace the loading message with error message
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: `Sorry, there was an error generating your video: ${error?.message || 'Unknown error'}`,
+            }
+          : msg
+      ))
+    } finally {
+      setIsLoading(false)
+      setSelectedImageForVideo(null)
     }
   }
 
@@ -1094,6 +1240,58 @@ export function ChatInterface() {
             </div>
           )}
         </ScrollArea>
+
+        {/* Duration Selection for WAN-2.5 Model */}
+        {showDurationSelection && (
+          <div className="border-t border-gray-800 p-4 bg-gray-900">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-white mb-2">Select Video Duration</h3>
+                <p className="text-gray-400 text-sm">Choose how long you want your video to be:</p>
+                {videoPrompt && (
+                  <div className="mt-3 p-3 bg-gray-800 rounded-lg">
+                    <p className="text-gray-300 text-sm">
+                      <strong>Video prompt:</strong> {videoPrompt}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex space-x-4">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => generateVideoWithDuration(5)}
+                  disabled={isLoading}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-8 py-3"
+                >
+                  <Video className="w-5 h-5 mr-2" />
+                  5 Seconds
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => generateVideoWithDuration(10)}
+                  disabled={isLoading}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-8 py-3"
+                >
+                  <Video className="w-5 h-5 mr-2" />
+                  10 Seconds
+                </Button>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowDurationSelection(false)
+                  setSelectedImageForVideo(null)
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Input area */}
         <div className="border-t border-gray-800 p-4">
