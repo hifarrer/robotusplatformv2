@@ -69,37 +69,81 @@ export function ChatInterface() {
   const [showDurationSelection, setShowDurationSelection] = useState(false)
   const [selectedImageForVideo, setSelectedImageForVideo] = useState<any>(null)
   const [videoPrompt, setVideoPrompt] = useState<string>('')
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Poll for generation updates
   const checkGenerations = async () => {
     try {
+      console.log('🔄 Checking generations...')
       const response = await fetch('/api/generations', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
+      
+      if (!response.ok) {
+        console.error('Generations API error:', response.status, response.statusText)
+        return
+      }
+      
       const result = await response.json()
+      console.log('📊 Generations result:', result)
+      console.log('📊 Generations count:', result.generations?.length || 0)
       
       if (result.generations && result.generations.length > 0) {
+        console.log('✅ Found generations to update:', result.generations.length)
+        console.log('🎬 Generations details:', JSON.stringify(result.generations, null, 2))
+        
         // Update messages with completed generations
         setMessages(prev => {
+          console.log('📋 Current messages count:', prev.length)
+          console.log('📋 Message IDs:', prev.map(m => m.id))
+          console.log('📋 Generation messageIds:', result.generations.map((g: any) => g.messageId))
+          
           const updatedMessages = prev.map(message => {
-            if (message.generations && message.generations.length > 0) {
-              const updatedGenerations = message.generations.map(gen => {
-                const updated = result.generations.find((g: any) => g.id === gen.id)
-                return updated || gen
+            // Find all generations that belong to this message (by messageId)
+            const matchingGenerations = result.generations.filter((g: any) => g.messageId === message.id)
+            
+            if (matchingGenerations.length > 0) {
+              console.log('🎯 Found', matchingGenerations.length, 'generations for message', message.id, 'Types:', matchingGenerations.map((g: any) => g.type))
+              
+              // Merge with existing generations (if any)
+              const existingGenerations = message.generations || []
+              const updatedGenerations = [...existingGenerations]
+              
+              // Update or add each matching generation
+              matchingGenerations.forEach((newGen: any) => {
+                const existingIndex = updatedGenerations.findIndex(g => g.id === newGen.id)
+                if (existingIndex >= 0) {
+                  // Update existing
+                  console.log('🔄 Updating existing generation:', newGen.id, 'Status:', newGen.status, 'Type:', newGen.type)
+                  updatedGenerations[existingIndex] = newGen
+                } else {
+                  // Add new
+                  console.log('➕ Adding new generation:', newGen.id, 'Status:', newGen.status, 'Type:', newGen.type)
+                  updatedGenerations.push(newGen)
+                }
               })
               
+              console.log('✅ Message', message.id, 'now has', updatedGenerations.length, 'generations')
               return { ...message, generations: updatedGenerations }
             }
+            
+            // No matching generations, return as-is
             return message
           })
           
+          console.log('📤 Updated messages count:', updatedMessages.length)
           return updatedMessages
         })
+      } else {
+        console.log('ℹ️ No generations to update')
       }
     } catch (error) {
-      console.error('Error checking generations:', error)
+      console.error('❌ Error checking generations:', error)
     }
   }
 
@@ -344,44 +388,27 @@ export function ChatInterface() {
         throw new Error('Failed to generate video')
       }
       
-      const videoResult = await videoResponse.json()
-      const taskId = videoResult.taskId
+      const result = await videoResponse.json()
       
-      // Create generation record
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `Generate video from image with prompt: ${videoPrompt}`,
-          images: [imageUrl],
-          audio: [],
-          chatId: chatId,
-        }),
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Chat API failed: ${response.status}`)
+      // Attach the created generation (if returned) to the loading message immediately
+      if (result.generation) {
+        setMessages(prev => prev.map(msg => 
+          msg.id === loadingMessage.id
+            ? {
+                ...msg,
+                generations: [
+                  // If API returned the new generation, seed it here so polling can update it
+                  ...(msg.generations || []),
+                  result.generation,
+                ],
+              }
+            : msg
+        ))
       }
       
-      const result = await response.json()
-      
-      // Store chatId from response if we don't have one
-      if (!chatId && result.chatId) {
-        setChatId(result.chatId)
-      }
-      
-      // Replace the loading message with the actual response
-      setMessages(prev => prev.map(msg => 
-        msg.id === loadingMessage.id 
-          ? {
-              ...msg,
-              content: result.response || 'Generating video from your image...',
-              generations: result.generations || [],
-            }
-          : msg
-      ))
+      // Keep the loading message as is - the video generation is happening asynchronously
+      // The polling system will update this message when the video is actually completed
+      console.log('🎬 Video generation request submitted successfully:', result)
     } catch (error: any) {
       console.error('Error generating video from image:', error)
       
@@ -406,11 +433,35 @@ export function ChatInterface() {
   }
 
   // Start new conversation
-  const startNewConversation = () => {
+  const startNewConversation = async () => {
+    try {
+      // Clear any pending generations first
+      console.log('🧹 Clearing generation queue before starting new conversation...')
+      const response = await fetch('/api/generations', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('✅ Generation queue cleared:', result.message)
+      } else {
+        console.warn('⚠️ Failed to clear generation queue, but continuing with new conversation')
+      }
+    } catch (error) {
+      console.warn('⚠️ Error clearing generation queue:', error)
+    }
+    
+    // Clear the UI state
     setMessages([])
     setChatId(null)
     setFiles([])
     setInput('')
+    setShowDurationSelection(false)
+    setSelectedImageForVideo(null)
+    setIsGeneratingVideo(false)
     console.log('✨ Started new conversation')
   }
 
@@ -593,6 +644,9 @@ export function ChatInterface() {
   const generateVideoWithDuration = async (duration: number) => {
     if (!selectedImageForVideo) return
     
+    // Disable buttons immediately
+    setIsGeneratingVideo(true)
+    
     const imageUrl = selectedImageForVideo.resultUrls?.[0] || selectedImageForVideo.resultUrl
     if (!imageUrl) {
       throw new Error('No image URL found to generate video from')
@@ -669,6 +723,7 @@ export function ChatInterface() {
       ))
     } finally {
       setIsLoading(false)
+      setIsGeneratingVideo(false)
       setSelectedImageForVideo(null)
     }
   }
@@ -776,9 +831,18 @@ export function ChatInterface() {
         setChatId(result.chatId)
       }
       
-      // Add AI response
+      // Update user message with database ID from response
+      if (result.userMessageId) {
+        setMessages(prev => prev.map(msg => 
+          msg.id === userMessage.id 
+            ? { ...msg, id: result.userMessageId }
+            : msg
+        ))
+      }
+      
+      // Add AI response with database ID
       const aiMessage: ChatMessage = {
-        id: generateId(),
+        id: result.messageId || generateId(),
         role: 'ASSISTANT',
         content: result.response || 'Processing your request...',
         timestamp: new Date(),
@@ -1004,13 +1068,30 @@ export function ChatInterface() {
                               </div>
                             )}
                             
+                            {/* DEBUG: Show raw generation data */}
+                            {generation.status === 'COMPLETED' && (
+                              <div className="mt-2 p-2 bg-gray-700 rounded text-xs">
+                                <div>Type: {generation.type}</div>
+                                <div>ResultUrl: {generation.resultUrl || 'none'}</div>
+                                <div>ResultUrls: {generation.resultUrls?.length || 0} items</div>
+                                {generation.resultUrls && generation.resultUrls.length > 0 && (
+                                  <div>First URL: {generation.resultUrls[0]}</div>
+                                )}
+                              </div>
+                            )}
+                            
                             {/* Show results */}
                             {generation.status === 'COMPLETED' && generation.resultUrls && generation.resultUrls.length > 0 && (
                               <div className="mt-2 space-y-3">
                                 <div className="grid grid-cols-1 gap-2">
                                   {generation.resultUrls.map((url, index) => (
                                     <div key={index} className="relative group">
-                                      {(generation.type === 'TEXT_TO_VIDEO' || generation.type === 'IMAGE_TO_VIDEO' || generation.type === 'LIPSYNC') ? (
+                                      {(
+                                        generation.type === 'TEXT_TO_VIDEO' ||
+                                        generation.type === 'IMAGE_TO_VIDEO' ||
+                                        generation.type === 'LIPSYNC' ||
+                                        (typeof url === 'string' && url.toLowerCase().includes('.mp4'))
+                                      ) ? (
                                         <video
                                           controls
                                           className="rounded w-full max-w-full h-auto"
@@ -1111,7 +1192,12 @@ export function ChatInterface() {
                             {generation.status === 'COMPLETED' && generation.resultUrl && (!generation.resultUrls || generation.resultUrls.length === 0) && (
                               <div className="mt-2 space-y-3">
                                 <div className="relative group">
-                                  {(generation.type === 'TEXT_TO_VIDEO' || generation.type === 'IMAGE_TO_VIDEO' || generation.type === 'LIPSYNC') ? (
+                                  {(
+                                    generation.type === 'TEXT_TO_VIDEO' ||
+                                    generation.type === 'IMAGE_TO_VIDEO' ||
+                                    generation.type === 'LIPSYNC' ||
+                                    (typeof generation.resultUrl === 'string' && generation.resultUrl.toLowerCase().includes('.mp4'))
+                                  ) ? (
                                     <video
                                       controls
                                       className="rounded w-full max-w-full h-auto"
@@ -1261,7 +1347,7 @@ export function ChatInterface() {
                   variant="outline"
                   size="lg"
                   onClick={() => generateVideoWithDuration(5)}
-                  disabled={isLoading}
+                  disabled={isLoading || isGeneratingVideo}
                   className="text-gray-300 border-gray-600 hover:bg-gray-700 px-8 py-3"
                 >
                   <Video className="w-5 h-5 mr-2" />
@@ -1271,7 +1357,7 @@ export function ChatInterface() {
                   variant="outline"
                   size="lg"
                   onClick={() => generateVideoWithDuration(10)}
-                  disabled={isLoading}
+                  disabled={isLoading || isGeneratingVideo}
                   className="text-gray-300 border-gray-600 hover:bg-gray-700 px-8 py-3"
                 >
                   <Video className="w-5 h-5 mr-2" />
@@ -1284,6 +1370,7 @@ export function ChatInterface() {
                 onClick={() => {
                   setShowDurationSelection(false)
                   setSelectedImageForVideo(null)
+                  setIsGeneratingVideo(false)
                 }}
                 className="text-gray-400 hover:text-white"
               >

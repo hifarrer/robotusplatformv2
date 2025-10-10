@@ -88,19 +88,19 @@ export interface WavespeedResultResponse {
   message: string
   data: {
     id: string
-    model: string
-    outputs: string[]
     urls: {
       get: string
     }
-    has_nsfw_contents: boolean[]
-    status: string
-    created_at: string
     error: string
-    executionTime: number
+    model: string
+    status: string
+    outputs: string[]
     timings: {
       inference: number
     }
+    created_at: string
+    has_nsfw_contents: boolean[]
+    executionTime: number
   }
 }
 

@@ -261,6 +261,9 @@ export class WavespeedService {
 
   static async getResult(requestId: string): Promise<WavespeedResultResponse> {
     try {
+      console.log('🔍 Calling Wavespeed API for requestId:', requestId)
+      console.log('🔗 API URL:', `${WAVESPEED_BASE_URL}/predictions/${requestId}/result`)
+      
       const response = await axios.get<WavespeedResultResponse>(
         `${WAVESPEED_BASE_URL}/predictions/${requestId}/result`,
         {
@@ -270,9 +273,22 @@ export class WavespeedService {
         }
       )
 
+      console.log('📊 Wavespeed API response:', JSON.stringify(response.data, null, 2))
       return response.data
     } catch (error) {
       console.error('Wavespeed get result error:', error)
+      
+      // If it's an axios error, provide more specific error message
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error('Generation not found - request ID may be invalid')
+        } else if (error.response?.status === 401) {
+          throw new Error('Unauthorized - check API key')
+        } else if (error.response?.status >= 500) {
+          throw new Error('Wavespeed service error')
+        }
+      }
+      
       throw new Error('Failed to get generation result')
     }
   }

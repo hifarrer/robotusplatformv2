@@ -74,10 +74,22 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
       include: { generations: true },
     })
 
+    // Get the user message ID from the previous message in the chat
+    const userMessage = await prisma.message.findFirst({
+      where: {
+        chatId: chat.id,
+        role: 'USER',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    
     return NextResponse.json({
       response: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
       chatId: chat.id,
       messageId: assistantMessage.id,
+      userMessageId: userMessage?.id,
       generations: updatedAssistantMessage?.generations || [],
     })
   } catch (error: any) {
@@ -493,6 +505,7 @@ What would you like to create today?`
       response,
       chatId: chat.id,
       messageId: assistantMessage.id,
+      userMessageId: userMessage.id,
       analysis,
       generations: updatedAssistantMessage?.generations || [],
     })
