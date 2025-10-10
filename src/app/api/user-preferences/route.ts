@@ -101,7 +101,7 @@ export async function PUT(request: NextRequest) {
         textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
         imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
         videoModel: updateData.videoModel || 'VEO3_FAST',
-      }
+      } as any
     })
 
     return NextResponse.json(preferences)
