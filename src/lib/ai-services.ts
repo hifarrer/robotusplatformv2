@@ -284,7 +284,7 @@ export class WavespeedService {
           throw new Error('Generation not found - request ID may be invalid')
         } else if (error.response?.status === 401) {
           throw new Error('Unauthorized - check API key')
-        } else if (error.response?.status >= 500) {
+        } else if (error.response && error.response.status >= 500) {
           throw new Error('Wavespeed service error')
         }
       }
