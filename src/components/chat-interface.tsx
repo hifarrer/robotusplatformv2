@@ -274,7 +274,7 @@ export function ChatInterface() {
     }
     
     // Check if user's preferred video model is WAN-2.5
-    if (userPreferences?.videoModel === 'WAN_2_5') {
+    if (userPreferences?.videoModel === ('WAN_2_5' as any)) {
       // Add immediate feedback message for WAN-2.5
       const loadingMessage: ChatMessage = {
         id: generateId(),
