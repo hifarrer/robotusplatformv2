@@ -94,7 +94,7 @@ export async function PUT(request: NextRequest) {
       update: {
         ...updateData,
         updatedAt: new Date(),
-      },
+      } as any,
       create: {
         userId: session.user.id,
         aspectRatio: updateData.aspectRatio || 'SQUARE',
