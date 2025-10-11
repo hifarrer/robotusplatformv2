@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { getSafeGenerationType } from '../src/lib/generation-utils'
 
 const prisma = new PrismaClient()
 
@@ -30,7 +31,7 @@ async function fixDatabaseSchema() {
       const generation = await prisma.generation.create({
         data: {
           messageId: testMessage.id,
-          type: 'IMAGE_UPSCALE',
+          type: getSafeGenerationType('IMAGE_UPSCALE', 'TEXT_TO_IMAGE') as any,
           status: 'PENDING',
           prompt: 'Test upscale prompt',
           provider: 'wavespeed',

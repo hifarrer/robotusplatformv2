@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { getSafeGenerationType } from '../src/lib/generation-utils'
 
 const prisma = new PrismaClient()
 
@@ -40,7 +41,7 @@ async function checkGenerationTypes() {
         const generation = await prisma.generation.create({
           data: {
             messageId: testMessage.id,
-            type: type as any,
+            type: getSafeGenerationType(type, 'TEXT_TO_IMAGE') as any,
             status: 'PENDING',
             prompt: 'Test prompt',
             provider: 'test',
