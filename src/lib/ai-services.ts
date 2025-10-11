@@ -6,9 +6,6 @@ import {
   WavespeedUpscaleRequest,
   WavespeedResponse,
   WavespeedResultResponse,
-  KieVideoRequest,
-  KieVideoResponse,
-  KieVideoResultResponse,
   AspectRatio,
   TextToImageModel,
   ImageToImageModel,
@@ -17,8 +14,6 @@ import {
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY!
 const WAVESPEED_BASE_URL = 'https://api.wavespeed.ai/api/v3'
-const KIE_API_KEY = process.env.KIE_API_KEY!
-const KIE_BASE_URL = 'https://api.kie.ai/api/v1'
 
 
 // Utility functions
@@ -86,14 +81,10 @@ function getImageToImageEndpoint(model: ImageToImageModel): string {
 
 function getVideoModel(model: VideoModel): string {
   switch (model) {
-    case 'VEO3_FAST':
-      return 'veo3_fast'
-    case 'VEO3_STANDARD':
-      return 'veo3_standard'
-    case 'RUNWAY_ML':
-      return 'runway_ml'
+    case 'WAN_2_5':
+      return 'wan-2.5'
     default:
-      return 'veo3_fast'
+      return 'wan-2.5'
   }
 }
 
@@ -301,82 +292,6 @@ export class WavespeedService {
   }
 }
 
-// KIE AI Video Service
-export class KieService {
-  static async generateVideo(
-    prompt: string,
-    imageUrls?: string[],
-    model: VideoModel = 'VEO3_FAST',
-    aspectRatio: AspectRatio = 'WIDE'
-  ): Promise<string> {
-    try {
-      if (!KIE_API_KEY) {
-        throw new Error('KIE_API_KEY environment variable is not set')
-      }
-      const videoAspectRatio = aspectRatioToVideoRatio(aspectRatio)
-      const videoModel = getVideoModel(model)
-      
-      const request: KieVideoRequest = {
-        prompt,
-        imageUrls: imageUrls || [],
-        model: videoModel,
-        aspectRatio: videoAspectRatio,
-        seeds: 12345,
-        enableFallback: false,
-        enableTranslation: true,
-      }
-
-      console.log('Sending video generation request to KIE:', { request, model, aspectRatio }) // Debug log
-
-      const response = await axios.post<KieVideoResponse>(
-        `${KIE_BASE_URL}/veo/generate`,
-        request,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${KIE_API_KEY}`,
-          },
-        }
-      )
-
-      console.log('KIE API Response Status:', response.status)
-      console.log('KIE API Response Data:', response.data)
-
-      if (response.data.code !== 200) {
-        console.error('KIE API Error Response:', response.data)
-        console.error('Full response:', response)
-        throw new Error(response.data.msg || 'Failed to start video generation')
-      }
-
-      console.log('KIE video generation response:', response.data) // Debug log
-      return response.data.data.taskId
-    } catch (error) {
-      console.error('KIE video generation error:', error)
-      throw new Error('Failed to start video generation')
-    }
-  }
-
-  static async getVideoResult(taskId: string): Promise<KieVideoResultResponse> {
-    try {
-      const response = await axios.get<KieVideoResultResponse>(
-        `${KIE_BASE_URL}/veo/record-info`,
-        {
-          headers: {
-            'Authorization': `Bearer ${KIE_API_KEY}`,
-          },
-          params: {
-            taskId,
-          },
-        }
-      )
-
-      return response.data
-    } catch (error) {
-      console.error('KIE get video result error:', error)
-      throw new Error('Failed to get video result')
-    }
-  }
-}
 
 // WAN-2.5 Video Service - Using same pattern as other Wavespeed services
 export class WanService {

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { analyzeUserRequest } from '@/lib/ai-orchestrator'
-import { WavespeedService, KieService } from '@/lib/ai-services'
+import { WavespeedService, WanService } from '@/lib/ai-services'
 import { GenerationType } from '@/types'
 import { getSafeGenerationType } from '@/lib/generation-utils'
 import { z } from 'zod'
@@ -410,31 +410,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'text_to_video':
-        try {
-          const taskId = await KieService.generateVideo(
-            analysis.prompt,
-            undefined,
-            userPreferences.videoModel,
-            userPreferences.aspectRatio
-          )
-          
-          const generation = await prisma.generation.create({
-            data: {
-              messageId: userMessage.id,
-              type: 'TEXT_TO_VIDEO',
-              status: 'PROCESSING',
-              prompt: analysis.prompt,
-              provider: 'kie',
-              model: userPreferences.videoModel.toLowerCase(),
-              taskId,
-            },
-          })
-          
-          generations.push(generation)
-          response = `I'm creating a video based on your description: "${analysis.prompt}". This will take a few minutes...`
-        } catch (error) {
-          response = 'Sorry, I encountered an error while trying to create your video. Please try again.'
-        }
+        response = 'Text-to-video generation is not currently supported. Please upload an image first to create a video from it.'
         break
 
       case 'image_to_video':
@@ -449,11 +425,11 @@ export async function POST(request: NextRequest) {
           response = 'I need images to create a video. Please upload some images or generate an image first that I can reference.'
         } else {
           try {
-            const taskId = await KieService.generateVideo(
+            const taskId = await WanService.generateVideo(
               analysis.prompt,
-              videoImagesToUse,
-              userPreferences.videoModel,
-              userPreferences.aspectRatio
+              videoImagesToUse[0],
+              5, // Default duration
+              '720p'
             )
             
             const generation = await prisma.generation.create({
@@ -462,9 +438,9 @@ export async function POST(request: NextRequest) {
                 type: 'IMAGE_TO_VIDEO',
                 status: 'PROCESSING',
                 prompt: analysis.prompt,
-                provider: 'kie',
-                model: userPreferences.videoModel.toLowerCase(),
-                taskId,
+                provider: 'wavespeed',
+                model: 'wan-2.5',
+                requestId: taskId,
               },
             })
             

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { KieService, WanService } from '@/lib/ai-services'
+import { WanService } from '@/lib/ai-services'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -31,65 +31,35 @@ export async function POST(request: NextRequest) {
     console.log('🎬 Duration:', duration)
     console.log('🎬 Message ID:', messageId)
     
-    let taskId: string
-    let generation
+    // Only WAN-2.5 model is supported now
+    if (!imageUrls || imageUrls.length === 0) {
+      return NextResponse.json(
+        { error: 'Image URL is required for video generation' },
+        { status: 400 }
+      )
+    }
     
-    if (model === 'WAN_2_5') {
-      // Use WAN-2.5 service for Alibaba model
-      if (!imageUrls || imageUrls.length === 0) {
-        return NextResponse.json(
-          { error: 'Image URL is required for WAN-2.5 model' },
-          { status: 400 }
-        )
-      }
-      
-      taskId = await WanService.generateVideo(
-        prompt,
-        imageUrls[0],
-        duration || 5,
-        '720p'
-      )
-      
-      // Create generation record for WAN-2.5
-      if (messageId) {
-        generation = await prisma.generation.create({
-          data: {
-            messageId: messageId,
-            type: 'IMAGE_TO_VIDEO',
-            status: 'PROCESSING',
-            prompt: prompt,
-            provider: 'wavespeed',
-            model: 'wan-2.5',
-            requestId: taskId,
-          },
-        })
-      }
-    } else {
-      // Use KIE service for other models
-      const singleImageUrl = imageUrls && imageUrls.length > 0 ? [imageUrls[0]] : undefined
-      console.log('🎬 Using single image for KIE:', singleImageUrl)
-      
-      taskId = await KieService.generateVideo(
-        prompt,
-        singleImageUrl,
-        model || 'VEO3_FAST',
-        aspectRatio || 'WIDE'
-      )
-      
-      // Create generation record for KIE
-      if (messageId) {
-        generation = await prisma.generation.create({
-          data: {
-            messageId: messageId,
-            type: 'IMAGE_TO_VIDEO',
-            status: 'PROCESSING',
-            prompt: prompt,
-            provider: 'kie',
-            model: model || 'VEO3_FAST',
-            requestId: taskId,
-          },
-        })
-      }
+    const taskId = await WanService.generateVideo(
+      prompt,
+      imageUrls[0],
+      duration || 5,
+      '720p'
+    )
+    
+    // Create generation record
+    let generation
+    if (messageId) {
+      generation = await prisma.generation.create({
+        data: {
+          messageId: messageId,
+          type: 'IMAGE_TO_VIDEO',
+          status: 'PROCESSING',
+          prompt: prompt,
+          provider: 'wavespeed',
+          model: 'wan-2.5',
+          requestId: taskId,
+        },
+      })
     }
     
     return NextResponse.json({ 

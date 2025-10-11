@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { WavespeedService, KieService, WanService } from '@/lib/ai-services'
+import { WavespeedService, WanService } from '@/lib/ai-services'
 import { downloadAndSaveImage, downloadAndSaveVideo } from '@/lib/media-storage'
 import { GenerationStatus, GenerationType } from '@/types'
 import { getUpscaleTitle } from '@/lib/generation-utils'
@@ -105,56 +105,6 @@ export async function GET(request: NextRequest) {
         } else if (result.data.status === 'failed') {
           status = 'FAILED'
           error = result.data.error || 'Generation failed'
-        }
-      } else if (generation.provider === 'kie' && generation.taskId) {
-        console.log('🎬 Checking KIE video result for taskId:', generation.taskId) // Debug log
-        const result = await KieService.getVideoResult(generation.taskId)
-        
-        console.log('🎬 KIE API response:', JSON.stringify(result, null, 2)) // Debug log
-        
-        if (result.code === 200) {
-          // Check new response structure with successFlag and response.resultUrls
-          if (result.data.successFlag === 1 && result.data.response?.resultUrls && result.data.response.resultUrls.length > 0) {
-            status = 'COMPLETED'
-            resultUrl = result.data.response.resultUrls[0]
-            resultUrls = result.data.response.resultUrls
-            
-            console.log('🎬 Video completed! URLs:', resultUrls) // Debug log
-            
-            // Save video to permanent storage
-            try {
-              const savedVideoId = await downloadAndSaveVideo(
-                session.user.id,
-                resultUrl,
-                generation.prompt,
-                generation.id,
-                `Generated Video - ${new Date().toLocaleDateString()}`
-              )
-              console.log('🎬 Video saved to storage with ID:', savedVideoId) // Debug log
-            } catch (saveError) {
-              console.error('Error saving generated video:', saveError)
-            }
-          } else if (result.data.successFlag === 0) {
-            // Check if there's an actual error message
-            if (result.data.errorMessage) {
-              status = 'FAILED'
-              error = result.data.errorMessage
-              console.log('🎬 Video generation failed:', error) // Debug log
-            } else {
-              // Still processing - successFlag 0 without error means in progress
-              console.log('🎬 Video still processing...') // Debug log
-            }
-          } else if (result.data.successFlag !== 1 && (result.data.errorCode || result.data.errorMessage)) {
-            // Handle any non-success status with error information
-            status = 'FAILED'
-            error = result.data.errorMessage || `Error code: ${result.data.errorCode}`
-            console.log('🎬 Video generation failed with error:', error) // Debug log
-          } else {
-            // Still processing
-            console.log('🎬 Video still processing...') // Debug log
-          }
-        } else {
-          console.log('🎬 KIE API returned error code:', result.code, result.msg) // Debug log
         }
       }
 
@@ -351,56 +301,6 @@ export async function POST(request: NextRequest) {
             // Mark as failed if there's an error checking the result
             status = 'FAILED'
             error = wavespeedError instanceof Error ? wavespeedError.message : 'Failed to check generation status'
-          }
-        } else if (generation.provider === 'kie' && generation.taskId) {
-          console.log('🎬 Batch checking KIE video result for taskId:', generation.taskId) // Debug log
-          const result = await KieService.getVideoResult(generation.taskId)
-          
-          console.log('🎬 Batch KIE API response:', JSON.stringify(result, null, 2)) // Debug log
-          
-          if (result.code === 200) {
-            // Check new response structure with successFlag and response.resultUrls
-            if (result.data.successFlag === 1 && result.data.response?.resultUrls && result.data.response.resultUrls.length > 0) {
-              status = 'COMPLETED'
-              resultUrl = result.data.response.resultUrls[0]
-              resultUrls = result.data.response.resultUrls
-              
-              console.log('🎬 Batch video completed! URLs:', resultUrls) // Debug log
-              
-              // Save video to permanent storage
-              try {
-                const savedVideoId = await downloadAndSaveVideo(
-                  session.user.id,
-                  resultUrl,
-                  generation.prompt,
-                  generation.id,
-                  `Generated Video - ${new Date().toLocaleDateString()}`
-                )
-                console.log('🎬 Batch video saved to storage with ID:', savedVideoId) // Debug log
-              } catch (saveError) {
-                console.error('Error saving generated video:', saveError)
-              }
-            } else if (result.data.successFlag === 0) {
-              // Check if there's an actual error message
-              if (result.data.errorMessage) {
-                status = 'FAILED'
-                error = result.data.errorMessage
-                console.log('🎬 Batch video generation failed:', error) // Debug log
-              } else {
-                // Still processing - successFlag 0 without error means in progress
-                console.log('🎬 Batch video still processing...') // Debug log
-              }
-            } else if (result.data.successFlag !== 1 && (result.data.errorCode || result.data.errorMessage)) {
-              // Handle any non-success status with error information
-              status = 'FAILED'
-              error = result.data.errorMessage || `Error code: ${result.data.errorCode}`
-              console.log('🎬 Batch video generation failed with error:', error) // Debug log
-            } else {
-              // Still processing
-              console.log('🎬 Batch video still processing...') // Debug log
-            }
-          } else {
-            console.log('🎬 Batch KIE API returned error code:', result.code, result.msg) // Debug log
           }
         }
 

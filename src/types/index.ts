@@ -104,49 +104,6 @@ export interface WavespeedResultResponse {
   }
 }
 
-export interface KieVideoRequest {
-  prompt: string
-  imageUrls?: string[]
-  model: string
-  callBackUrl?: string
-  aspectRatio: string
-  seeds: number
-  enableFallback: boolean
-  enableTranslation: boolean
-}
-
-export interface KieVideoResponse {
-  code: number
-  msg: string
-  data: {
-    taskId: string
-  }
-}
-
-export interface KieVideoResultResponse {
-  code: number
-  msg: string
-  data: {
-    taskId: string
-    paramJson?: string
-    completeTime?: string
-    response?: {
-      taskId: string
-      resultUrls: string[]
-      originUrls?: string[]
-      resolution?: string
-    }
-    successFlag: number // 1 for success, 0 for failure
-    errorCode?: string | null
-    errorMessage?: string
-    createTime?: string
-    fallbackFlag?: boolean
-    // Legacy fields for backward compatibility
-    status?: string
-    videoUrl?: string
-    error?: string
-  }
-}
 
 // AI Orchestrator Types
 export interface AIAnalysisResult {
@@ -170,7 +127,7 @@ export interface FileUpload {
 export type AspectRatio = 'SQUARE' | 'PORTRAIT' | 'LANDSCAPE' | 'WIDE' | 'ULTRAWIDE'
 export type TextToImageModel = 'SEEDREAM_V4' | 'FLUX_1_1_PRO' | 'FLUX_1_SCHNELL' | 'NANO_BANANA'
 export type ImageToImageModel = 'SEEDREAM_V4_EDIT' | 'FLUX_1_1_PRO_EDIT' | 'NANO_BANANA_EDIT'
-export type VideoModel = 'VEO3_FAST' | 'VEO3_STANDARD' | 'RUNWAY_ML'
+export type VideoModel = 'WAN_2_5'
 
 export interface UserPreferences {
   id: string
@@ -219,8 +176,5 @@ export const IMAGE_TO_IMAGE_MODEL_OPTIONS: ModelOption[] = [
 ]
 
 export const VIDEO_MODEL_OPTIONS: ModelOption[] = [
-  { value: 'VEO3_FAST', label: 'Veo3 Fast', description: 'Quick video generation' },
-  { value: 'VEO3_STANDARD', label: 'Veo3 Standard', description: 'Balanced speed and quality' },
-  { value: 'RUNWAY_ML', label: 'RunwayML', description: 'High-end video creation' },
   { value: 'WAN_2_5', label: 'Alibaba WAN-2.5', description: 'Image-to-video generation with duration options' }
 ]

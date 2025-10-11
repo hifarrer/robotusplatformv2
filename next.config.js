@@ -8,10 +8,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'api.kie.ai',
-      },
-      {
-        protocol: 'https',
         hostname: '**',
       },
     ],

@@ -7,7 +7,7 @@ A modern, all-in-one AI platform for image and video generation with a beautiful
 - 🤖 **AI-Powered Orchestrator**: Smart request analysis using OpenAI
 - 🖼️ **Text-to-Image**: Generate images using Wavespeed AI (Bytedance Seedream V4)
 - 🎨 **Image-to-Image**: Edit and modify existing images
-- 🎥 **Text-to-Video**: Create videos from text descriptions using KIE.ai
+- 🎥 **Image-to-Video**: Create videos from uploaded images using Wavespeed AI
 - 📱 **Video from Images**: Animate your images into videos
 - 🌙 **Dark Theme**: Beautiful black background with pink/purple gradients
 - 🔐 **Authentication**: Secure login/register system
@@ -22,8 +22,7 @@ A modern, all-in-one AI platform for image and video generation with a beautiful
 - **Database**: PostgreSQL with Prisma ORM
 - **AI Services**: 
   - OpenAI GPT-4 (orchestration)
-  - Wavespeed AI (image generation/editing)
-  - KIE.ai (video generation)
+  - Wavespeed AI (image generation/editing/video generation)
 
 ## Getting Started
 
@@ -34,7 +33,6 @@ A modern, all-in-one AI platform for image and video generation with a beautiful
 - API keys for:
   - OpenAI
   - Wavespeed AI
-  - KIE.ai
 
 ### Installation
 
@@ -52,7 +50,6 @@ A modern, all-in-one AI platform for image and video generation with a beautiful
    Fill in your actual API keys and database credentials in `.env`:
    - `OPENAI_API_KEY`: Your OpenAI API key
    - `WAVESPEED_API_KEY`: Your Wavespeed AI API key  
-   - `KIE_API_KEY`: Your KIE.ai API key
    - `DATABASE_URL`: Your PostgreSQL connection string
    - `NEXTAUTH_SECRET`: A random secret for NextAuth.js
 
@@ -86,9 +83,9 @@ A modern, all-in-one AI platform for image and video generation with a beautiful
 - "Make this image more colorful and vibrant"
 - "Change the background to a forest scene"
 
-**Video Generation**:
-- "Create a video of waves crashing on a beach"
-- "Make a video from these images with smooth transitions" (upload images)
+**Video Generation** (upload images first):
+- "Make a video from this image with smooth transitions"
+- "Animate this image into a video"
 
 ### File Upload
 
@@ -118,7 +115,7 @@ src/
 │   └── chat-interface.tsx # Main chat component
 ├── lib/                   # Utility libraries
 │   ├── ai-orchestrator.ts # OpenAI request analysis
-│   ├── ai-services.ts     # Wavespeed & KIE API clients
+│   ├── ai-services.ts     # Wavespeed API clients
 │   ├── auth.ts           # NextAuth configuration
 │   ├── prisma.ts         # Database client
 │   └── utils.ts          # Helper functions
@@ -131,7 +128,6 @@ src/
 |----------|-------------|----------|
 | `OPENAI_API_KEY` | OpenAI API key for request orchestration | Yes |
 | `WAVESPEED_API_KEY` | Wavespeed AI API key for image generation | Yes |
-| `KIE_API_KEY` | KIE.ai API key for video generation | Yes |
 | `DATABASE_URL` | PostgreSQL connection string | Yes |
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js sessions | Yes |
 | `NEXTAUTH_URL` | Base URL for NextAuth.js | Yes |
