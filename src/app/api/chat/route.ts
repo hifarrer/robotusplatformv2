@@ -104,6 +104,7 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
       messageId: assistantMessage.id,
       userMessageId: userMessage?.id,
       generations: updatedAssistantMessage?.generations || [],
+      isUpscaling: true, // Flag to indicate this is an upscaling operation
     })
   } catch (error: any) {
     console.error('❌ Upscale error:', error)

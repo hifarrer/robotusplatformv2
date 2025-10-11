@@ -592,16 +592,34 @@ export function ChatInterface() {
         setChatId(result.chatId)
       }
       
-      // Replace the loading message with the actual response
-      setMessages(prev => prev.map(msg => 
-        msg.id === loadingMessage.id 
-          ? {
-              ...msg,
-              content: result.response || 'Upscaling your image...',
-              generations: result.generations || [],
-            }
-          : msg
-      ))
+      // Handle upscaling response - add the upscaling message to chat
+      if (result.isUpscaling && result.messageId) {
+        console.log('🔄 Adding upscaling message to chat:', result.messageId)
+        const upscalingMessage: ChatMessage = {
+          id: result.messageId,
+          role: 'ASSISTANT',
+          content: result.response || 'Upscaling your image...',
+          generations: result.generations || [],
+          timestamp: new Date(),
+        }
+        
+        // Remove the loading message and add the upscaling message
+        setMessages(prev => {
+          const filteredMessages = prev.filter(msg => msg.id !== loadingMessage.id)
+          return [...filteredMessages, upscalingMessage]
+        })
+      } else {
+        // Replace the loading message with the actual response
+        setMessages(prev => prev.map(msg => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                content: result.response || 'Upscaling your image...',
+                generations: result.generations || [],
+              }
+            : msg
+        ))
+      }
     } catch (error: any) {
       console.error('Error upscaling image:', error)
       
