@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { VideoModel } from '@prisma/client'
 import { analyzeUserRequest } from '@/lib/ai-orchestrator'
 import { WavespeedService, WanService } from '@/lib/ai-services'
 import { GenerationType } from '@/types'
@@ -175,7 +176,7 @@ export async function POST(request: NextRequest) {
           aspectRatio: 'SQUARE' as any,
           textToImageModel: 'SEEDREAM_V4' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
-          videoModel: 'WAN_2_5' as const,
+          videoModel: VideoModel.WAN_2_5,
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
             aspectRatio: 'SQUARE',
             textToImageModel: 'SEEDREAM_V4',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
-            videoModel: 'WAN_2_5' as const,
+            videoModel: VideoModel.WAN_2_5,
           }
         })
       } catch (createError) {
@@ -220,7 +221,7 @@ export async function POST(request: NextRequest) {
             aspectRatio: 'SQUARE' as any,
             textToImageModel: 'SEEDREAM_V4' as any,
             imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
-            videoModel: 'WAN_2_5' as const,
+            videoModel: VideoModel.WAN_2_5,
             createdAt: new Date(),
             updatedAt: new Date()
           }
