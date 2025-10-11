@@ -8,7 +8,7 @@ const preferencesUpdateSchema = z.object({
   aspectRatio: z.enum(['SQUARE', 'PORTRAIT', 'LANDSCAPE', 'WIDE']).optional(),
   textToImageModel: z.enum(['SEEDREAM_V4', 'NANO_BANANA']).optional(),
   imageToImageModel: z.enum(['SEEDREAM_V4_EDIT', 'NANO_BANANA_EDIT']).optional(),
-  videoModel: z.enum(['WAN_2_5']).optional(),
+  videoModel: z.enum(['WAN_2_5', 'VEO3_FAST']).optional(),
 })
 
 export async function GET(request: NextRequest) {

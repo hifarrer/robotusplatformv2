@@ -193,4 +193,5 @@ enum ImageToImageModel {
 
 enum VideoModel {
   WAN_2_5
+  VEO3_FAST
 }

@@ -73,6 +73,8 @@ function getVideoModel(model: VideoModel): string {
   switch (model) {
     case 'WAN_2_5':
       return 'wan-2.5'
+    case 'VEO3_FAST':
+      return 'veo3-fast'
     default:
       return 'wan-2.5'
   }
@@ -289,32 +291,54 @@ export class WanService {
     prompt: string,
     imageUrl: string,
     duration: number = 5,
-    resolution: string = '720p'
+    resolution: string = '720p',
+    model: VideoModel = 'WAN_2_5',
+    aspectRatio: AspectRatio = 'WIDE'
   ): Promise<string> {
     try {
       if (!WAVESPEED_API_KEY) {
         throw new Error('WAVESPEED_API_KEY environment variable is not set')
       }
       
-      const request = {
-        duration,
-        enable_prompt_expansion: false,
-        image: imageUrl,
-        prompt: prompt,
-        resolution,
-        seed: -1
+      let request: any
+      let endpoint: string
+
+      if (model === 'VEO3_FAST') {
+        // VEO3_FAST uses different request structure
+        const aspectRatioStr = aspectRatioToVideoRatio(aspectRatio)
+        request = {
+          aspect_ratio: aspectRatioStr,
+          duration,
+          generate_audio: true,
+          image: imageUrl,
+          prompt: prompt,
+          resolution
+        }
+        endpoint = '/google/veo3-fast/image-to-video'
+      } else {
+        // WAN_2_5 uses the original request structure
+        request = {
+          duration,
+          enable_prompt_expansion: false,
+          image: imageUrl,
+          prompt: prompt,
+          resolution,
+          seed: -1
+        }
+        endpoint = '/alibaba/wan-2.5/image-to-video'
       }
 
-      console.log('Sending video generation request to WAN-2.5:', { 
+      console.log(`Sending video generation request to ${model}:`, { 
         request, 
         prompt, 
         imageUrl, 
         duration, 
-        resolution 
+        resolution,
+        model
       })
 
       const response = await axios.post(
-        `${WAVESPEED_BASE_URL}/alibaba/wan-2.5/image-to-video`,
+        `${WAVESPEED_BASE_URL}${endpoint}`,
         request,
         {
           headers: {
@@ -324,8 +348,8 @@ export class WanService {
         }
       )
 
-      console.log('WAN-2.5 API Response Status:', response.status)
-      console.log('WAN-2.5 API Response Data:', response.data)
+      console.log(`${model} API Response Status:`, response.status)
+      console.log(`${model} API Response Data:`, response.data)
 
       if (response.status !== 200) {
         throw new Error('Failed to start video generation')
@@ -333,13 +357,13 @@ export class WanService {
 
       // Use the same pattern as other Wavespeed services - return the ID from data
       const taskId = response.data.data?.id || response.data.id || 'unknown'
-      console.log('WAN-2.5 Selected taskId:', taskId)
+      console.log(`${model} Selected taskId:`, taskId)
       return taskId
     } catch (error: any) {
-      console.error('WAN-2.5 video generation error:', error)
+      console.error(`${model} video generation error:`, error)
       if (error.response) {
-        console.error('WAN-2.5 API Error Response:', error.response.data)
-        console.error('WAN-2.5 API Error Status:', error.response.status)
+        console.error(`${model} API Error Response:`, error.response.data)
+        console.error(`${model} API Error Status:`, error.response.status)
       }
       throw new Error('Failed to start video generation')
     }

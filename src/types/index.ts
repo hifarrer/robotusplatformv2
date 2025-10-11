@@ -127,7 +127,7 @@ export interface FileUpload {
 export type AspectRatio = 'SQUARE' | 'PORTRAIT' | 'LANDSCAPE' | 'WIDE'
 export type TextToImageModel = 'SEEDREAM_V4' | 'NANO_BANANA'
 export type ImageToImageModel = 'SEEDREAM_V4_EDIT' | 'NANO_BANANA_EDIT'
-export type VideoModel = 'WAN_2_5'
+export type VideoModel = 'WAN_2_5' | 'VEO3_FAST'
 
 export interface UserPreferences {
   id: string
@@ -172,5 +172,6 @@ export const IMAGE_TO_IMAGE_MODEL_OPTIONS: ModelOption[] = [
 ]
 
 export const VIDEO_MODEL_OPTIONS: ModelOption[] = [
-  { value: 'WAN_2_5', label: 'Alibaba WAN-2.5', description: 'Image-to-video generation with duration options' }
+  { value: 'WAN_2_5', label: 'Alibaba WAN-2.5', description: 'Image-to-video generation with duration options' },
+  { value: 'VEO3_FAST', label: 'Google Veo3-Fast', description: 'Fast video generation with 5s or 8s duration' }
 ]
