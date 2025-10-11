@@ -886,9 +886,12 @@ export function ChatInterface() {
           {/* Mobile header - stacked layout */}
           <div className="flex items-center justify-between mb-3 sm:hidden">
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
-              </div>
+              <Avatar className="w-7 h-7">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-4 h-4 text-white" />
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <h1 className="text-white font-semibold text-sm">Robotus AI</h1>
               </div>
@@ -924,9 +927,12 @@ export function ChatInterface() {
           {/* Desktop header - original layout */}
           <div className="hidden sm:flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
-              </div>
+              <Avatar className="w-8 h-8">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-5 h-5 text-white" />
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <h1 className="text-white font-semibold">Robotus AI</h1>
                 <p className="text-gray-400 text-sm">AI-powered creative assistant</p>
@@ -1027,9 +1033,12 @@ export function ChatInterface() {
         <ScrollArea className="flex-1 p-2 sm:p-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-4">
-                <Bot className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
+              <Avatar className="w-12 h-12 sm:w-16 sm:h-16 mb-4">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                </AvatarFallback>
+              </Avatar>
               <h2 className="text-lg sm:text-2xl font-semibold text-white mb-2">
                 Welcome to Robotus AI
               </h2>
@@ -1072,6 +1081,7 @@ export function ChatInterface() {
                 >
                   {message.role === 'ASSISTANT' && (
                     <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
+                      <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
                       <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
                         <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </AvatarFallback>
@@ -1080,26 +1090,27 @@ export function ChatInterface() {
                   
                   <div
                     className={cn(
-                      "max-w-[85%] sm:max-w-[80%] rounded-lg p-3 sm:p-4",
+                      "max-w-[85%] sm:max-w-[80%] rounded-lg p-3 sm:p-4 overflow-hidden",
                       message.role === 'USER'
                         ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white"
                         : "bg-gray-800 text-white"
                     )}
+                    style={{ maxWidth: 'calc(100vw - 2rem)', wordWrap: 'break-word' }}
                   >
                     {message.content && (
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      <p className="whitespace-pre-wrap break-words overflow-wrap-anywhere">{message.content}</p>
                     )}
                     
                     {message.images && message.images.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                         {message.images.map((image, index) => (
-                          <div key={index} className="relative">
+                          <div key={index} className="relative w-full">
                             <Image
                               src={image}
                               alt={`Uploaded image ${index + 1}`}
                               width={200}
                               height={200}
-                              className="rounded-lg object-cover w-full h-auto"
+                              className="rounded-lg object-cover w-full h-auto max-w-full"
                             />
                           </div>
                         ))}
@@ -1109,7 +1120,7 @@ export function ChatInterface() {
                     {message.generations && message.generations.length > 0 && (
                       <div className="mt-3 space-y-2">
                         {message.generations.map((generation) => (
-                          <div key={generation.id} className="border border-gray-600 rounded p-2">
+                          <div key={generation.id} className="border border-gray-600 rounded p-2 w-full max-w-full overflow-hidden">
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-gray-300">
                                 {generation.type.replace('_', ' ').toLowerCase()} - {generation.model}
@@ -1140,24 +1151,13 @@ export function ChatInterface() {
                               </div>
                             )}
                             
-                            {/* DEBUG: Show raw generation data */}
-                            {generation.status === 'COMPLETED' && (
-                              <div className="mt-2 p-2 bg-gray-700 rounded text-xs">
-                                <div>Type: {generation.type}</div>
-                                <div>ResultUrl: {generation.resultUrl || 'none'}</div>
-                                <div>ResultUrls: {generation.resultUrls?.length || 0} items</div>
-                                {generation.resultUrls && generation.resultUrls.length > 0 && (
-                                  <div>First URL: {generation.resultUrls[0]}</div>
-                                )}
-                              </div>
-                            )}
                             
                             {/* Show results */}
                             {generation.status === 'COMPLETED' && generation.resultUrls && generation.resultUrls.length > 0 && (
                               <div className="mt-2 space-y-3">
                                 <div className="grid grid-cols-1 gap-2">
                                   {generation.resultUrls.map((url, index) => (
-                                    <div key={index} className="relative group">
+                                    <div key={index} className="relative group w-full max-w-full overflow-hidden">
                                       {(
                                         generation.type === 'TEXT_TO_VIDEO' ||
                                         generation.type === 'IMAGE_TO_VIDEO' ||
@@ -1183,7 +1183,8 @@ export function ChatInterface() {
                                           alt={`Generated ${generation.type.toLowerCase()} ${index + 1}`}
                                           width={400}
                                           height={400}
-                                          className="rounded object-cover max-w-full h-auto"
+                                          className="rounded object-cover w-full max-w-full h-auto"
+                                          style={{ maxWidth: '100%', height: 'auto' }}
                                           onError={(e) => {
                                             console.error('Failed to load generated image:', url)
                                             e.currentTarget.style.display = 'none'
@@ -1266,7 +1267,7 @@ export function ChatInterface() {
                             {/* Fallback for single resultUrl */}
                             {generation.status === 'COMPLETED' && generation.resultUrl && (!generation.resultUrls || generation.resultUrls.length === 0) && (
                               <div className="mt-2 space-y-3">
-                                <div className="relative group">
+                                <div className="relative group w-full max-w-full overflow-hidden">
                                   {(
                                     generation.type === 'TEXT_TO_VIDEO' ||
                                     generation.type === 'IMAGE_TO_VIDEO' ||
@@ -1292,7 +1293,8 @@ export function ChatInterface() {
                                       alt={`Generated ${generation.type.toLowerCase()}`}
                                       width={400}
                                       height={400}
-                                      className="rounded object-cover max-w-full h-auto"
+                                      className="rounded object-cover w-full max-w-full h-auto"
+                                      style={{ maxWidth: '100%', height: 'auto' }}
                                       onError={(e) => {
                                         console.error('Failed to load generated image:', generation.resultUrl)
                                         e.currentTarget.style.display = 'none'
@@ -1389,6 +1391,7 @@ export function ChatInterface() {
               {isLoading && (
                 <div className="flex gap-2 sm:gap-3">
                   <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
+                    <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
                     <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
                       <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                     </AvatarFallback>
