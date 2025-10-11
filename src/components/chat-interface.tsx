@@ -381,7 +381,7 @@ export function ChatInterface() {
         body: JSON.stringify({
           prompt: videoPrompt,
           imageUrls: [imageUrl],
-          model: userPreferences?.videoModel || 'VEO3_FAST',
+          model: userPreferences?.videoModel || 'WAN_2_5',
           aspectRatio: userPreferences?.aspectRatio || 'WIDE',
         }),
       })

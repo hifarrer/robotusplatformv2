@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
           aspectRatio: 'SQUARE' as any,
           textToImageModel: 'SEEDREAM_V4' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
-          videoModel: 'VEO3_FAST' as any,
+          videoModel: 'WAN_2_5' as any,
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
             aspectRatio: 'SQUARE',
             textToImageModel: 'SEEDREAM_V4',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
-            videoModel: 'VEO3_FAST',
+            videoModel: 'WAN_2_5',
           }
         })
       } catch (createError) {
@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
             aspectRatio: 'SQUARE' as any,
             textToImageModel: 'SEEDREAM_V4' as any,
             imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
-            videoModel: 'VEO3_FAST' as any,
+            videoModel: 'WAN_2_5' as any,
             createdAt: new Date(),
             updatedAt: new Date()
           }
