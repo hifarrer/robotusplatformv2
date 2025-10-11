@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,15 +13,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -38,19 +34,19 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String           @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String           @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   accounts      Account[]
-  sessions      Session[]
   chats         Chat[]
   savedImages   SavedImage[]
   savedVideos   SavedVideo[]
+  sessions      Session[]
   preferences   UserPreferences?
 }
 
@@ -63,46 +59,97 @@ model VerificationToken {
 }
 
 model Chat {
-  id        String      @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   title     String?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  Message[]
 }
 
 model Message {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   chatId      String
   role        MessageRole
-  content     String      @db.Text
-  images      String[]    @default([])
+  content     String
+  images      String[]     @default([])
   metadata    Json?
-  createdAt   DateTime    @default(now())
-  chat        Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
   generations Generation[]
+  chat        Chat         @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 model Generation {
-  id            String          @id @default(cuid())
-  messageId     String
-  type          GenerationType
-  status        GenerationStatus @default(PENDING)
-  prompt        String          @db.Text
-  provider      String
-  model         String
-  requestId     String?
-  taskId        String?
-  resultUrl     String?
-  resultUrls    String[]        @default([])
-  metadata      Json?
-  error         String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  message       Message         @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  savedImages   SavedImage[]
-  savedVideos   SavedVideo[]
+  id          String           @id @default(cuid())
+  messageId   String
+  type        GenerationType
+  status      GenerationStatus @default(PENDING)
+  prompt      String
+  provider    String
+  model       String
+  requestId   String?
+  taskId      String?
+  resultUrl   String?
+  resultUrls  String[]         @default([])
+  metadata    Json?
+  error       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  message     Message          @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  savedImages SavedImage[]
+  savedVideos SavedVideo[]
+}
+
+model SavedImage {
+  id           String      @id @default(cuid())
+  userId       String
+  title        String?
+  prompt       String
+  originalUrl  String
+  localPath    String
+  fileName     String
+  fileSize     Int?
+  width        Int?
+  height       Int?
+  mimeType     String?
+  generationId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  generation   Generation? @relation(fields: [generationId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SavedVideo {
+  id           String      @id @default(cuid())
+  userId       String
+  title        String?
+  prompt       String
+  originalUrl  String
+  localPath    String
+  fileName     String
+  fileSize     Int?
+  duration     Float?
+  width        Int?
+  height       Int?
+  mimeType     String?
+  generationId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  generation   Generation? @relation(fields: [generationId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPreferences {
+  id                String            @id @default(cuid())
+  userId            String            @unique
+  aspectRatio       AspectRatio       @default(SQUARE)
+  textToImageModel  TextToImageModel  @default(SEEDREAM_V4)
+  imageToImageModel ImageToImageModel @default(SEEDREAM_V4_EDIT)
+  videoModel        VideoModel        @default(WAN_2_5)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum MessageRole {
@@ -127,63 +174,12 @@ enum GenerationStatus {
   FAILED
 }
 
-model SavedImage {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String?
-  prompt      String   @db.Text
-  originalUrl String   @db.Text
-  localPath   String   @db.Text
-  fileName    String
-  fileSize    Int?
-  width       Int?
-  height      Int?
-  mimeType    String?
-  generationId String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  generation  Generation? @relation(fields: [generationId], references: [id], onDelete: SetNull)
-}
-
-model SavedVideo {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String?
-  prompt      String   @db.Text
-  originalUrl String   @db.Text
-  localPath   String   @db.Text
-  fileName    String
-  fileSize    Int?
-  duration    Float?
-  width       Int?
-  height      Int?
-  mimeType    String?
-  generationId String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  generation  Generation? @relation(fields: [generationId], references: [id], onDelete: SetNull)
-}
-
-model UserPreferences {
-  id                   String           @id @default(cuid())
-  userId               String           @unique
-  aspectRatio          AspectRatio      @default(SQUARE)
-  textToImageModel     TextToImageModel @default(SEEDREAM_V4)
-  imageToImageModel    ImageToImageModel @default(SEEDREAM_V4_EDIT)
-  videoModel           VideoModel       @default(WAN_2_5)
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 enum AspectRatio {
-  SQUARE          // 1:1
-  PORTRAIT        // 3:4
-  LANDSCAPE       // 4:3
-  WIDE            // 16:9
-  ULTRAWIDE       // 21:9
+  SQUARE
+  PORTRAIT
+  LANDSCAPE
+  WIDE
+  ULTRAWIDE
 }
 
 enum TextToImageModel {
