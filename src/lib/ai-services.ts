@@ -27,8 +27,6 @@ function aspectRatioToSize(aspectRatio: AspectRatio): string {
       return '1152*864'   // Changed from 1024*768 to meet minimum 921600 pixels requirement (4:3 ratio)
     case 'WIDE':
       return '1792*1024'
-    case 'ULTRAWIDE':
-      return '2048*896'
     default:
       return '1024*1024'
   }
@@ -44,8 +42,6 @@ function aspectRatioToVideoRatio(aspectRatio: AspectRatio): string {
       return '4:3'
     case 'WIDE':
       return '16:9'
-    case 'ULTRAWIDE':
-      return '16:9'  // Map ultrawide to 16:9 since 21:9 is not supported for video
     default:
       return '16:9'
   }
@@ -55,10 +51,6 @@ function getTextToImageEndpoint(model: TextToImageModel): string {
   switch (model) {
     case 'SEEDREAM_V4':
       return '/bytedance/seedream-v4'
-    case 'FLUX_1_1_PRO':
-      return '/flux/flux-1.1-pro'
-    case 'FLUX_1_SCHNELL':
-      return '/flux/flux-1-schnell'
     case 'NANO_BANANA':
       return '/google/nano-banana/text-to-image'
     default:
@@ -70,8 +62,6 @@ function getImageToImageEndpoint(model: ImageToImageModel): string {
   switch (model) {
     case 'SEEDREAM_V4_EDIT':
       return '/bytedance/seedream-v4/edit'
-    case 'FLUX_1_1_PRO_EDIT':
-      return '/flux/flux-1.1-pro/edit'
     case 'NANO_BANANA_EDIT':
       return '/google/nano-banana/edit'
     default:

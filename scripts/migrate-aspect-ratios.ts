@@ -1,5 +1,6 @@
 // Migration script to update ULTRAWIDE aspect ratios to WIDE
-// Run this script after deploying the updated code
+// NOTE: This script is no longer needed as ULTRAWIDE has been removed from the system
+// This script was used to migrate existing ULTRAWIDE users to WIDE before removal
 
 import { PrismaClient } from '@prisma/client'
 

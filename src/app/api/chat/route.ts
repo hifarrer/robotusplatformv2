@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
         userPreferences = await prisma.userPreferences.create({
           data: {
             userId: session.user.id,
-            aspectRatio: 'SQUARE',
+            aspectRatio: 'PORTRAIT',
             textToImageModel: 'SEEDREAM_V4',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
             videoModel: VideoModel.WAN_2_5,
@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
           userPreferences = {
             id: 'default',
             userId: session.user.id,
-            aspectRatio: 'SQUARE' as any,
+            aspectRatio: 'PORTRAIT' as any,
             textToImageModel: 'SEEDREAM_V4' as any,
             imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
             videoModel: VideoModel.WAN_2_5,

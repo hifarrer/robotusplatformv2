@@ -24,7 +24,7 @@ async function checkDatabaseSchema() {
           CREATE TABLE IF NOT EXISTS "UserPreferences" (
             "id" TEXT NOT NULL PRIMARY KEY,
             "userId" TEXT NOT NULL UNIQUE,
-            "aspectRatio" TEXT NOT NULL DEFAULT 'SQUARE',
+            "aspectRatio" TEXT NOT NULL DEFAULT 'PORTRAIT',
             "textToImageModel" TEXT NOT NULL DEFAULT 'SEEDREAM_V4',
             "imageToImageModel" TEXT NOT NULL DEFAULT 'SEEDREAM_V4_EDIT',
             "videoModel" TEXT NOT NULL DEFAULT 'VEO3_FAST',
@@ -42,9 +42,9 @@ async function checkDatabaseSchema() {
     
     // Check if all required enums exist
     console.log('🔍 Checking enum values...')
-    const aspectRatios = ['SQUARE', 'PORTRAIT', 'LANDSCAPE', 'WIDE', 'ULTRAWIDE']
-    const textToImageModels = ['SEEDREAM_V4', 'FLUX_1_1_PRO', 'FLUX_1_SCHNELL', 'NANO_BANANA']
-    const imageToImageModels = ['SEEDREAM_V4_EDIT', 'FLUX_1_1_PRO_EDIT', 'NANO_BANANA_EDIT']
+    const aspectRatios = ['SQUARE', 'PORTRAIT', 'LANDSCAPE', 'WIDE']
+    const textToImageModels = ['SEEDREAM_V4', 'NANO_BANANA']
+    const imageToImageModels = ['SEEDREAM_V4_EDIT', 'NANO_BANANA_EDIT']
     const videoModels = ['VEO3_FAST', 'VEO3_STANDARD', 'RUNWAY_ML', 'WAN_2_5']
     
     console.log('✅ Database schema check completed')

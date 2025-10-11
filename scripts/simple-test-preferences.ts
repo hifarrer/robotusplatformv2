@@ -60,7 +60,7 @@ async function simpleTestPreferences() {
         ) VALUES (
           gen_random_uuid()::text,
           ${testUser.id},
-          'SQUARE',
+          'PORTRAIT',
           'SEEDREAM_V4',
           'SEEDREAM_V4_EDIT',
           'WAN_2_5',
