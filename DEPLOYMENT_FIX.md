@@ -14,18 +14,40 @@ The production database already has the `WAN_2_5` value in the `VideoModel` enum
 
 The main issue is that the Prisma client needs to be regenerated to match the database schema. Run this script:
 
+**For Windows Systems:**
 ```bash
-# Production fix script (JavaScript - no TypeScript compilation issues)
-node scripts/production-fix.js
+# Windows-safe fix (handles file locking issues)
+node scripts/windows-safe-prisma-fix.js
 ```
 
-Or manually run these commands:
-
+**For Unix/Linux Systems:**
 ```bash
-# Generate Prisma client
+# Aggressive Prisma client fix
+node scripts/aggressive-prisma-fix.js
+```
+
+**Manual Commands (Windows):**
+```bash
+# Clean everything
+rmdir /s /q node_modules\.prisma
+rmdir /s /q .next
+
+# Regenerate Prisma client
 npx prisma generate
 
-# Push schema to database (if needed)
+# Push schema to database
+npx prisma db push
+```
+
+**Manual Commands (Unix/Linux):**
+```bash
+# Clean everything
+rm -rf node_modules/.prisma .next
+
+# Regenerate Prisma client
+npx prisma generate
+
+# Push schema to database
 npx prisma db push
 ```
 

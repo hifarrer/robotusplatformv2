@@ -133,9 +133,31 @@ export async function POST(request: NextRequest) {
     console.log('📝 Parsed request:', { message, images: images.length, audio: audio.length, chatId }) // Debug log
 
     // Get user preferences
-    let userPreferences = await prisma.userPreferences.findUnique({
-      where: { userId: session.user.id }
-    })
+    let userPreferences
+    try {
+      userPreferences = await prisma.userPreferences.findUnique({
+        where: { userId: session.user.id }
+      })
+    } catch (dbError) {
+      console.error('❌ Database error when fetching preferences in Chat API:', dbError)
+      
+      // If there's an enum value error, use default preferences
+      if (dbError instanceof Error && dbError.message.includes('not found in enum')) {
+        console.log('📝 Enum value error in Chat API, using default preferences')
+        userPreferences = {
+          id: 'default',
+          userId: session.user.id,
+          aspectRatio: 'SQUARE',
+          textToImageModel: 'SEEDREAM_V4',
+          imageToImageModel: 'SEEDREAM_V4_EDIT',
+          videoModel: 'VEO3_FAST',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      } else {
+        throw dbError
+      }
+    }
 
     // Create default preferences if not found
     if (!userPreferences) {
@@ -151,15 +173,36 @@ export async function POST(request: NextRequest) {
         )
       }
       
-      userPreferences = await prisma.userPreferences.create({
-        data: {
-          userId: session.user.id,
-          aspectRatio: 'SQUARE',
-          textToImageModel: 'SEEDREAM_V4',
-          imageToImageModel: 'SEEDREAM_V4_EDIT',
-          videoModel: 'VEO3_FAST',
+      try {
+        userPreferences = await prisma.userPreferences.create({
+          data: {
+            userId: session.user.id,
+            aspectRatio: 'SQUARE',
+            textToImageModel: 'SEEDREAM_V4',
+            imageToImageModel: 'SEEDREAM_V4_EDIT',
+            videoModel: 'VEO3_FAST',
+          }
+        })
+      } catch (createError) {
+        console.error('❌ Failed to create preferences in Chat API:', createError)
+        
+        // If creation fails due to enum issues, use default preferences
+        if (createError instanceof Error && createError.message.includes('not found in enum')) {
+          console.log('📝 Enum value error during creation in Chat API, using default preferences')
+          userPreferences = {
+            id: 'default',
+            userId: session.user.id,
+            aspectRatio: 'SQUARE',
+            textToImageModel: 'SEEDREAM_V4',
+            imageToImageModel: 'SEEDREAM_V4_EDIT',
+            videoModel: 'VEO3_FAST',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        } else {
+          throw createError
         }
-      })
+      }
     }
 
     console.log('🛠️ User preferences:', userPreferences) // Debug log

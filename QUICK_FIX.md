@@ -2,10 +2,24 @@
 
 ## For Render Shell (Production Environment)
 
-Run these commands in order:
-
-### 1. Check Database Schema
+### Option 1: Aggressive Fix (Recommended)
 ```bash
+# Run the aggressive fix script
+node scripts/aggressive-prisma-fix.js
+```
+
+### Option 2: Manual Commands
+```bash
+# 1. Clean everything
+rm -rf node_modules/.prisma .next
+
+# 2. Regenerate Prisma client
+npx prisma generate --force
+
+# 3. Push schema to database
+npx prisma db push --force-reset
+
+# 4. Test the fix
 node -e "
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -18,27 +32,7 @@ prisma.\$queryRaw\`SELECT unnest(enum_range(NULL::\"VideoModel\")) as enum_value
 "
 ```
 
-### 2. Fix Prisma Client
-```bash
-npx prisma generate
-```
-
-### 3. Test the Fix
-```bash
-node -e "
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-prisma.userPreferences.count().then(count => {
-  console.log('UserPreferences table exists, count:', count);
-  prisma.\$disconnect();
-}).catch(err => {
-  console.log('UserPreferences table error:', err.message);
-  prisma.\$disconnect();
-});
-"
-```
-
-### 4. Restart Application
+### 5. Restart Application
 After running the above commands, restart your application to pick up the new Prisma client.
 
 ## Expected Result
