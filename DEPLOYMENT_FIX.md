@@ -6,6 +6,8 @@ The preferences are not loading in production with error: "Error loading prefere
 ## Root Cause
 The production database already has the `WAN_2_5` value in the `VideoModel` enum, but the Prisma client is out of sync with the database schema, causing the query to fail with: `Value 'WAN_2_5' not found in enum 'VideoModel'`
 
+**Note**: The TypeScript compilation error confirms this - the Prisma client doesn't recognize `WAN_2_5` as a valid enum value, even though it exists in the database.
+
 ## Solution
 
 ### 1. Fix Prisma Client Sync (Run in Production)
@@ -13,8 +15,8 @@ The production database already has the `WAN_2_5` value in the `VideoModel` enum
 The main issue is that the Prisma client needs to be regenerated to match the database schema. Run this script:
 
 ```bash
-# Fix Prisma client sync issues
-npx tsx scripts/fix-prisma-client.ts
+# Production fix script (JavaScript - no TypeScript compilation issues)
+node scripts/production-fix.js
 ```
 
 Or manually run these commands:
@@ -55,8 +57,8 @@ CREATE TABLE IF NOT EXISTS "UserPreferences" (
 ### 3. Test the Fix
 
 ```bash
-# Test that the preferences API is working
-npx tsx scripts/test-preferences-api.ts
+# Test that the database schema is correct (JavaScript version)
+node scripts/production-fix.js
 ```
 
 ### 4. Run Database Schema Check

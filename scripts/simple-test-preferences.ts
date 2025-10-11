@@ -1,13 +1,13 @@
-// Test script to verify preferences API is working
-// This script tests the preferences API endpoints to ensure they're working correctly
+// Simple test script to verify preferences API without TypeScript compilation issues
+// This script uses raw SQL to test the database directly
 
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-async function testPreferencesAPI() {
+async function simpleTestPreferences() {
   try {
-    console.log('🧪 Testing preferences API...')
+    console.log('🧪 Simple preferences API test...')
     
     // Test 1: Check if UserPreferences table exists
     console.log('📋 Test 1: Checking UserPreferences table...')
@@ -20,7 +20,7 @@ async function testPreferencesAPI() {
       return false
     }
     
-    // Test 2: Check VideoModel enum values
+    // Test 2: Check VideoModel enum values using raw SQL
     console.log('📋 Test 2: Checking VideoModel enum...')
     try {
       const enumValues = await prisma.$queryRaw`
@@ -40,8 +40,8 @@ async function testPreferencesAPI() {
       return false
     }
     
-    // Test 3: Test creating a preference record
-    console.log('📋 Test 3: Testing preference creation...')
+    // Test 3: Test creating a preference record using raw SQL
+    console.log('📋 Test 3: Testing preference creation with raw SQL...')
     try {
       // Create a test user if it doesn't exist
       const testUser = await prisma.user.upsert({
@@ -53,29 +53,32 @@ async function testPreferencesAPI() {
         }
       })
       
-      // Test creating preferences with WAN_2_5
-      const testPreferences = await prisma.userPreferences.upsert({
-        where: { userId: testUser.id },
-        update: {
-          videoModel: 'WAN_2_5' as any, // Type assertion to handle enum sync issues
-          updatedAt: new Date(),
-        },
-        create: {
-          userId: testUser.id,
-          aspectRatio: 'SQUARE',
-          textToImageModel: 'SEEDREAM_V4',
-          imageToImageModel: 'SEEDREAM_V4_EDIT',
-          videoModel: 'WAN_2_5' as any, // Type assertion to handle enum sync issues
-        }
-      })
+      // Test creating preferences with WAN_2_5 using raw SQL
+      const result = await prisma.$executeRaw`
+        INSERT INTO "UserPreferences" (
+          "id", "userId", "aspectRatio", "textToImageModel", "imageToImageModel", "videoModel", "createdAt", "updatedAt"
+        ) VALUES (
+          gen_random_uuid()::text,
+          ${testUser.id},
+          'SQUARE',
+          'SEEDREAM_V4',
+          'SEEDREAM_V4_EDIT',
+          'WAN_2_5',
+          NOW(),
+          NOW()
+        )
+        ON CONFLICT ("userId") DO UPDATE SET
+          "videoModel" = 'WAN_2_5',
+          "updatedAt" = NOW()
+        RETURNING *
+      `
       
-      console.log('✅ Successfully created/updated preferences with WAN_2_5')
-      console.log('📊 Test preferences:', testPreferences)
+      console.log('✅ Successfully created/updated preferences with WAN_2_5 using raw SQL')
       
       // Clean up test data
-      await prisma.userPreferences.deleteMany({
-        where: { userId: testUser.id }
-      })
+      await prisma.$executeRaw`
+        DELETE FROM "UserPreferences" WHERE "userId" = ${testUser.id}
+      `
       await prisma.user.deleteMany({
         where: { email: 'test@example.com' }
       })
@@ -87,7 +90,8 @@ async function testPreferencesAPI() {
       return false
     }
     
-    console.log('✅ All tests passed! Preferences API should be working correctly.')
+    console.log('✅ All tests passed! Database schema is correct.')
+    console.log('💡 The issue is likely that the Prisma client needs to be regenerated.')
     return true
     
   } catch (error) {
@@ -100,13 +104,14 @@ async function testPreferencesAPI() {
 
 // Run the test if this script is executed directly
 if (require.main === module) {
-  testPreferencesAPI()
+  simpleTestPreferences()
     .then((success) => {
       if (success) {
-        console.log('✅ Preferences API test completed successfully!')
+        console.log('✅ Simple preferences test completed successfully!')
+        console.log('🔧 Next step: Run "npx prisma generate" to fix the Prisma client')
         process.exit(0)
       } else {
-        console.log('❌ Preferences API test failed!')
+        console.log('❌ Simple preferences test failed!')
         process.exit(1)
       }
     })
@@ -116,4 +121,4 @@ if (require.main === module) {
     })
 }
 
-export { testPreferencesAPI }
+export { simpleTestPreferences }

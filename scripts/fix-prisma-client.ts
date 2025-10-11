@@ -24,6 +24,15 @@ async function fixPrismaClient() {
     // Step 2: Generate Prisma client
     console.log('🔧 Generating Prisma client...')
     try {
+      // First, clean the generated client
+      console.log('🧹 Cleaning existing Prisma client...')
+      try {
+        execSync('rm -rf node_modules/.prisma', { stdio: 'inherit' })
+      } catch (cleanError) {
+        console.log('⚠️ Could not clean existing client (this is usually fine)')
+      }
+      
+      // Generate new client
       execSync('npx prisma generate', { stdio: 'inherit' })
       console.log('✅ Prisma client generated successfully')
     } catch (error) {
