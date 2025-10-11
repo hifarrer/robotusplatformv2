@@ -1196,7 +1196,7 @@ export function ChatInterface() {
                                       <Button
                                         variant="outline"
                                         size="icon"
-                                        className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 border-white/20 hover:bg-black/70"
+                                        className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-80 group-hover:opacity-100 transition-opacity bg-black/70 border-white/30 hover:bg-black/80"
                                         onClick={() => downloadGeneratedContent(url, generation.type, index)}
                                         title="Download"
                                       >
@@ -1306,7 +1306,7 @@ export function ChatInterface() {
                                   <Button
                                     variant="outline"
                                     size="icon"
-                                    className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 border-white/20 hover:bg-black/70"
+                                    className="absolute top-2 left-2 w-8 h-8 rounded-full opacity-80 group-hover:opacity-100 transition-opacity bg-black/70 border-white/30 hover:bg-black/80"
                                     onClick={() => generation.resultUrl && downloadGeneratedContent(generation.resultUrl, generation.type, 0)}
                                     title="Download"
                                   >

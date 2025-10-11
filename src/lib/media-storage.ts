@@ -4,7 +4,11 @@ import axios from 'axios'
 import sharp from 'sharp'
 import { prisma } from './prisma'
 
-const UPLOADS_DIR = path.join(process.cwd(), 'public', 'uploads')
+// Use Render's persistent disk storage in production, fallback to public/uploads in development
+const isProduction = process.env.NODE_ENV === 'production'
+const UPLOADS_DIR = isProduction 
+  ? '/tmp/uploads' 
+  : path.join(process.cwd(), 'public', 'uploads')
 const IMAGES_DIR = path.join(UPLOADS_DIR, 'images')
 const VIDEOS_DIR = path.join(UPLOADS_DIR, 'videos')
 
@@ -36,7 +40,9 @@ export async function downloadAndSaveImage(
     const randomId = Math.random().toString(36).substring(2)
     const fileName = `${timestamp}_${randomId}.webp`
     const filePath = path.join(IMAGES_DIR, fileName)
-    const relativePath = `/uploads/images/${fileName}`
+    const relativePath = isProduction 
+      ? `/api/serve-file/images/${fileName}` 
+      : `/uploads/images/${fileName}`
 
     // Convert to WebP and get metadata using Sharp
     const imageBuffer = Buffer.from(response.data)
@@ -95,7 +101,9 @@ export async function downloadAndSaveVideo(
     const randomId = Math.random().toString(36).substring(2)
     const fileName = `${timestamp}_${randomId}.mp4`
     const filePath = path.join(VIDEOS_DIR, fileName)
-    const relativePath = `/uploads/videos/${fileName}`
+    const relativePath = isProduction 
+      ? `/api/serve-file/videos/${fileName}` 
+      : `/uploads/videos/${fileName}`
 
     // Save the video stream
     const writer = await fs.open(filePath, 'w')
@@ -220,7 +228,8 @@ export async function deleteUserImage(userId: string, imageId: string): Promise<
     }
 
     // Delete file from filesystem
-    const fullPath = path.join(process.cwd(), 'public', image.localPath)
+    const fileName = image.fileName
+    const fullPath = path.join(IMAGES_DIR, fileName)
     try {
       await fs.unlink(fullPath)
     } catch (error) {
@@ -250,7 +259,8 @@ export async function deleteUserVideo(userId: string, videoId: string): Promise<
     }
 
     // Delete file from filesystem
-    const fullPath = path.join(process.cwd(), 'public', video.localPath)
+    const fileName = video.fileName
+    const fullPath = path.join(VIDEOS_DIR, fileName)
     try {
       await fs.unlink(fullPath)
     } catch (error) {
