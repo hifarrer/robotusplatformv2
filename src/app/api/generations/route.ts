@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { WavespeedService, KieService, WanService } from '@/lib/ai-services'
 import { downloadAndSaveImage, downloadAndSaveVideo } from '@/lib/media-storage'
 import { GenerationStatus, GenerationType } from '@/types'
+import { getUpscaleTitle } from '@/lib/generation-utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -84,9 +85,7 @@ export async function GET(request: NextRequest) {
                 }
               } else {
                 // Save image results (including upscaled images)
-                const title = generation.type === 'IMAGE_UPSCALE' as GenerationType 
-                  ? `Upscaled Image - ${new Date().toLocaleDateString()}`
-                  : generation.prompt
+                const title = getUpscaleTitle(generation)
                 
                 for (const imageUrl of result.data.outputs) {
                   await downloadAndSaveImage(
@@ -324,9 +323,7 @@ export async function POST(request: NextRequest) {
                     }
                   } else {
                     // Save regular image results (including upscaled images)
-                    const title = generation.type === 'IMAGE_UPSCALE' as GenerationType 
-                      ? `Upscaled Image - ${new Date().toLocaleDateString()}`
-                      : generation.prompt
+                    const title = getUpscaleTitle(generation)
                     
                     for (const imageUrl of result.data.outputs) {
                       await downloadAndSaveImage(

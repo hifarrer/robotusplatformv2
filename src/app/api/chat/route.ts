@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { analyzeUserRequest } from '@/lib/ai-orchestrator'
 import { WavespeedService, KieService } from '@/lib/ai-services'
 import { GenerationType } from '@/types'
+import { getSafeGenerationType } from '@/lib/generation-utils'
 import { z } from 'zod'
 
 const chatRequestSchema = z.object({
@@ -65,10 +66,11 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
     const requestId = await WavespeedService.upscaleImage(imageUrl)
     console.log('🔍 Got request ID:', requestId) // Debug log
     
+    // Use safe generation type to avoid database enum issues
     const generation = await prisma.generation.create({
       data: {
         messageId: assistantMessage.id,
-        type: 'IMAGE_UPSCALE' as any,
+        type: getSafeGenerationType('IMAGE_UPSCALE', 'TEXT_TO_IMAGE') as any,
         status: 'PROCESSING',
         prompt: 'Image upscaling to 4K resolution',
         provider: 'wavespeed',

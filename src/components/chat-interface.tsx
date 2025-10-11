@@ -880,7 +880,7 @@ export function ChatInterface() {
   return (
     <div className="flex h-screen bg-black">
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
         {/* Header */}
         <div className="border-b border-gray-800 p-3 sm:p-4">
           {/* Mobile header - stacked layout */}
@@ -1090,7 +1090,7 @@ export function ChatInterface() {
                   
                   <div
                     className={cn(
-                      "max-w-[85%] sm:max-w-[80%] rounded-lg p-3 sm:p-4 overflow-hidden",
+                      "max-w-[85%] sm:max-w-[70%] lg:max-w-[60%] xl:max-w-[50%] rounded-lg p-3 sm:p-4 overflow-hidden",
                       message.role === 'USER'
                         ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white"
                         : "bg-gray-800 text-white"
@@ -1102,15 +1102,15 @@ export function ChatInterface() {
                     )}
                     
                     {message.images && message.images.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-3">
                         {message.images.map((image, index) => (
-                          <div key={index} className="relative w-full">
+                          <div key={index} className="relative w-full max-w-xs mx-auto">
                             <Image
                               src={image}
                               alt={`Uploaded image ${index + 1}`}
-                              width={200}
-                              height={200}
-                              className="rounded-lg object-cover w-full h-auto max-w-full"
+                              width={300}
+                              height={300}
+                              className="rounded-lg object-cover w-full h-auto max-h-64"
                             />
                           </div>
                         ))}
@@ -1155,7 +1155,7 @@ export function ChatInterface() {
                             {/* Show results */}
                             {generation.status === 'COMPLETED' && generation.resultUrls && generation.resultUrls.length > 0 && (
                               <div className="mt-2 space-y-3">
-                                <div className="grid grid-cols-1 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
                                   {generation.resultUrls.map((url, index) => (
                                     <div key={index} className="relative group w-full max-w-full overflow-hidden">
                                       {(
@@ -1183,7 +1183,7 @@ export function ChatInterface() {
                                           alt={`Generated ${generation.type.toLowerCase()} ${index + 1}`}
                                           width={400}
                                           height={400}
-                                          className="rounded object-cover w-full max-w-full h-auto"
+                                          className="rounded object-cover w-full max-w-md mx-auto h-auto max-h-80"
                                           style={{ maxWidth: '100%', height: 'auto' }}
                                           onError={(e) => {
                                             console.error('Failed to load generated image:', url)
