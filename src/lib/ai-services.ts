@@ -27,9 +27,9 @@ function aspectRatioToSize(aspectRatio: AspectRatio): string {
     case 'SQUARE':
       return '1024*1024'
     case 'PORTRAIT':
-      return '768*1024'
+      return '1024*1365'  // Changed from 768*1024 to meet minimum 921600 pixels requirement (3:4 ratio)
     case 'LANDSCAPE':
-      return '1024*768'
+      return '1152*864'   // Changed from 1024*768 to meet minimum 921600 pixels requirement (4:3 ratio)
     case 'WIDE':
       return '1792*1024'
     case 'ULTRAWIDE':

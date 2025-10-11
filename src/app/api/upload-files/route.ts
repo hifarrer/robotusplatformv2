@@ -103,6 +103,15 @@ export async function POST(request: NextRequest) {
       // Check if we're in development and need to use a tunnel
       const isLocalDev = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')
       
+      // If we're in local development, we need to warn about external API access
+      if (isLocalDev) {
+        console.warn('⚠️ LOCAL DEVELOPMENT WARNING: External APIs cannot access localhost URLs')
+        console.warn('💡 For image editing to work, you need to:')
+        console.warn('   1. Use a tunnel service like ngrok: npx ngrok http 3000')
+        console.warn('   2. Set NEXTAUTH_URL to your ngrok URL')
+        console.warn('   3. Or deploy to a public URL for testing')
+      }
+      
       // If we're in production, make sure the URL is accessible
       if (!isLocalDev) {
         // Test if the file is accessible via API route

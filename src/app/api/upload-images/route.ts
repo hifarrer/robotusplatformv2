@@ -74,6 +74,16 @@ export async function POST(request: NextRequest) {
       const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
       const fullUrl = baseUrl.startsWith('http') ? `${baseUrl}${apiUrl}` : `https://${baseUrl}${apiUrl}`
       
+      // Check if we're in local development and warn about external API access
+      const isLocalDev = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')
+      if (isLocalDev) {
+        console.warn('⚠️ LOCAL DEVELOPMENT WARNING: External APIs cannot access localhost URLs')
+        console.warn('💡 For image editing to work, you need to:')
+        console.warn('   1. Use a tunnel service like ngrok: npx ngrok http 3000')
+        console.warn('   2. Set NEXTAUTH_URL to your ngrok URL')
+        console.warn('   3. Or deploy to a public URL for testing')
+      }
+      
       uploadedImages.push({
         name: file.name,
         size: file.size,
