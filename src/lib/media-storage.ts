@@ -6,11 +6,23 @@ import { prisma } from './prisma'
 
 // Use Render's persistent disk storage in production, fallback to public/uploads in development
 const isProduction = process.env.NODE_ENV === 'production'
-const UPLOADS_DIR = isProduction 
+const isRender = process.env.RENDER === 'true' || process.env.NODE_ENV === 'production'
+const UPLOADS_DIR = isRender 
   ? '/tmp/uploads' 
   : path.join(process.cwd(), 'public', 'uploads')
 const IMAGES_DIR = path.join(UPLOADS_DIR, 'images')
 const VIDEOS_DIR = path.join(UPLOADS_DIR, 'videos')
+
+// Debug logging
+console.log('🔧 Media Storage Config:', {
+  NODE_ENV: process.env.NODE_ENV,
+  RENDER: process.env.RENDER,
+  isProduction,
+  isRender,
+  UPLOADS_DIR,
+  IMAGES_DIR,
+  VIDEOS_DIR
+})
 
 // Ensure upload directories exist
 async function ensureDirectories() {
@@ -40,7 +52,7 @@ export async function downloadAndSaveImage(
     const randomId = Math.random().toString(36).substring(2)
     const fileName = `${timestamp}_${randomId}.webp`
     const filePath = path.join(IMAGES_DIR, fileName)
-    const relativePath = isProduction 
+    const relativePath = isRender 
       ? `/api/serve-file/images/${fileName}` 
       : `/uploads/images/${fileName}`
 
@@ -101,7 +113,7 @@ export async function downloadAndSaveVideo(
     const randomId = Math.random().toString(36).substring(2)
     const fileName = `${timestamp}_${randomId}.mp4`
     const filePath = path.join(VIDEOS_DIR, fileName)
-    const relativePath = isProduction 
+    const relativePath = isRender 
       ? `/api/serve-file/videos/${fileName}` 
       : `/uploads/videos/${fileName}`
 
