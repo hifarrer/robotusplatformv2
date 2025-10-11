@@ -68,6 +68,22 @@ export async function GET(request: NextRequest) {
           updatedAt: new Date()
         })
       }
+      
+      // If there's an enum value error, return default preferences
+      if (dbError instanceof Error && dbError.message.includes('not found in enum')) {
+        console.log('📝 Enum value error, returning default preferences')
+        return NextResponse.json({
+          id: 'default',
+          userId: session.user.id,
+          aspectRatio: 'SQUARE',
+          textToImageModel: 'SEEDREAM_V4',
+          imageToImageModel: 'SEEDREAM_V4_EDIT',
+          videoModel: 'VEO3_FAST',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      }
+      
       throw dbError
     }
 
@@ -95,6 +111,21 @@ export async function GET(request: NextRequest) {
           createError.message.includes('table')
         )) {
           console.log('📝 Table does not exist, returning default preferences')
+          return NextResponse.json({
+            id: 'default',
+            userId: session.user.id,
+            aspectRatio: 'SQUARE',
+            textToImageModel: 'SEEDREAM_V4',
+            imageToImageModel: 'SEEDREAM_V4_EDIT',
+            videoModel: 'VEO3_FAST',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        }
+        
+        // If creation fails due to enum issues, return default preferences
+        if (createError instanceof Error && createError.message.includes('not found in enum')) {
+          console.log('📝 Enum value error during creation, returning default preferences')
           return NextResponse.json({
             id: 'default',
             userId: session.user.id,
@@ -181,6 +212,21 @@ export async function PUT(request: NextRequest) {
         dbError.message.includes('table')
       )) {
         console.log('📝 Table does not exist, returning updated default preferences')
+        return NextResponse.json({
+          id: 'default',
+          userId: session.user.id,
+          aspectRatio: updateData.aspectRatio || 'SQUARE',
+          textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
+          imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
+          videoModel: updateData.videoModel || 'VEO3_FAST',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      }
+      
+      // If there's an enum value error, return updated default preferences
+      if (dbError instanceof Error && dbError.message.includes('not found in enum')) {
+        console.log('📝 Enum value error, returning updated default preferences')
         return NextResponse.json({
           id: 'default',
           userId: session.user.id,

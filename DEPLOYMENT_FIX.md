@@ -4,13 +4,32 @@
 The preferences are not loading in production with error: "Error loading preferences: Error: Failed to load preferences"
 
 ## Root Cause
-The `UserPreferences` table likely doesn't exist in the production database, causing the API to fail.
+The production database already has the `WAN_2_5` value in the `VideoModel` enum, but the Prisma client is out of sync with the database schema, causing the query to fail with: `Value 'WAN_2_5' not found in enum 'VideoModel'`
 
 ## Solution
 
-### 1. Database Migration (Run in Production)
+### 1. Fix Prisma Client Sync (Run in Production)
 
-First, check if the UserPreferences table exists:
+The main issue is that the Prisma client needs to be regenerated to match the database schema. Run this script:
+
+```bash
+# Fix Prisma client sync issues
+npx tsx scripts/fix-prisma-client.ts
+```
+
+Or manually run these commands:
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database (if needed)
+npx prisma db push
+```
+
+### 2. Database Migration (If Needed)
+
+If the UserPreferences table doesn't exist:
 
 ```bash
 # Connect to your production database and run:
@@ -33,29 +52,37 @@ CREATE TABLE IF NOT EXISTS "UserPreferences" (
 );
 ```
 
-### 2. Run Database Schema Check
+### 3. Test the Fix
+
+```bash
+# Test that the preferences API is working
+npx tsx scripts/test-preferences-api.ts
+```
+
+### 4. Run Database Schema Check
 
 ```bash
 # Run the database schema check script
 npx tsx scripts/check-database-schema.ts
 ```
 
-### 3. Deploy Updated Code
+### 5. Deploy Updated Code
 
 The updated code now includes:
 - ✅ Better error handling and logging
+- ✅ Fallback mechanism for enum value errors
 - ✅ Fallback mechanism when table doesn't exist
 - ✅ Detailed console logging for debugging
 - ✅ Graceful degradation with default preferences
 
-### 4. Verify Fix
+### 6. Verify Fix
 
 After deployment, check the browser console for detailed logs:
 - Look for "🔧 Getting user preferences..." 
 - Check for any database errors
 - Verify preferences are loading correctly
 
-### 5. Alternative: Manual Database Setup
+### 7. Alternative: Manual Database Setup
 
 If the automatic migration doesn't work, you can manually run:
 
