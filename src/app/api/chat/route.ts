@@ -23,6 +23,8 @@ const upscaleRequestSchema = z.object({
 async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: string | null) {
   try {
     console.log('🔍 Starting upscale process for:', imageUrl) // Debug log
+    console.log('🔍 Session user ID:', session.user.id) // Debug log
+    console.log('🔍 Chat ID:', chatId) // Debug log
     
     // Create or get chat
     let chat
@@ -33,18 +35,22 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
           userId: session.user.id,
         },
       })
+      console.log('🔍 Found existing chat:', chat?.id) // Debug log
     }
     
     if (!chat) {
+      console.log('🔍 Creating new chat') // Debug log
       chat = await prisma.chat.create({
         data: {
           userId: session.user.id,
           title: 'Image Upscaling',
         },
       })
+      console.log('🔍 Created new chat:', chat.id) // Debug log
     }
 
     // Create assistant message for the upscale operation
+    console.log('🔍 Creating assistant message') // Debug log
     const assistantMessage = await prisma.message.create({
       data: {
         chatId: chat.id,
@@ -52,9 +58,12 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
         content: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
       },
     })
+    console.log('🔍 Created assistant message:', assistantMessage.id) // Debug log
 
     // Start the upscaling process
+    console.log('🔍 Calling WavespeedService.upscaleImage') // Debug log
     const requestId = await WavespeedService.upscaleImage(imageUrl)
+    console.log('🔍 Got request ID:', requestId) // Debug log
     
     const generation = await prisma.generation.create({
       data: {
@@ -93,9 +102,20 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
       generations: updatedAssistantMessage?.generations || [],
     })
   } catch (error: any) {
-    console.error('Upscale error:', error)
+    console.error('❌ Upscale error:', error)
+    console.error('❌ Error stack:', error?.stack)
+    console.error('❌ Error details:', {
+      message: error?.message,
+      name: error?.name,
+      code: error?.code,
+      response: error?.response?.data
+    })
     return NextResponse.json(
-      { error: 'Failed to start image upscaling', details: error?.message },
+      { 
+        error: 'Failed to start image upscaling', 
+        details: error?.message,
+        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+      },
       { status: 500 }
     )
   }

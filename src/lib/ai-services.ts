@@ -228,6 +228,13 @@ export class WavespeedService {
     creativity: number = 2
   ): Promise<string> {
     try {
+      if (!WAVESPEED_API_KEY) {
+        throw new Error('WAVESPEED_API_KEY environment variable is not set')
+      }
+      
+      console.log('🔍 Upscaling image:', imageUrl) // Debug log
+      console.log('🔍 API Key present:', !!WAVESPEED_API_KEY) // Debug log
+      
       const request: WavespeedUpscaleRequest = {
         creativity,
         enable_base64_output: false,
