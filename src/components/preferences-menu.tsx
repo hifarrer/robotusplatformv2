@@ -49,14 +49,29 @@ export function PreferencesMenu({ onPreferencesChange }: PreferencesMenuProps) {
   const loadPreferences = async () => {
     try {
       setIsLoading(true)
+      console.log('🔧 Loading user preferences...')
       const response = await fetch('/api/user-preferences')
-      if (!response.ok) throw new Error('Failed to load preferences')
+      
+      console.log('📡 Response status:', response.status)
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()))
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ API Error Response:', errorText)
+        throw new Error(`Failed to load preferences: ${response.status} ${response.statusText}`)
+      }
       
       const data = await response.json()
+      console.log('✅ Preferences loaded successfully:', data)
       setPreferences(data)
       onPreferencesChange?.(data)
     } catch (error) {
-      console.error('Error loading preferences:', error)
+      console.error('❌ Error loading preferences:', error)
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      })
     } finally {
       setIsLoading(false)
     }

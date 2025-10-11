@@ -882,94 +882,166 @@ export function ChatInterface() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="border-b border-gray-800 p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+        <div className="border-b border-gray-800 p-3 sm:p-4">
+          {/* Mobile header - stacked layout */}
+          <div className="flex items-center justify-between mb-3 sm:hidden">
+            <div className="flex items-center space-x-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                <Bot className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h1 className="text-white font-semibold text-sm">Robotus AI</h1>
+              </div>
             </div>
-            <div>
-              <h1 className="text-white font-semibold">Robotus AI</h1>
-              <p className="text-gray-400 text-sm">AI-powered creative assistant</p>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={startNewConversation}
+                className="text-gray-400 hover:text-white p-2"
+                title="New Conversation"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+              <PreferencesMenu onPreferencesChange={handlePreferencesChange} />
+              <Avatar className="w-7 h-7">
+                <AvatarImage src={session?.user?.image || ''} />
+                <AvatarFallback className="bg-gray-700 text-white text-xs">
+                  {session?.user?.name?.[0] || <User className="w-3 h-3" />}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-gray-400 hover:text-white p-2"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={startNewConversation}
-              className="text-gray-400 hover:text-white"
-              title="Start New Conversation"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Conversation
-            </Button>
-            <PreferencesMenu onPreferencesChange={handlePreferencesChange} />
+          {/* Desktop header - original layout */}
+          <div className="hidden sm:flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                <Bot className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-white font-semibold">Robotus AI</h1>
+                <p className="text-gray-400 text-sm">AI-powered creative assistant</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={startNewConversation}
+                className="text-gray-400 hover:text-white"
+                title="Start New Conversation"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Conversation
+              </Button>
+              <PreferencesMenu onPreferencesChange={handlePreferencesChange} />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/my-images'}
+                className="text-gray-400 hover:text-white"
+                title="My Images"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                My Images
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/my-videos'}
+                className="text-gray-400 hover:text-white"
+                title="My Videos"
+              >
+                <Video className="w-4 h-4 mr-2" />
+                My Videos
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={checkGenerations}
+                className="text-gray-400 hover:text-white"
+                title="Refresh generations"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={session?.user?.image || ''} />
+                <AvatarFallback className="bg-gray-700 text-white">
+                  {session?.user?.name?.[0] || <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-gray-400 hover:text-white"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* Mobile navigation menu */}
+          <div className="flex sm:hidden items-center justify-center space-x-4 pt-2 border-t border-gray-700">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => window.location.href = '/my-images'}
-              className="text-gray-400 hover:text-white"
-              title="My Images"
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
             >
-              <ImageIcon className="w-4 h-4 mr-2" />
-              My Images
+              <ImageIcon className="w-3 h-3 mr-1" />
+              Images
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => window.location.href = '/my-videos'}
-              className="text-gray-400 hover:text-white"
-              title="My Videos"
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
             >
-              <Video className="w-4 h-4 mr-2" />
-              My Videos
+              <Video className="w-3 h-3 mr-1" />
+              Videos
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={checkGenerations}
-              className="text-gray-400 hover:text-white"
-              title="Refresh generations"
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
             >
-              <RefreshCw className="w-4 h-4" />
-            </Button>
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={session?.user?.image || ''} />
-              <AvatarFallback className="bg-gray-700 text-white">
-                {session?.user?.name?.[0] || <User className="w-4 h-4" />}
-              </AvatarFallback>
-            </Avatar>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => signOut()}
-              className="text-gray-400 hover:text-white"
-            >
-              <LogOut className="w-4 h-4" />
+              <RefreshCw className="w-3 h-3 mr-1" />
+              Refresh
             </Button>
           </div>
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-2 sm:p-4">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-4">
-                <Bot className="w-8 h-8 text-white" />
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-4">
+                <Bot className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-semibold text-white mb-2">
+              <h2 className="text-lg sm:text-2xl font-semibold text-white mb-2">
                 Welcome to Robotus AI
               </h2>
-              <p className="text-gray-400 max-w-md">
+              <p className="text-gray-400 max-w-md text-sm sm:text-base">
                 I can help you create images, edit images, and generate videos. 
                 Just describe what you want or upload images to get started!
               </p>
-              <div className="flex flex-wrap gap-2 mt-6">
+              <div className="flex flex-col sm:flex-row gap-2 mt-6 w-full max-w-sm">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1"
                   onClick={generateRandomPrompt}
                   title="Generate a random image prompt"
                 >
@@ -979,7 +1051,7 @@ export function ChatInterface() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1"
                   onClick={generateRandomVideoPrompt}
                   title="Generate a random video prompt"
                 >
@@ -989,26 +1061,26 @@ export function ChatInterface() {
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={cn(
-                    "flex gap-3 message-fade-in",
+                    "flex gap-2 sm:gap-3 message-fade-in",
                     message.role === 'USER' ? "justify-end" : "justify-start"
                   )}
                 >
                   {message.role === 'ASSISTANT' && (
-                    <Avatar className="w-8 h-8 mt-1">
+                    <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
                       <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
-                        <Bot className="w-4 h-4 text-white" />
+                        <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </AvatarFallback>
                     </Avatar>
                   )}
                   
                   <div
                     className={cn(
-                      "max-w-[80%] rounded-lg p-4",
+                      "max-w-[85%] sm:max-w-[80%] rounded-lg p-3 sm:p-4",
                       message.role === 'USER'
                         ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white"
                         : "bg-gray-800 text-white"
@@ -1019,7 +1091,7 @@ export function ChatInterface() {
                     )}
                     
                     {message.images && message.images.length > 0 && (
-                      <div className="grid grid-cols-2 gap-2 mt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                         {message.images.map((image, index) => (
                           <div key={index} className="relative">
                             <Image
@@ -1027,7 +1099,7 @@ export function ChatInterface() {
                               alt={`Uploaded image ${index + 1}`}
                               width={200}
                               height={200}
-                              className="rounded-lg object-cover"
+                              className="rounded-lg object-cover w-full h-auto"
                             />
                           </div>
                         ))}
@@ -1134,16 +1206,17 @@ export function ChatInterface() {
                                 </div>
                                 
                                 {/* Generate New, Upscale, Edit, and Generate Video buttons */}
-                                <div className="flex justify-center space-x-2">
+                                <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => regenerateContent(generation)}
                                     disabled={isLoading}
-                                    className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                   >
-                                    <RefreshCw className="w-4 h-4 mr-2" />
-                                    Generate New
+                                    <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                    <span className="hidden sm:inline">Generate New</span>
+                                    <span className="sm:hidden">New</span>
                                   </Button>
                                   {/* Show upscale button only for completed image generations */}
                                   {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
@@ -1152,10 +1225,11 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => upscaleImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
-                                      <ZoomIn className="w-4 h-4 mr-2" />
-                                      Upscale
+                                      <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      <span className="hidden sm:inline">Upscale</span>
+                                      <span className="sm:hidden">Scale</span>
                                     </Button>
                                   )}
                                   {/* Show edit button only for completed image generations */}
@@ -1165,7 +1239,7 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => editImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <Edit className="w-4 h-4 mr-2" />
                                       Edit
@@ -1178,10 +1252,11 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => generateVideoFromImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
-                                      <Video className="w-4 h-4 mr-2" />
-                                      Generate Video
+                                      <Video className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      <span className="hidden sm:inline">Generate Video</span>
+                                      <span className="sm:hidden">Video</span>
                                     </Button>
                                   )}
                                 </div>
@@ -1238,16 +1313,17 @@ export function ChatInterface() {
                                 </div>
                                 
                                 {/* Generate New, Upscale, Edit, and Generate Video buttons */}
-                                <div className="flex justify-center space-x-2">
+                                <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => regenerateContent(generation)}
                                     disabled={isLoading}
-                                    className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                    className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                   >
-                                    <RefreshCw className="w-4 h-4 mr-2" />
-                                    Generate New
+                                    <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                    <span className="hidden sm:inline">Generate New</span>
+                                    <span className="sm:hidden">New</span>
                                   </Button>
                                   {/* Show upscale button only for completed image generations */}
                                   {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
@@ -1256,10 +1332,11 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => upscaleImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
-                                      <ZoomIn className="w-4 h-4 mr-2" />
-                                      Upscale
+                                      <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      <span className="hidden sm:inline">Upscale</span>
+                                      <span className="sm:hidden">Scale</span>
                                     </Button>
                                   )}
                                   {/* Show edit button only for completed image generations */}
@@ -1269,7 +1346,7 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => editImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <Edit className="w-4 h-4 mr-2" />
                                       Edit
@@ -1282,10 +1359,11 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => generateVideoFromImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
-                                      <Video className="w-4 h-4 mr-2" />
-                                      Generate Video
+                                      <Video className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      <span className="hidden sm:inline">Generate Video</span>
+                                      <span className="sm:hidden">Video</span>
                                     </Button>
                                   )}
                                 </div>
@@ -1298,10 +1376,10 @@ export function ChatInterface() {
                   </div>
                   
                   {message.role === 'USER' && (
-                    <Avatar className="w-8 h-8 mt-1">
+                    <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
                       <AvatarImage src={session?.user?.image || ''} />
                       <AvatarFallback className="bg-gray-700 text-white">
-                        {session?.user?.name?.[0] || <User className="w-4 h-4" />}
+                        {session?.user?.name?.[0] || <User className="w-3 h-3 sm:w-4 sm:h-4" />}
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -1309,16 +1387,16 @@ export function ChatInterface() {
               ))}
               
               {isLoading && (
-                <div className="flex gap-3">
-                  <Avatar className="w-8 h-8 mt-1">
+                <div className="flex gap-2 sm:gap-3">
+                  <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
                     <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
-                      <Bot className="w-4 h-4 text-white" />
+                      <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="bg-gray-800 rounded-lg p-4">
+                  <div className="bg-gray-800 rounded-lg p-3 sm:p-4">
                     <div className="flex items-center space-x-2">
                       <div className="spinner"></div>
-                      <span className="text-gray-300">Processing...</span>
+                      <span className="text-gray-300 text-sm sm:text-base">Processing...</span>
                     </div>
                   </div>
                 </div>
@@ -1329,28 +1407,28 @@ export function ChatInterface() {
 
         {/* Duration Selection for WAN-2.5 Model */}
         {showDurationSelection && (
-          <div className="border-t border-gray-800 p-4 bg-gray-900">
-            <div className="flex flex-col items-center space-y-4">
+          <div className="border-t border-gray-800 p-3 sm:p-4 bg-gray-900">
+            <div className="flex flex-col items-center space-y-3 sm:space-y-4">
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-white mb-2">Select Video Duration</h3>
-                <p className="text-gray-400 text-sm">Choose how long you want your video to be:</p>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2">Select Video Duration</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Choose how long you want your video to be:</p>
                 {videoPrompt && (
-                  <div className="mt-3 p-3 bg-gray-800 rounded-lg">
-                    <p className="text-gray-300 text-sm">
+                  <div className="mt-3 p-2 sm:p-3 bg-gray-800 rounded-lg">
+                    <p className="text-gray-300 text-xs sm:text-sm">
                       <strong>Video prompt:</strong> {videoPrompt}
                     </p>
                   </div>
                 )}
               </div>
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-sm">
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={() => generateVideoWithDuration(5)}
                   disabled={isLoading || isGeneratingVideo}
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-8 py-3"
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-4 sm:px-8 py-2 sm:py-3 flex-1"
                 >
-                  <Video className="w-5 h-5 mr-2" />
+                  <Video className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   5 Seconds
                 </Button>
                 <Button
@@ -1358,9 +1436,9 @@ export function ChatInterface() {
                   size="lg"
                   onClick={() => generateVideoWithDuration(10)}
                   disabled={isLoading || isGeneratingVideo}
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-8 py-3"
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-4 sm:px-8 py-2 sm:py-3 flex-1"
                 >
-                  <Video className="w-5 h-5 mr-2" />
+                  <Video className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   10 Seconds
                 </Button>
               </div>
@@ -1372,7 +1450,7 @@ export function ChatInterface() {
                   setSelectedImageForVideo(null)
                   setIsGeneratingVideo(false)
                 }}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white text-sm"
               >
                 Cancel
               </Button>
@@ -1381,13 +1459,13 @@ export function ChatInterface() {
         )}
 
         {/* Input area */}
-        <div className="border-t border-gray-800 p-4">
+        <div className="border-t border-gray-800 p-3 sm:p-4">
           {/* File previews */}
           {files.length > 0 && (
-            <div className="mb-4 flex flex-wrap gap-2">
+            <div className="mb-3 sm:mb-4 flex flex-wrap gap-2">
               {files.map((file) => (
                 <div key={file.id} className="relative group">
-                  <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-600">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-gray-600">
                     {file.type === 'image' ? (
                       <Image
                         src={file.preview}
@@ -1398,23 +1476,23 @@ export function ChatInterface() {
                       />
                     ) : file.type === 'audio' ? (
                       <div className="w-full h-full flex items-center justify-center bg-gray-700">
-                        <Music className="w-6 h-6 text-gray-400" />
+                        <Music className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
                       </div>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-700">
-                        <Paperclip className="w-6 h-6 text-gray-400" />
+                        <Paperclip className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
                       </div>
                     )}
                   </div>
                   <Button
                     variant="destructive"
                     size="icon"
-                    className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => removeFile(file.id)}
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2 h-2 sm:w-3 sm:h-3" />
                   </Button>
-                  <p className="text-xs text-gray-400 mt-1 truncate w-20">
+                  <p className="text-xs text-gray-400 mt-1 truncate w-16 sm:w-20">
                     {file.file.name}
                   </p>
                   <p className="text-xs text-gray-500">
@@ -1442,22 +1520,22 @@ export function ChatInterface() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Describe what you want to create, or drag and drop images here..."
-                className="min-h-[80px] resize-none border-0 bg-transparent focus-visible:ring-0 text-white placeholder:text-gray-500"
+                className="min-h-[60px] sm:min-h-[80px] resize-none border-0 bg-transparent focus-visible:ring-0 text-white placeholder:text-gray-500 text-sm sm:text-base"
                 disabled={isLoading}
               />
               
               {dragOver && (
                 <div className="absolute inset-0 flex items-center justify-center bg-primary/10 rounded-lg">
                   <div className="text-center">
-                    <Upload className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <p className="text-primary font-medium">Drop files here</p>
+                    <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2" />
+                    <p className="text-primary font-medium text-sm sm:text-base">Drop files here</p>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-0 sm:justify-between">
+              <div className="flex items-center gap-2">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -1475,10 +1553,11 @@ export function ChatInterface() {
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1 sm:flex-none"
                 >
-                  <Paperclip className="w-4 h-4 mr-2" />
-                  Attach
+                  <Paperclip className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Attach</span>
+                  <span className="sm:hidden">Attach</span>
                 </Button>
                 <Button
                   type="button"
@@ -1486,14 +1565,15 @@ export function ChatInterface() {
                   size="sm"
                   onClick={loadLibraryImages}
                   disabled={loadingLibrary}
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1 sm:flex-none"
                 >
                   {loadingLibrary ? (
-                    <div className="spinner w-4 h-4 mr-2"></div>
+                    <div className="spinner w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"></div>
                   ) : (
-                    <Images className="w-4 h-4 mr-2" />
+                    <Images className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   )}
-                  Select from Library
+                  <span className="hidden sm:inline">Select from Library</span>
+                  <span className="sm:hidden">Library</span>
                 </Button>
               </div>
 
@@ -1501,19 +1581,19 @@ export function ChatInterface() {
                 type="submit"
                 variant="gradient"
                 disabled={isLoading || isUploadingImages || (!input.trim() && files.length === 0)}
-                className="min-w-[100px]"
+                className="min-w-[80px] sm:min-w-[100px] w-full sm:w-auto"
               >
                 {isUploadingImages ? (
                   <>
                     <div className="spinner"></div>
-                    <span className="ml-2">Uploading...</span>
+                    <span className="ml-2 text-sm sm:text-base">Uploading...</span>
                   </>
                 ) : isLoading ? (
                   <div className="spinner"></div>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Send
+                    <Send className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="text-sm sm:text-base">Send</span>
                   </>
                 )}
               </Button>
@@ -1524,20 +1604,20 @@ export function ChatInterface() {
 
       {/* Image Library Modal */}
       <Dialog open={showImageLibrary} onOpenChange={setShowImageLibrary}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden bg-gray-900 border-gray-700">
+        <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden bg-gray-900 border-gray-700 mx-4 sm:mx-auto">
           <DialogHeader>
-            <DialogTitle className="text-white">Select from Your Image Library</DialogTitle>
+            <DialogTitle className="text-white text-sm sm:text-base">Select from Your Image Library</DialogTitle>
           </DialogHeader>
           
-          <div className="overflow-auto max-h-[60vh]">
+          <div className="overflow-auto max-h-[70vh] sm:max-h-[60vh]">
             {libraryImages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-48 text-center">
-                <Images className="w-12 h-12 text-gray-400 mb-4" />
-                <h3 className="text-white font-medium mb-2">No Images in Library</h3>
-                <p className="text-gray-400 text-sm">Generate some images first to see them here!</p>
+              <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
+                <Images className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-3 sm:mb-4" />
+                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">No Images in Library</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Generate some images first to see them here!</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
                 {libraryImages.map((image) => (
                   <div
                     key={image.id}
@@ -1556,8 +1636,8 @@ export function ChatInterface() {
                       {/* Hover overlay */}
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <div className="text-white text-center">
-                          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-2">
-                            <Paperclip className="w-4 h-4" />
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-1 sm:mb-2">
+                            <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
                           </div>
                           <p className="text-xs">Select</p>
                         </div>
@@ -1567,21 +1647,21 @@ export function ChatInterface() {
                       <Button
                         variant="destructive"
                         size="icon"
-                        className="absolute top-2 right-2 w-7 h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        className="absolute top-1 right-1 sm:top-2 sm:right-2 w-5 h-5 sm:w-7 sm:h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         onClick={(e) => deleteFromLibrary(e, image.id)}
                         disabled={deletingLibraryImageId === image.id}
                         title="Delete image"
                       >
                         {deletingLibraryImageId === image.id ? (
-                          <div className="spinner w-3 h-3" />
+                          <div className="spinner w-2 h-2 sm:w-3 sm:h-3" />
                         ) : (
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-2 h-2 sm:w-3 sm:h-3" />
                         )}
                       </Button>
                     </div>
                     
                     {/* Image info */}
-                    <div className="p-2">
+                    <div className="p-1 sm:p-2">
                       <p className="text-white text-xs font-medium truncate mb-1">
                         {image.title}
                       </p>
