@@ -86,8 +86,10 @@ export async function GET(request: NextRequest) {
               } else {
                 // Save image results (including upscaled images)
                 const title = getUpscaleTitle(generation)
+                console.log('🖼️ Processing single image generation:', generation.id, 'Model:', generation.model, 'Title:', title)
                 
                 for (const imageUrl of result.data.outputs) {
+                  console.log('💾 Saving single image:', imageUrl)
                   await downloadAndSaveImage(
                     session.user.id,
                     imageUrl,
@@ -232,7 +234,7 @@ export async function POST(request: NextRequest) {
     
     console.log('🔍 Found pending generations:', pendingGenerations.length)
     pendingGenerations.forEach(gen => {
-      console.log(`- ${gen.id} (${gen.provider}/${gen.model}) - RequestId: ${gen.requestId}`)
+      console.log(`- ${gen.id} (${gen.provider}/${gen.model}) - RequestId: ${gen.requestId} - Type: ${gen.type} - Status: ${gen.status}`)
     })
 
     const results = []
@@ -324,8 +326,10 @@ export async function POST(request: NextRequest) {
                   } else {
                     // Save regular image results (including upscaled images)
                     const title = getUpscaleTitle(generation)
+                    console.log('🖼️ Processing image generation:', generation.id, 'Model:', generation.model, 'Title:', title)
                     
                     for (const imageUrl of result.data.outputs) {
+                      console.log('💾 Saving image:', imageUrl)
                       await downloadAndSaveImage(
                         session.user.id,
                         imageUrl,

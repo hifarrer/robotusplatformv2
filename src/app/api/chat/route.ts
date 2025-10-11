@@ -78,6 +78,8 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
         requestId,
       },
     })
+    
+    console.log('🔍 Created upscaling generation:', generation.id, 'RequestId:', requestId)
 
     // Get the updated assistant message with generations
     const updatedAssistantMessage = await prisma.message.findUnique({

@@ -893,7 +893,7 @@ export function ChatInterface() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-white font-semibold text-sm">Robotus AI</h1>
+                <h1 className="text-white font-semibold text-sm">Robotus.AI</h1>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -934,8 +934,7 @@ export function ChatInterface() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-white font-semibold">Robotus AI</h1>
-                <p className="text-gray-400 text-sm">AI-powered creative assistant</p>
+                <h1 className="text-white font-semibold">Robotus.AI</h1>
               </div>
             </div>
             
@@ -1040,7 +1039,7 @@ export function ChatInterface() {
                 </AvatarFallback>
               </Avatar>
               <h2 className="text-lg sm:text-2xl font-semibold text-white mb-2">
-                Welcome to Robotus AI
+                Welcome to Robotus.AI
               </h2>
               <p className="text-gray-400 max-w-md text-sm sm:text-base">
                 I can help you create images, edit images, and generate videos. 
@@ -1104,13 +1103,14 @@ export function ChatInterface() {
                     {message.images && message.images.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-3">
                         {message.images.map((image, index) => (
-                          <div key={index} className="relative w-full max-w-xs mx-auto">
+                          <div key={index} className="relative w-full max-w-sm mx-auto">
                             <Image
                               src={image}
                               alt={`Uploaded image ${index + 1}`}
                               width={300}
                               height={300}
-                              className="rounded-lg object-cover w-full h-auto max-h-64"
+                              className="rounded-lg object-contain w-full h-auto"
+                              style={{ maxHeight: '400px' }}
                             />
                           </div>
                         ))}
@@ -1155,9 +1155,9 @@ export function ChatInterface() {
                             {/* Show results */}
                             {generation.status === 'COMPLETED' && generation.resultUrls && generation.resultUrls.length > 0 && (
                               <div className="mt-2 space-y-3">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
                                   {generation.resultUrls.map((url, index) => (
-                                    <div key={index} className="relative group w-full max-w-full overflow-hidden">
+                                    <div key={index} className="relative group w-full max-w-full overflow-hidden flex justify-center">
                                       {(
                                         generation.type === 'TEXT_TO_VIDEO' ||
                                         generation.type === 'IMAGE_TO_VIDEO' ||
@@ -1183,8 +1183,8 @@ export function ChatInterface() {
                                           alt={`Generated ${generation.type.toLowerCase()} ${index + 1}`}
                                           width={400}
                                           height={400}
-                                          className="rounded object-cover w-full max-w-md mx-auto h-auto max-h-80"
-                                          style={{ maxWidth: '100%', height: 'auto' }}
+                                          className="rounded object-contain w-full max-w-lg mx-auto"
+                                          style={{ maxWidth: '100%', height: 'auto', maxHeight: '600px' }}
                                           onError={(e) => {
                                             console.error('Failed to load generated image:', url)
                                             e.currentTarget.style.display = 'none'
