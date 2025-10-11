@@ -8,7 +8,7 @@ const preferencesUpdateSchema = z.object({
   aspectRatio: z.enum(['SQUARE', 'PORTRAIT', 'LANDSCAPE', 'WIDE']).optional(),
   textToImageModel: z.enum(['SEEDREAM_V4', 'FLUX_1_1_PRO', 'FLUX_1_SCHNELL', 'NANO_BANANA']).optional(),
   imageToImageModel: z.enum(['SEEDREAM_V4_EDIT', 'FLUX_1_1_PRO_EDIT', 'NANO_BANANA_EDIT']).optional(),
-  videoModel: z.enum(['VEO3_FAST', 'VEO3_STANDARD', 'RUNWAY_ML', 'WAN_2_5']).optional(),
+  videoModel: z.enum(['WAN_2_5']).optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
           aspectRatio: 'SQUARE' as any,
           textToImageModel: 'SEEDREAM_V4' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
-          videoModel: 'VEO3_FAST' as any,
+          videoModel: 'WAN_2_5' as any,
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
           aspectRatio: 'SQUARE' as any,
           textToImageModel: 'SEEDREAM_V4' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
-          videoModel: 'VEO3_FAST' as any,
+          videoModel: 'WAN_2_5' as any,
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
             aspectRatio: 'SQUARE',
             textToImageModel: 'SEEDREAM_V4',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
-            videoModel: 'VEO3_FAST',
+            videoModel: 'WAN_2_5',
           }
         })
         console.log('✅ Default preferences created')
@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
             aspectRatio: 'SQUARE',
             textToImageModel: 'SEEDREAM_V4',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
-            videoModel: 'VEO3_FAST',
+            videoModel: 'WAN_2_5',
             createdAt: new Date(),
             updatedAt: new Date()
           })
@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
             aspectRatio: 'SQUARE',
             textToImageModel: 'SEEDREAM_V4',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
-            videoModel: 'VEO3_FAST',
+            videoModel: 'WAN_2_5',
             createdAt: new Date(),
             updatedAt: new Date()
           })
@@ -199,7 +199,7 @@ export async function PUT(request: NextRequest) {
           aspectRatio: updateData.aspectRatio || 'SQUARE',
           textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
-          videoModel: (updateData.videoModel || 'VEO3_FAST') as any,
+          videoModel: (updateData.videoModel || 'WAN_2_5') as any,
         }
       })
     } catch (dbError) {
@@ -218,7 +218,7 @@ export async function PUT(request: NextRequest) {
           aspectRatio: updateData.aspectRatio || 'SQUARE',
           textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
-          videoModel: updateData.videoModel || 'VEO3_FAST',
+          videoModel: updateData.videoModel || 'WAN_2_5',
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -233,7 +233,7 @@ export async function PUT(request: NextRequest) {
           aspectRatio: updateData.aspectRatio || 'SQUARE',
           textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
-          videoModel: updateData.videoModel || 'VEO3_FAST',
+          videoModel: updateData.videoModel || 'WAN_2_5',
           createdAt: new Date(),
           updatedAt: new Date()
         })
