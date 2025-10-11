@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           id: 'default',
           userId: session.user.id,
-          aspectRatio: 'SQUARE',
-          textToImageModel: 'SEEDREAM_V4',
-          imageToImageModel: 'SEEDREAM_V4_EDIT',
-          videoModel: 'VEO3_FAST',
+          aspectRatio: 'SQUARE' as any,
+          textToImageModel: 'SEEDREAM_V4' as any,
+          imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
+          videoModel: 'VEO3_FAST' as any,
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -75,10 +75,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           id: 'default',
           userId: session.user.id,
-          aspectRatio: 'SQUARE',
-          textToImageModel: 'SEEDREAM_V4',
-          imageToImageModel: 'SEEDREAM_V4_EDIT',
-          videoModel: 'VEO3_FAST',
+          aspectRatio: 'SQUARE' as any,
+          textToImageModel: 'SEEDREAM_V4' as any,
+          imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
+          videoModel: 'VEO3_FAST' as any,
           createdAt: new Date(),
           updatedAt: new Date()
         })
