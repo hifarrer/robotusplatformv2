@@ -7,10 +7,10 @@ const UPLOADS_DIR = isProduction ? '/tmp/uploads' : path.join(process.cwd(), 'pu
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { type: string; filename: string } }
+  { params }: { params: Promise<{ type: string; filename: string }> }
 ) {
   try {
-    const { type, filename } = params
+    const { type, filename } = await params
 
     // Validate file type
     if (!['images', 'videos'].includes(type)) {
