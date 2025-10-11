@@ -102,6 +102,7 @@ export function ChatInterface() {
           console.log('📋 Current messages count:', prev.length)
           console.log('📋 Message IDs:', prev.map(m => m.id))
           console.log('📋 Generation messageIds:', result.generations.map((g: any) => g.messageId))
+          console.log('📋 Generation details:', result.generations.map((g: any) => ({ id: g.id, messageId: g.messageId, status: g.status, type: g.type, model: g.model })))
           
           const updatedMessages = prev.map(message => {
             // Find all generations that belong to this message (by messageId)
@@ -109,6 +110,7 @@ export function ChatInterface() {
             
             if (matchingGenerations.length > 0) {
               console.log('🎯 Found', matchingGenerations.length, 'generations for message', message.id, 'Types:', matchingGenerations.map((g: any) => g.type))
+              console.log('🎯 Generation details:', matchingGenerations.map((g: any) => ({ id: g.id, status: g.status, type: g.type, model: g.model, resultUrls: g.resultUrls })))
               
               // Merge with existing generations (if any)
               const existingGenerations = message.generations || []
