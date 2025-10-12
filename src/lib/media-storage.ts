@@ -8,7 +8,7 @@ import { prisma } from './prisma'
 const isProduction = process.env.NODE_ENV === 'production'
 const isRender = process.env.RENDER === 'true' || process.env.NODE_ENV === 'production'
 const UPLOADS_DIR = isRender 
-  ? '/tmp/uploads' 
+  ? '/temp-uploads' 
   : path.join(process.cwd(), 'public', 'uploads')
 const IMAGES_DIR = path.join(UPLOADS_DIR, 'images')
 const VIDEOS_DIR = path.join(UPLOADS_DIR, 'videos')

@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 
 const isProduction = process.env.NODE_ENV === 'production'
-const UPLOADS_DIR = isProduction ? '/tmp/uploads' : path.join(process.cwd(), 'public', 'uploads')
+const UPLOADS_DIR = isProduction ? '/temp-uploads' : path.join(process.cwd(), 'public', 'uploads')
 
 export async function GET(
   request: NextRequest,
