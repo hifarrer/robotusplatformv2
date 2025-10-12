@@ -61,9 +61,10 @@ Keyword Guidelines:
 - VEO3-Fast supports: 5 seconds (minimum), 8 seconds (maximum)
 - If user asks for < 5 seconds, use 5 seconds
 - If user asks for > 10 seconds (WAN-2.5) or > 8 seconds (VEO3-Fast), use the maximum supported duration
-- IMPORTANT: If user sends a video prompt and there's recent image generation context, treat it as "image_to_video" not "text_to_video"
+- IMPORTANT: If user sends a video prompt and there's recent image generation context, check duration first
+- If no duration is specified, choose "video_duration_selection" with useRecentImage: true
+- If duration is specified, choose "image_to_video" with useRecentImage: true
 - Video prompts with recent image context should use the most recent generated image for video creation
-- When hasRecentImageGeneration is true and user sends a video prompt, ALWAYS choose "image_to_video" with useRecentImage: true
 - This handles cases where users edit video prompts or send new video prompts after generating images
 
 Return your analysis as JSON with:
@@ -158,15 +159,31 @@ Analyze this request and determine the appropriate action. Pay special attention
       throw new Error('Invalid action returned')
     }
 
-    // Override logic: If there's recent image context and user wants video, force image_to_video
+    // Override logic: If there's recent image context and user wants video, check duration first
     if (analysis.action === 'text_to_video' && conversationContext?.hasRecentImageGeneration) {
-      console.log('🔄 Overriding text_to_video to image_to_video due to recent image context')
-      return {
-        ...analysis,
-        action: 'image_to_video',
-        requiresImages: true,
-        useRecentImage: true,
-        reasoning: 'Overridden: Video prompt with recent image context - using recent image for video creation'
+      console.log('🔄 Overriding text_to_video due to recent image context')
+      
+      // Check if duration is specified in the message
+      const hasDuration = /\d+\s*(seconds?|s\b)/i.test(message)
+      
+      if (!hasDuration) {
+        console.log('🔄 No duration specified - asking for duration selection')
+        return {
+          ...analysis,
+          action: 'video_duration_selection',
+          requiresImages: true,
+          useRecentImage: true,
+          reasoning: 'Overridden: Video prompt with recent image context but no duration specified - asking for duration'
+        }
+      } else {
+        console.log('🔄 Duration specified - proceeding with image_to_video')
+        return {
+          ...analysis,
+          action: 'image_to_video',
+          requiresImages: true,
+          useRecentImage: true,
+          reasoning: 'Overridden: Video prompt with recent image context and duration specified - using recent image for video creation'
+        }
       }
     }
 

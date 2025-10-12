@@ -918,7 +918,7 @@ export function ChatInterface() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: `Generate ${finalDuration}-second video from image using ${videoModel} model`,
+        message: `Generate ${finalDuration} second video from image using ${videoModel} model`,
         images: [imageUrl],
         audio: [],
         chatId: chatId,
@@ -946,31 +946,9 @@ export function ChatInterface() {
       setIsLoading(true)
       setShowDurationSelection(false)
       
-      // Generate video using WAN-2.5 API
-      const videoResponse = await fetch('/api/generate-video', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: videoPrompt || `Create a ${finalDuration}-second video from this image`,
-          imageUrls: [imageUrl],
-          model: videoModel,
-          aspectRatio: userPreferences?.aspectRatio || 'WIDE',
-          duration: finalDuration,
-          messageId: messageResult.messageId, // Pass real message ID for generation record
-        }),
-      })
-      
-      if (!videoResponse.ok) {
-        throw new Error('Failed to generate video')
-      }
-      
-      const result = await videoResponse.json()
-      
-      // Keep the loading message as is - the video generation is happening asynchronously
-      // The polling system will update this message when the video is actually completed
-      console.log('🎬 Video generation request submitted successfully:', result)
+      // The video generation is already triggered by the /api/chat call above
+      // The polling system will update the message when the video is completed
+      console.log('🎬 Video generation request submitted successfully via chat API')
     } catch (error: any) {
       console.error('Error generating video:', error)
       
