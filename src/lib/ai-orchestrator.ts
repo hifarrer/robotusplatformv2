@@ -13,7 +13,8 @@ Available actions:
 3. "text_to_video" - User wants to create a video from text description
 4. "image_to_video" - User wants to create a video from images (requires images)
 5. "lipsync" - User wants to make an image speak/talk (requires image and audio)
-6. "chat" - General conversation that doesn't require image/video generation
+6. "text_to_audio" - User wants to create an audio file from text (requires text in quotes)
+7. "chat" - General conversation that doesn't require image/video generation
 
 IMPORTANT WORKFLOW RULES:
 - If 2+ images are attached: ALWAYS choose "image_to_image" (even if user asks for video)
@@ -33,16 +34,22 @@ Keyword Guidelines:
 - Look for "edit", "modify", "change", "improve", "now", "also", "make it" for editing requests
 - Look for "video", "animation", "motion" for video requests
 - Look for "speak", "talk", "lipsync", "voice", "saying", "talking" for lipsync requests
+- Look for "audio", "sound", "voice", "speak", "say" with text in quotes for audio requests
+- If user wants audio but doesn't specify DETAILED voice characteristics, ask them to describe the voice they want
+- DETAILED voice characteristics include: accent (American/British/etc), age (young/adult), tone (deep/soft/loud/gentle/strong/smooth), style (professional/energetic/captivating)
+- Basic gender (male/female) alone is NOT sufficient - need additional characteristics for "text_to_audio"
 - If 2+ images are provided: ALWAYS choose "image_to_image" (video button will be available after)
 - If 1 image and user wants video: choose "image_to_video"
 - If 0 images and user wants video: choose "text_to_video"
 - If images and audio are provided and user wants talking/speaking: choose "lipsync"
+- If user wants audio with text in quotes and DETAILED voice description (accent, age, tone, style): choose "text_to_audio"
+- If user wants audio with text in quotes but only basic gender (male/female) without detailed characteristics: choose "chat" and ask for voice details
 - If no images and user wants image: choose "text_to_image"
 - For general questions or conversations: choose "chat"
 
 Return your analysis as JSON with:
 {
-  "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|chat",
+  "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|text_to_audio|chat",
   "prompt": "cleaned and optimized prompt for the AI service",
   "requiresImages": boolean,
   "requiresAudio": boolean (true for lipsync),
@@ -121,7 +128,7 @@ Analyze this request and determine the appropriate action. Pay special attention
     console.log('🤖 AI Analysis Result:', analysis) // Debug log
     
     // Validate the response
-    const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'chat']
+    const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'text_to_audio', 'chat']
     if (!validActions.includes(analysis.action)) {
       throw new Error('Invalid action returned')
     }
@@ -160,6 +167,12 @@ Analyze this request and determine the appropriate action. Pay special attention
     const lipsyncKeywords = ['speak', 'talk', 'lipsync', 'voice', 'saying', 'talking']
     const isLipsyncRequest = lipsyncKeywords.some(keyword => lowerMessage.includes(keyword))
     
+    // Check for audio keywords with text in quotes
+    const audioKeywords = ['audio', 'sound', 'voice', 'speak', 'say']
+    const hasQuotedText = /"[^"]*"/.test(message) || /'[^']*'/.test(message)
+    const isAudioRequest = audioKeywords.some(keyword => lowerMessage.includes(keyword)) && hasQuotedText
+    
+    
     // Check for contextual references to previous images
     const hasContextualReference = conversationContext?.hasRecentImageGeneration && (
       lowerMessage.includes('previous') ||
@@ -171,6 +184,92 @@ Analyze this request and determine the appropriate action. Pay special attention
       lowerMessage.includes('change') ||
       lowerMessage.includes('modify')
     )
+    
+    // Audio requests - check for gender and detailed description
+    if (isAudioRequest) {
+      // Check if gender is specified
+      const hasGender = lowerMessage.includes('female') || lowerMessage.includes('male') || 
+                       lowerMessage.includes('woman') || lowerMessage.includes('man') ||
+                       lowerMessage.includes('girl') || lowerMessage.includes('boy')
+      
+      // Check if detailed voice description is provided
+      const hasDetailedDescription = lowerMessage.includes('accent') || 
+                                   lowerMessage.includes('adult') || lowerMessage.includes('young') ||
+                                   lowerMessage.includes('deep') || lowerMessage.includes('soft') ||
+                                   lowerMessage.includes('loud') || lowerMessage.includes('gentle') ||
+                                   lowerMessage.includes('strong') || lowerMessage.includes('smooth') ||
+                                   lowerMessage.includes('professional') || lowerMessage.includes('energetic') ||
+                                   lowerMessage.includes('captivating') || lowerMessage.includes('American') ||
+                                   lowerMessage.includes('British') || lowerMessage.includes('accent')
+      
+      // If no gender specified, ask for gender with buttons
+      if (!hasGender) {
+        return {
+          action: 'chat',
+          prompt: `I'd be happy to create an audio for you! First, please choose the gender of the voice:
+
+**Female** | **Male**
+
+Click one of the buttons above to select the gender, then I'll ask for more voice details.`,
+          requiresImages: false,
+          requiresAudio: false,
+          useRecentImage: false,
+          confidence: 0.9,
+          reasoning: 'Audio request detected without gender - asking for gender selection'
+        }
+      }
+      
+      // If gender specified but no detailed description, ask for voice details
+      if (hasGender && !hasDetailedDescription) {
+        return {
+          action: 'chat',
+          prompt: `Great! Now please describe the voice characteristics you'd like. For example, you could say:
+
+• "A captivating adult female voice with a general American accent, ideal for news reporting and documentary narration"
+• "A deep male voice with a British accent"
+• "A young, energetic female voice"
+• "A professional male voice with a smooth tone"
+
+What kind of voice characteristics would you like for your audio?`,
+          requiresImages: false,
+          requiresAudio: false,
+          useRecentImage: false,
+          confidence: 0.9,
+          reasoning: 'Audio request with gender but no detailed description - asking for voice characteristics'
+        }
+      }
+      
+      // If both gender and detailed description provided, proceed with text_to_audio
+      if (hasGender && hasDetailedDescription) {
+        return {
+          action: 'text_to_audio',
+          prompt: message,
+          requiresImages: false,
+          requiresAudio: false,
+          useRecentImage: false,
+          confidence: 0.9,
+          reasoning: 'Audio request with gender and detailed description - proceeding with generation'
+        }
+      }
+      
+      // Fallback - if we get here, something went wrong with the logic
+      return {
+        action: 'chat',
+        prompt: `I'd be happy to create an audio for you! To give you the best voice match, could you please describe the voice characteristics you'd like? For example, you could say:
+
+• "A captivating adult female voice with a general American accent, ideal for news reporting and documentary narration"
+• "A deep male voice with a British accent"
+• "A young, energetic female voice"
+• "A professional male voice with a smooth tone"
+
+What kind of voice characteristics would you like for your audio?`,
+        requiresImages: false,
+        requiresAudio: false,
+        useRecentImage: false,
+        confidence: 0.9,
+        reasoning: 'Fallback: asking for voice characteristics'
+      }
+    }
     
     // Lipsync takes priority if detected
     if (isLipsyncRequest) {

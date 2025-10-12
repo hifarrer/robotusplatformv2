@@ -12,6 +12,7 @@ const UPLOADS_DIR = isRender
   : path.join(process.cwd(), 'public', 'uploads')
 const IMAGES_DIR = path.join(UPLOADS_DIR, 'images')
 const VIDEOS_DIR = path.join(UPLOADS_DIR, 'videos')
+const AUDIOS_DIR = path.join(UPLOADS_DIR, 'audios')
 
 // Debug logging
 console.log('🔧 Media Storage Config:', {
@@ -21,7 +22,8 @@ console.log('🔧 Media Storage Config:', {
   isRender,
   UPLOADS_DIR,
   IMAGES_DIR,
-  VIDEOS_DIR
+  VIDEOS_DIR,
+  AUDIOS_DIR
 })
 
 // Ensure upload directories exist
@@ -29,6 +31,7 @@ async function ensureDirectories() {
   await fs.mkdir(UPLOADS_DIR, { recursive: true })
   await fs.mkdir(IMAGES_DIR, { recursive: true })
   await fs.mkdir(VIDEOS_DIR, { recursive: true })
+  await fs.mkdir(AUDIOS_DIR, { recursive: true })
 }
 
 export async function downloadAndSaveImage(
@@ -288,5 +291,50 @@ export async function deleteUserVideo(userId: string, videoId: string): Promise<
   } catch (error) {
     console.error('Error deleting video:', error)
     return false
+  }
+}
+
+export async function saveFile(
+  buffer: ArrayBuffer,
+  fileName: string,
+  type: 'image' | 'video' | 'audio'
+): Promise<string> {
+  try {
+    await ensureDirectories()
+
+    const timestamp = Date.now()
+    const randomId = Math.random().toString(36).substring(2)
+    const finalFileName = `${timestamp}_${randomId}_${fileName}`
+    
+    let filePath: string
+    let relativePath: string
+    
+    if (type === 'image') {
+      filePath = path.join(IMAGES_DIR, finalFileName)
+      relativePath = isRender 
+        ? `/api/serve-file/images/${finalFileName}` 
+        : `/uploads/images/${finalFileName}`
+    } else if (type === 'video') {
+      filePath = path.join(VIDEOS_DIR, finalFileName)
+      relativePath = isRender 
+        ? `/api/serve-file/videos/${finalFileName}` 
+        : `/uploads/videos/${finalFileName}`
+    } else if (type === 'audio') {
+      filePath = path.join(AUDIOS_DIR, finalFileName)
+      relativePath = isRender 
+        ? `/api/serve-file/audios/${finalFileName}` 
+        : `/uploads/audios/${finalFileName}`
+    } else {
+      throw new Error('Invalid file type')
+    }
+
+    // Save the file
+    await fs.writeFile(filePath, Buffer.from(buffer))
+
+    console.log(`File saved successfully: ${relativePath}`)
+    return relativePath
+  } catch (error) {
+    console.error('Error saving file:', error)
+    throw new Error('Failed to save file')
   }
 }

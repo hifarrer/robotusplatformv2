@@ -1,0 +1,3187 @@
+[
+  {
+    "language": "English",
+    "voice_id": "English_expressive_narrator",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An expressive adult male voice with a British accent, perfect for engaging audiobook narration."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_radiant_girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A radiant and lively young adult female voice with a general American accent, full of energy and brightness."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_magnetic_voiced_man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A magnetic and persuasive adult male voice with a general American accent, ideal for advertisements and promotions."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_compelling_lady1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A compelling adult female voice with a British accent, suitable for broadcast and formal announcements. Clear and authoritative."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Aussie_Bloke",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A friendly, bright adult male voice with a distinct Australian accent, conveying a cheerful and approachable tone."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_captivating_female1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A captivating adult female voice with a general American accent, ideal for news reporting and documentary narration."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Upbeat_Woman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An upbeat and bright adult female voice with a general American accent, perfect for energetic and positive messaging."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Trustworth_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A trustworthy and resonant adult male voice with a general American accent, conveying sincerity and reliability."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_CalmWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm and soothing adult female voice with a general American accent, excellent for audiobooks and meditation guides."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_UpsetGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A young adult female voice with a British accent, effectively conveying sadness and distress."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Gentle-voiced_man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A gentle and resonant adult male voice with a general American accent, warm and reassuring."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Whispering_girl_v3",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A young adult female voice delivering a soft whisper, perfect for ASMR content and intimate narration."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Diligent_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A diligent and sincere adult male voice with an Indian accent, conveying honesty and hard work."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Graceful_Lady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A graceful and elegant middle-aged female voice with a classic British accent, exuding sophistication."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Husky_MetalHead",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A husky, lo-fi adult male voice, perfect for a raw, alternative, or metal-style narration."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_ReservedYoungMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A reserved and cold adult male voice with a general American accent, conveying distance and introspection."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_PlayfulGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A playful female youth voice with a general American accent, ideal for cartoons and children’s entertainment."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_ManWithDeepVoice",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An adult male with a deep, commanding voice and a general American accent, projecting authority and strength."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_GentleTeacher",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A gentle and mild-mannered adult male teacher voice with an Indian accent, patient and instructive."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_MaturePartner",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A mature, gentle middle-aged male voice with a British accent, suitable for a caring and supportive partner role."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_FriendlyPerson",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A friendly and natural-sounding adult male voice with a general American accent, like an approachable guy-next-door."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_MatureBoss",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A mature, middle-aged female voice with a general American accent, conveying authority and a commanding presence."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Debator",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A tough, middle-aged male voice with a general American accent, perfect for debates and assertive arguments."
+  },
+  {
+    "language": "English",
+    "voice_id": "whisper_man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A mysterious adult male voice with a general American accent, delivered in a soft whisper for suspenseful content."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Abbess",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An adult female voice for an abbess character, speaking warily with a general American accent."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_LovelyGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A lovely and sweet female youth voice with a British accent, full of charm and innocence."
+  },
+  {
+    "language": "English",
+    "voice_id": "whisper_woman_1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A soft, whispering adult female voice with a general American accent, creating a sense of intimacy and calm."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Steadymentor",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A young adult male voice with a general American accent, projecting an air of arrogant reliability."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Deep-VoicedGentleman",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A deep-voiced and wise adult male gentleman with a classic British accent, sounding experienced and thoughtful."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_DeterminedMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A determined adult male voice with a general American accent, conveying focus and unwavering resolve."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Wiselady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A wise and genial middle-aged female voice with a British accent, offering kind and insightful words."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_CaptivatingStoryteller",
+    "gender": "Male",
+    "age": "Senior",
+    "description": "A captivating senior male storyteller with a cold, detached tone and a general American accent."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_AttractiveGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An attractive and alluring adult female voice with a general American accent, projecting charm and appeal."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_DecentYoungMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A decent and respectable adult male voice with a British accent, sounding polite and well-mannered."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_SentimentalLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A sentimental and elegant middle-aged female voice with a British accent, perfect for nostalgic or emotional readings."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_ImposingManner",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "The imposing voice of an adult queen with a powerful British accent, commanding respect and authority."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_SadTeen",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A frustrated young adult male voice with a British accent, perfect for a teen character expressing annoyance."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_ThoughtfulMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A thoughtful young adult male voice, speaking solicitously with a general American accent to show care and concern."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_PassionateWarrior",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An energetic and passionate young adult male warrior voice with a general American accent, ready for battle."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_DecentBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A decent young man with an English accent, sounding earnest and respectable."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_WiseScholar",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A wise, conversational young adult scholar with a British accent, making complex topics accessible and engaging."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Soft-spokenGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "An adorable, soft-spoken female youth voice with a general American accent, gentle and sweet."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_SereneWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A serene and friendly young adult female voice with a general American accent, calm and welcoming."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_ConfidentWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A confident and firm young adult female voice with a general American accent, assertive and clear."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_PatientMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A patient adult male voice with a British accent, speaking in a calm and understanding manner."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Comedian",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A breezy young adult male comedian with a British accent, delivering lines with a light and humorous touch."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_GorgeousLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An elegant and gorgeous adult female voice with a general American accent, exuding sophistication and style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_BossyLeader",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A bossy adult male leader with a general American accent, speaking unconcernedly with an air of command."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_LovelyLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A lovely and vibrant adult female voice with a general American accent, full of life and energy."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Strong-WilledBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A mature-sounding and strong-willed young adult male with a British accent, showing determination beyond his years."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Deep-tonedMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A charismatic, deep-toned middle-aged man with a general American accent, naturally drawing in listeners."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_StressedLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An unsure, stressed middle-aged female voice with a general American accent, conveying anxiety and uncertainty."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_AssertiveQueen",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An assertive yet guarded young adult queen with a general American accent, projecting authority while remaining cautious."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_AnimeCharacter",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A sincere middle-aged female narrator with a British accent, perfect for trustworthy and heartfelt storytelling."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Jovialman",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A jovial and mature middle-aged male voice with a general American accent, cheerful and good-natured."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_WhimsicalGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A whimsical yet wary young adult female voice with a general American accent, combining playfulness with caution."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_CharmingQueen",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A bewitching and charming adult queen with an English accent, captivating all who listen."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Kind-heartedGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A kind-hearted and calm young adult female with a general American accent, speaking with gentle warmth."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_FriendlyNeighbor",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An energetic and friendly young adult female neighbor with a general American accent, cheerful and welcoming."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Sweet_Female_4",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A sweet and lively adult female voice with a general American accent, exuding charm and vivacity."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Magnetic_Male_2",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A magnetic adult male voice with a British accent, ideal for authoritative and engaging news reports."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Lively_Male_11",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A lively adult male voice with a general American accent, perfect for energetic and dynamic news reporting."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Friendly_Female_3",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A friendly adult female voice with a general American accent, suitable for warm and inviting broadcast content."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Steady_Female_1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A steady and reliable adult female voice with a general American accent, perfect for clear and consistent broadcasting."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Lively_Male_10",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A professional adult male news presenter with a clear British accent, designed for formal news reporting."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Magnetic_Male_12",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A lively adult male host for a nature show, with an enthusiastic British accent that brings the outdoors to life."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Steady_Female_5",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A lively adult female actor with a versatile British accent, capable of a wide range of performances."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Insightful_Speaker",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, characterized by an Explanatory style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_patient_man_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a British accent, characterized by a Patient style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Persuasive_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, characterized by a Persuasive style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Explanatory_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, characterized by an Explanatory style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_intellect_female_1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An Adult Female English voice with a general American accent, featuring a Podcast style suitable for intellectual content."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_energetic_male_1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, characterized by a Leadership style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_witty_female_1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An Adult Female English voice with a general American accent, characterized by a Witty style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Lucky_Robot",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male English voice with a general American accent, characterized by a robotic style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Cute_Girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A Young Adult Female English voice with a Spanish accent, characterized by a Cute style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Sharp_Commentator",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An Adult Female English voice with a general American accent, characterized by a Lively commentary style."
+  },
+  {
+    "language": "English",
+    "voice_id": "English_Honest_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with an African accent, characterized by a Sincere style."
+  },
+  {
+    "language": "English",
+    "voice_id": "angry_pirate_1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, characterized by a Raspy, pirate-like style."
+  },
+  {
+    "language": "English",
+    "voice_id": "massive_kind_troll",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, characterized by a deep and Steady, giant-like style."
+  },
+  {
+    "language": "English",
+    "voice_id": "movie_trailer_deep",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An Adult Male English voice with a general American accent, featuring a Deep, cinematic style suitable for movie trailers."
+  },
+  {
+    "language": "English",
+    "voice_id": "peace_and_ease",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An Adult Female English voice with a general American accent, characterized by a Peaceful and calm style."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_6dc281eb-713c-11f0-a447-9613c873494c",
+    "gender": "Female",
+    "age": "Senior",
+    "description": "A sweet old granny, mumbling slightly, sharing life lessons with you with great warmth."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_c12a59b9-7115-11f0-a447-9613c873494c",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An engaging and expressive vocal tone, typical of a young woman."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_076697ad-7144-11f0-a447-9613c873494c",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A young guy, full of confidence, speaking with a heavy Southern drawl."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_737a299c-734a-11f0-918f-4e0486034804",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A vibrant young male voice, with the kind of clear, trustworthy delivery ideal for science communication."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_19dbb103-7350-11f0-ad20-f2bc95e89150",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A sassy girl with a tone that blends sarcasm and surprise."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_7c7e7ae2-7356-11f0-9540-7ef9b4b62566",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A magnetic young woman’s voice with a hint of urgency."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_570551b1-735c-11f0-b236-0adeeecad052",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A self-assured man with a German accent. He comes across as cocky."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_ad5baf92-735f-11f0-8263-fe5a2fe98ec8",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A young girl with a sweet voice, who sounds like she’s thinking aloud as she talks to a friend."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_cedfd4d2-736d-11f0-99be-fe40dd2a5fe8",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "The voice of a bored husband attempting to sound casual as he makes conversation."
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_a0d611da-737c-11f0-ad20-f2bc95e89150",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A middle-aged man with a warm and welcoming voice, delivering an introduction"
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_4f4172f4-737b-11f0-9540-7ef9b4b62566",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A middle-aged man speaking about his hobbies in a quiet, unassuming way"
+  },
+  {
+    "language": "English",
+    "voice_id": "moss_audio_62ca20b0-7380-11f0-99be-fe40dd2a5fe8",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An energetic young woman who is slightly pretentious."
+  },
+  {
+    "language": "English",
+    "voice_id": "conversational_female_1_v1",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A youthful and conversational female voice, natural and authentic. Perfect for vlogs, social media content, and casual storytelling"
+  },
+  {
+    "language": "English",
+    "voice_id": "conversational_female_2_v1",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A friendly and supportive young adult female voice, perfect for conversational content, lifestyle vlogs, or offering advice like a caring older sister."
+  },
+  {
+    "language": "English",
+    "voice_id": "socialmedia_female_1_v1",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A youthful and energetic American female voice, characterized by a fast-paced, confident delivery."
+  },
+  {
+    "language": "English",
+    "voice_id": "BritishChild_male_1_v1",
+    "gender": "Male",
+    "age": "Youth",
+    "description": "A bright and innocent young boy’s voice in British English."
+  },
+  {
+    "language": "English",
+    "voice_id": "BritishChild_female_1_v1",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A gentle and sweet young girl’s voice in British English."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Reliable_Executive",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A steady and reliable middle-aged male executive voice in Standard Mandarin, conveying trustworthiness."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_News_Anchor",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A professional, broadcaster-like middle-aged female news anchor in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Unrestrained_Young_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An unrestrained and free-spirited adult male voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Mature_Woman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A charming and mature adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Arrogant_Miss",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An arrogant adult female voice in Standard Mandarin, projecting confidence and superiority."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Kind-hearted_Antie",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A gentle and kind-hearted middle-aged “antie” voice in Standard Mandarin, warm and caring."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Robot_Armor",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An electronic, robotic adult male voice, suitable for sci-fi or futuristic content in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "hunyin_6",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A cheerful and refreshing adult male voice in Standard Mandarin, bright and positive."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_HK_Flight_Attendant",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A polite middle-aged female flight attendant with a Southern Chinese accent, clear and courteous."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Humorous_Elder",
+    "gender": "Male",
+    "age": "Senior",
+    "description": "A refreshing and humorous senior male voice with a Northern Chinese accent, full of character."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Gentleman",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A magnetic and charismatic adult male gentleman in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Warm_Bestie",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A warm and crisp adult female “bestie” voice in Standard Mandarin, friendly and clear."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Stubborn_Friend",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An uninhibited and stubborn adult male friend’s voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Sweet_Lady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A tender and sweet adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Southern_Young_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An earnest adult male voice with a Southern Chinese accent."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Wise_Women",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A lyrical and wise middle-aged female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Gentle_Youth",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A gentle adult male youth voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Warm_Girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A soft and warm young adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Male_Announcer",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A magnetic middle-aged male announcer voice in Standard Mandarin, clear and authoritative."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Kind-hearted_Elder",
+    "gender": "Female",
+    "age": "Senior",
+    "description": "A kind and gentle senior female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Cute_Spirit",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "An adorable and cute female spirit voice, youthful and sweet, in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Radio_Host",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A poetic adult male radio host in Standard Mandarin, with a smooth and engaging delivery."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Lyrical_Voice",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A mellow and lyrical adult male voice in Standard Mandarin, smooth and expressive."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Straightforward_Boy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A thoughtful and straightforward young adult male voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Sincere_Adult",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A sincere and encouraging adult male voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Gentle_Senior",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A gentle and cozy adult female senior voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Crisp_Girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A warm and crisp young adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Pure-hearted_Boy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A committed and pure-hearted young adult male voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Soft_Girl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A welcoming and soft adult female voice with a Southern Chinese accent."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_IntellectualGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An intellectual adult female voice in Standard Mandarin, clear and knowledgeable."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Warm_HeartedGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A warm-hearted and caring adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Laid_BackGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A relaxed and laid-back adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_ExplorativeGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An explorative and curious adult female voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_Warm-HeartedAunt",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A kind and warm-hearted middle-aged auntie voice in Standard Mandarin."
+  },
+  {
+    "language": "Chinese (Mandarin)",
+    "voice_id": "Chinese (Mandarin)_BashfulGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A bashful and shy female youth voice in Standard Mandarin."
+  },
+  {
+    "language": "Arabic",
+    "voice_id": "Arabic_CalmWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm adult female Arabic voice, ideal for audiobooks and serene narration."
+  },
+  {
+    "language": "Arabic",
+    "voice_id": "Arabic_FriendlyGuy",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A natural and friendly adult male Arabic voice."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_ProfessionalHost（F)",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A neutral and professional adult female host in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_GentleLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm and gentle adult female voice in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_ProfessionalHost（M)",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A neutral and professional adult male host in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_PlayfulMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A soulful and playful adult male voice in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_CuteGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A soothing and cute young adult female voice in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_KindWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A friendly and kind adult female voice in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_Narrator",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A classic middle-aged male narrator voice in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_WiselProfessor",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A gentle and wise adult male professor’s voice in Cantonese."
+  },
+  {
+    "language": "Cantonese",
+    "voice_id": "Cantonese_IndifferentStaff",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A convincing yet indifferent adult male staff voice in Cantonese."
+  },
+  {
+    "language": "Dutch",
+    "voice_id": "Dutch_kindhearted_girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A warm and kind-hearted young adult female voice in Dutch."
+  },
+  {
+    "language": "Dutch",
+    "voice_id": "Dutch_bossy_leader",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A serious and bossy adult male leader’s voice in Dutch."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_Male_Speech_New",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A level-headed and composed adult male voice in French."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_Female_News Anchor",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A patient adult female presenter in French, calm and clear."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_CasualMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A casual and relaxed middle-aged male voice in French."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_MovieLeadFemale",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A cinematic young adult female lead voice in French, perfect for film."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_FemaleAnchor",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A professional adult female anchor voice in French, authoritative and clear."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_MaleNarrator",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A classic adult male narrator voice in French, ideal for storytelling."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_Female Journalist",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A fluent and articulate adult female broadcaster in French."
+  },
+  {
+    "language": "French",
+    "voice_id": "French_Female_Speech_New",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A persuasive adult female speaker in French, confident and convincing."
+  },
+  {
+    "language": "German",
+    "voice_id": "German_FriendlyMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A sincere and friendly middle-aged male voice in German."
+  },
+  {
+    "language": "German",
+    "voice_id": "German_SweetLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An animated and sweet adult female voice in German."
+  },
+  {
+    "language": "German",
+    "voice_id": "German_PlayfulMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A lively and spirited adult male voice in German, full of energy."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_SweetGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A cute and sweet young adult female voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_ReservedYoungMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A cold and reserved young adult male voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_CharmingGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An alluring and charming adult female voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_CalmWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A serene and calm young adult female voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_ConfidentWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An assertive and confident young adult female voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_CaringMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A compassionate and caring young adult male voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_BossyLeader",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A calm, authoritative, and bossy adult male leader’s voice in Indonesian."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_DeterminedBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A mature and resolute young adult male voice in Indonesian, conveying determination."
+  },
+  {
+    "language": "Indonesian",
+    "voice_id": "Indonesian_GentleGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A soft-spoken and gentle young adult female voice in Indonesian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_BraveHeroine",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A calm and brave middle-aged female heroine’s voice in Italian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_Narrator",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A classic middle-aged male narrator voice in Italian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_WanderingSorcerer",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A ruthless adult female wandering sorcerer’s voice in Italian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_DiligentLeader",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm and diligent adult female leader’s voice in Italian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_ReliableMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A confident and reliable adult male voice in Italian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_AthleticStudent",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A charming adult male athletic student’s voice in Italian."
+  },
+  {
+    "language": "Italian",
+    "voice_id": "Italian_ArrogantPrincess",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A passionate and arrogant young adult princess’s voice in Italian."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_Whisper_Belle",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A breathy, adult female whisper voice in Japanese, perfect for ASMR."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_IntellectualSenior",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A mature and intellectual young adult male voice in Japanese, sounding older than his age."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_DecisivePrincess",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A firm and decisive adult princess’s voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_LoyalKnight",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A youthful and loyal adult male knight’s voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_DominantMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A mature and dominant middle-aged male voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_SeriousCommander",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A serious and reliable adult male commander’s voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_ColdQueen",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A distant and cold adult queen’s voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_DependableWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A steady and dependable adult female voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_GentleButler",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A charming and gentle adult male butler’s voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_KindLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A charming and kind adult female voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_CalmLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm and charming adult female voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_OptimisticYouth",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A cheerful and optimistic adult male youth’s voice in Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_GenerousIzakayaOwner",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A playful and generous middle-aged male izakaya owner’s voice in Standard Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_SportyStudent",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An inviting and sporty adult male student’s voice in Standard Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_InnocentBoy",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An inviting and innocent adult male voice in Standard Japanese."
+  },
+  {
+    "language": "Japanese",
+    "voice_id": "Japanese_GracefulMaiden",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A sweet and graceful adult maiden’s voice in Standard Japanese."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_PowerfulGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A powerful adult female voice with a rural Korean accent."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_BossyMan",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An innocent and ethereal adult female voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_SweetGirl",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A soothing and gentle middle-aged female voice in Standard Korean, sweet and calming."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CheerfulBoyfriend",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A sharp and intense middle-aged male voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_EnchantingSister",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A desirable and charming young adult “enchanting sister” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ShyGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A timid and introverted young adult female voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ReliableSister",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A powerful and authoritative middle-aged “reliable sister” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_StrictBoss",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A stern middle-aged male boss’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_SassyGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A Sassy female youth voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ChildhoodFriendGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A polite and reserved young adult female “childhood friend” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_PlayboyCharmer",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A seductive young adult male “playboy charmer” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ElegantPrincess",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A graceful and refined adult princess voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_BraveFemaleWarrior",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A resolute young adult brave female warrior’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_BraveYouth",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A powerful young adult brave male youth’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CalmLady",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A resilient and determined young adult female voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_EnthusiasticTeen",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A passionate and lively young adult male teen’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_SoothingLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An alluring and soothing middle-aged female voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_IntellectualSenior",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A magnetic and intellectual young adult male voice with a senior quality in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_LonelyWarrior",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A youthful and daring adult male “lonely warrior” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_MatureLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A refined and elegant mature middle-aged lady’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_InnocentBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A naive and pure young adult male “innocent boy” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CharmingSister",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A seductive middle-aged “charming sister” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_AthleticStudent",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An energetic young adult male athletic student’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_BraveAdventurer",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A playful and adventurous adult female brave adventurer’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CalmGentleman",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A composed and calm middle-aged gentleman’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_WiseElf",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A sweet and ethereal young adult female “wise elf” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CheerfulCoolJunior",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An energetic and spirited adult male “cheerful cool junior” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_DecisiveQueen",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A sweet yet resolute young adult decisive queen’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ColdYoungMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A cold and composed adult male voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_MysteriousGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "An energetic and lively female youth voice for a mysterious character in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_QuirkyGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "An adorable and quirky female youth voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ConsiderateSenior",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A gentle and mature young adult male “considerate senior” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CheerfulLittleSister",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An energetic and lively adult female “cheerful little sister” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_DominantMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A mature and authoritative dominant adult male voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_AirheadedGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A cool and composed adult female voice, suitable for an “airheaded” character in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ReliableYouth",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A gentle and considerate young adult reliable male youth’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_FriendlyBigSister",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A charismatic and alluring middle-aged “friendly big sister” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_GentleBoss",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A regal and refined middle-aged male “gentle boss” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ColdGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An aloof and cold adult female voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_HaughtyLady",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A cold and distant young adult haughty lady’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CharmingElderSister",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A playful and mischievous middle-aged “charming elder sister” voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_IntellectualMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A combative middle-aged intellectual male voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CaringWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A lively and vibrant young adult caring woman’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_WiseTeacher",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A sagacious and wise middle-aged male teacher’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ConfidentBoss",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A deep and commanding middle-aged confident boss’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_AthleticGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A robust and athletic female youth’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_PossessiveMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A powerful and authoritative middle-aged possessive man’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_GentleWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A strong-willed yet gentle young adult female voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_CockyGuy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A playful and mischievous young adult cocky guy’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_ThoughtfulWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A mature and contemplative young adult thoughtful woman’s voice in Standard Korean."
+  },
+  {
+    "language": "Korean",
+    "voice_id": "Korean_OptimisticYouth",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A cheerful and optimistic young adult male youth’s voice in Standard Korean."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_AnxiousMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "An enthusiastic middle-aged male voice in Portuguese, conveying a sense of anxiety."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Matureresearcher",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A comforting and mature middle-aged male researcher’s voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Optimisticyouth",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A high-energy and optimistic young adult male voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CuteElf",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A lively and cute young adult female elf’s voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_EnergeticGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A cheerful and energetic young adult female voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_FunnyGuy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A mischievous young adult “funny guy” voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Nuttylady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A wacky middle-aged “nutty lady” voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Deep-tonedMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A charismatic, deep-toned middle-aged male voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SentimentalLady",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An elegant and sentimental young adult female voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_BossyLeader",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A calm and formal adult male bossy leader’s voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Wiselady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A smooth and wise middle-aged lady’s voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Strong-WilledBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A mature and strong-willed young adult male voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Deep-VoicedGentleman",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A deep-voiced adult gentleman in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_UpsetGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A sad young adult female voice in Portuguese, conveying upset emotions."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_PassionateWarrior",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An energetic and passionate young adult male warrior’s voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_AnimeCharacter",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An animated middle-aged female voice in Portuguese, suitable for anime characters."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ConfidentWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A clear and firm young adult confident woman’s voice in Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_AngryMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A serious young adult male voice in Portuguese, conveying anger."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CaptivatingStoryteller",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A captivating middle-aged male narrator’s voice in Portuguese, ideal for storytelling."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Godfather",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A serious middle-aged male godfather voice in Standard Portuguese, conveying authority."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ReservedYoungMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A cold and calm reserved young adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SmartYoungGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "An intelligent young female girl’s voice in Standard Portuguese, sharp and clear."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Kind-heartedGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A calm and kind-hearted young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Pompouslady",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A pompous young adult female cartoon-style voice in Standard Portuguese, full of personality."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Grinch",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A cunning adult male Grinch-like voice in Standard Portuguese, mischievous and sly."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Debator",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A tough middle-aged male debater’s voice in Standard Portuguese, strong and assertive."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SweetGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An adorable and sweet young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_AttractiveGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An alluring and attractive adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ThoughtfulMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A gentle and thoughtful young adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_PlayfulGirl",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "A cutesy and playful female youth voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_GorgeousLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A playful and gorgeous adult female voice in Standard Portuguese, exuding confidence."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_LovelyLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A charismatic and lovely adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SereneWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A calm and serene young adult female voice in Standard Portuguese, peaceful and composed."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SadTeen",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A frustrated and sad male teen’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_MaturePartner",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A mature middle-aged male partner’s voice in Standard Portuguese, dependable and warm."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Comedian",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A humorous young adult male comedian’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_NaughtySchoolgirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An inviting and naughty young adult female schoolgirl’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Narrator",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A middle-aged female narrator’s voice in Standard Portuguese, perfect for storytelling."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ToughBoss",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A mature and tough middle-aged female boss’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Fussyhostess",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An intense and fussy middle-aged female hostess’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Dramatist",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A quirky middle-aged male dramatist’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Steadymentor",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An arrogant yet steady young adult male mentor’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Jovialman",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A jovial and laughing middle-aged male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CharmingQueen",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A bewitching and charming adult queen’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SantaClaus",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A joyful middle-aged male Santa Claus voice in Standard Portuguese, full of holiday cheer."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Rudolph",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A naive young adult female voice in the style of Rudolph in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Arnold",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A steady adult male voice in the style of Arnold in Standard Portuguese, strong and firm."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CharmingSanta",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "An attractive and charming middle-aged male Santa voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Ghost",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A sensual adult male ghost’s voice in Standard Portuguese, mysterious and alluring."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_HumorousElder",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A wacky and humorous middle-aged male elder’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CalmLeader",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A composed and calm middle-aged male leader’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_GentleTeacher",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A mild and gentle adult male teacher’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_EnergeticBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A cheerful and energetic young adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ReliableMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A steady and reliable adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SereneElder",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A reflective and serene middle-aged male elder’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_GrimReaper",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A sinister adult male Grim Reaper’s voice in Standard Portuguese, dark and ominous."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_AssertiveQueen",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A firm and assertive young adult queen’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_WhimsicalGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A lovely and whimsical young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_StressedLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An unsure and stressed middle-aged lady’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_FriendlyNeighbor",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An energetic and friendly young adult female neighbor’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CaringGirlfriend",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A dreamy middle-aged female caring girlfriend’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_PowerfulSoldier",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A youthful and bold young adult male powerful soldier’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_FascinatingBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An approachable and fascinating young adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_RomanticHusband",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "An emotional middle-aged male romantic husband’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_StrictBoss",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A robotic and strict young adult female boss’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_InspiringLady",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A commanding and inspiring young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_PlayfulSpirit",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An animated and playful young adult female spirit’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ElegantGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A dramatic and elegant young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CompellingGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A persuasive and compelling young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_PowerfulVeteran",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A strong and powerful middle-aged male veteran’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_SensibleManager",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A charismatic and sensible middle-aged male manager’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ThoughtfulLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A worried and thoughtful middle-aged lady’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_TheatricalActor",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "An animated middle-aged male theatrical actor’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_FragileBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A gentle and fragile young adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_ChattyGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A conversational and chatty young adult female voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_Conscientiousinstructor",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A youthful and conscientious young adult female instructor’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_RationalMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A thoughtful and rational adult male voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_WiseScholar",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A conversational young adult male wise scholar’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_FrankLady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An agitated and frank middle-aged lady’s voice in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_DeterminedManager",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A middle-aged female manager’s voice with attitude and determination in Standard Portuguese."
+  },
+  {
+    "language": "Portuguese",
+    "voice_id": "Portuguese_CharmingLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": null
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_HandsomeChildhoodFriend",
+    "gender": "Female",
+    "age": "Youth",
+    "description": "An aggressive female youth’s voice for a handsome childhood friend character in Standard Russian."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_BrightHeroine",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An arrogant and bright adult queen’s voice in Standard Russian."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_AmbitiousWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A demanding and ambitious adult woman’s voice in Standard Russian."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_ReliableMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A steady and reliable middle-aged man’s voice in Standard Russian."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_CrazyQueen",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An energetic adult female “crazy girl” voice in Standard Russian, wild and unpredictable."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_PessimisticGirl",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A compassionate adult female “pessimistic girl” voice in Standard Russian."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_AttractiveGuy",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A deep-voiced and attractive adult guy’s voice in Standard Russian."
+  },
+  {
+    "language": "Russian",
+    "voice_id": "Russian_Bad-temperedBoy",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A charming adult male “bad-tempered boy” voice in Standard Russian."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_FriendlyNeighbor",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An energetic young adult female friendly neighbor’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_FragileBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A gentle young adult fragile boy’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_UpsetGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A sad young adult upset girl’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Soft-spokenGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A serene and soft-spoken young adult girl’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_CharmingQueen",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A bewitching and charming adult queen’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Nuttylady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A wacky middle-aged female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ElegantGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A dramatic and elegant young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_FascinatingBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An approachable and fascinating young adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_FunnyGuy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A mischievous young adult male “funny guy” voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_PlayfulSpirit",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An animated and playful young adult female spirit’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_TheatricalActor",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A robust and theatrical middle-aged male actor’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_SereneWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A soothing and serene young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_MaturePartner",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A warm and mature middle-aged male partner’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_CaptivatingStoryteller",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A captivating middle-aged male narrator’s voice in Standard Spanish, perfect for storytelling."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Narrator",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A middle-aged female narrator’s voice in Standard Spanish, ideal for storytelling."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_WiseScholar",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A conversational young adult male wise scholar’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Kind-heartedGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A bright and kind-hearted young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_DeterminedManager",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A businesslike and determined middle-aged female manager’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_BossyLeader",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A businesslike and bossy adult male leader’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ReservedYoungMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A tranquil and reserved young adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ConfidentWoman",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A clear and firm young adult confident woman’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ThoughtfulMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A sober and thoughtful young adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Strong-WilledBoy",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A mature and strong-willed adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_SophisticatedLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A refined and sophisticated adult lady’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_RationalMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A thoughtful and rational adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_AnimeCharacter",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An animated middle-aged female voice in Standard Spanish, suitable for anime characters."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Deep-tonedMan",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A charismatic, deep-toned middle-aged male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Fussyhostess",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "An intense and fussy middle-aged female hostess’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_SincereTeen",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A heartfelt and sincere male teen’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_FrankLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An agitated and frank adult lady’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Comedian",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A humorous young adult male comedian’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Debator",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A tough middle-aged male debater’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ToughBoss",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A mature and tough middle-aged female boss’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Wiselady",
+    "gender": "Female",
+    "age": "Middle Age",
+    "description": "A neutral and wise middle-aged lady’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Steadymentor",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An arrogant yet steady young adult male mentor’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Jovialman",
+    "gender": "Male",
+    "age": "Senior",
+    "description": "A gravelly and jovial senior male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_SantaClaus",
+    "gender": "Male",
+    "age": "Senior",
+    "description": "A joyful senior male Santa Claus voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Rudolph",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A naive young adult male voice in the style of Rudolph in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Intonategirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A versatile young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Arnold",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A steady adult male voice in the style of Arnold in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_Ghost",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A raspy adult male ghost’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_HumorousElder",
+    "gender": "Male",
+    "age": "Senior",
+    "description": "An eccentric and humorous senior male elder’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_EnergeticBoy",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A cheerful and energetic young adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_WhimsicalGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A witty and whimsical young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_StrictBoss",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A commanding and strict young adult female boss’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ReliableMan",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A steady and reliable adult male voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_SereneElder",
+    "gender": "Male",
+    "age": "Senior",
+    "description": "A reflective and serene senior male elder’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_AngryMan",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An intense young adult male voice in Standard Spanish, conveying anger."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_AssertiveQueen",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A firm and assertive young adult queen’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_CaringGirlfriend",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A dreamy adult female caring girlfriend’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_PowerfulSoldier",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A youthful and bold young adult male powerful soldier’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_PassionateWarrior",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "An energetic and passionate young adult male warrior’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ChattyGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A conversational and chatty young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_RomanticHusband",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "An emotional middle-aged male romantic husband’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_CompellingGirl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A persuasive and compelling young adult female voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_PowerfulVeteran",
+    "gender": "Male",
+    "age": "Middle Age",
+    "description": "A strong and powerful middle-aged male veteran’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_SensibleManager",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A charismatic and sensible adult male manager’s voice in Standard Spanish."
+  },
+  {
+    "language": "Spanish",
+    "voice_id": "Spanish_ThoughtfulLady",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A worried and thoughtful adult lady’s voice in Standard Spanish."
+  },
+  {
+    "language": "Turkish",
+    "voice_id": "Turkish_CalmWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm adult female Turkish voice, ideal for audiobooks."
+  },
+  {
+    "language": "Turkish",
+    "voice_id": "Turkish_Trustworthyman",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A resonant and trustworthy adult male Turkish voice."
+  },
+  {
+    "language": "Ukrainian",
+    "voice_id": "Ukrainian_CalmWoman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm adult female Ukrainian voice, ideal for audiobooks."
+  },
+  {
+    "language": "Ukrainian",
+    "voice_id": "Ukrainian_WiseScholar",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A conversational young adult male wise scholar’s voice in Ukrainian."
+  },
+  {
+    "language": "Vietnamese",
+    "voice_id": "Vietnamese_Serene_Man",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A serene adult male Vietnamese voice, perfect for podcasts."
+  },
+  {
+    "language": "Vietnamese",
+    "voice_id": "Vietnamese_female_4_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A confident adult female Vietnamese voice, suitable for broadcast."
+  },
+  {
+    "language": "Vietnamese",
+    "voice_id": "Vietnamese_male_1_v2",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A tranquil and friendly adult male Vietnamese voice."
+  },
+  {
+    "language": "Vietnamese",
+    "voice_id": "Vietnamese_kindhearted_girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A warm and kind-hearted young adult female voice in Vietnamese."
+  },
+  {
+    "language": "Thai",
+    "voice_id": "Thai_Optimistic_girl",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A lively and optimistic young adult female voice in Thai."
+  },
+  {
+    "language": "Thai",
+    "voice_id": "Thai_male_1_sample8",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A magnetic and serene adult male voice in Thai."
+  },
+  {
+    "language": "Thai",
+    "voice_id": "Thai_Tender_Woman",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A gentle and tender adult female voice in Thai."
+  },
+  {
+    "language": "Thai",
+    "voice_id": "Thai_male_2_sample2",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A lively and friendly adult male voice in Thai."
+  },
+  {
+    "language": "Thai",
+    "voice_id": "Thai_female_1_sample1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A neutral and confident adult female voice in Thai."
+  },
+  {
+    "language": "Thai",
+    "voice_id": "Thai_female_2_sample2",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "An energetic adult female voice in Thai."
+  },
+  {
+    "language": "Polish",
+    "voice_id": "Polish_male_1_sample4",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A mature adult male narrator’s voice in Polish."
+  },
+  {
+    "language": "Polish",
+    "voice_id": "Polish_male_2_sample3",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An adult male broadcast anchor’s voice in Polish."
+  },
+  {
+    "language": "Polish",
+    "voice_id": "Polish_female_1_sample1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm adult female voice in Polish."
+  },
+  {
+    "language": "Polish",
+    "voice_id": "Polish_female_2_sample3",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A neutral and casual adult female voice in Polish."
+  },
+  {
+    "language": "Romanian",
+    "voice_id": "Romanian_male_1_sample2",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A neutral and reliable adult male voice in Romanian."
+  },
+  {
+    "language": "Romanian",
+    "voice_id": "Romanian_male_2_sample1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An energetic adult male youth’s voice in Romanian."
+  },
+  {
+    "language": "Romanian",
+    "voice_id": "Romanian_female_1_sample4",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A cheerful and optimistic adult female youth’s voice in Romanian."
+  },
+  {
+    "language": "Romanian",
+    "voice_id": "Romanian_female_2_sample1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A gentle adult female voice in Romanian."
+  },
+  {
+    "language": "Greek",
+    "voice_id": "Greek_female_1_sample1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A gentle adult lady’s voice in Greek."
+  },
+  {
+    "language": "Greek",
+    "voice_id": "greek_male_1a_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "An intellectual and thoughtful adult male mentor’s voice in Greek."
+  },
+  {
+    "language": "Greek",
+    "voice_id": "Greek_female_2_sample3",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "A cheerful young adult “girl next door” voice in Greek."
+  },
+  {
+    "language": "Czech",
+    "voice_id": "czech_male_1_v1",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A serious and assured young adult male presenter’s voice in Czech."
+  },
+  {
+    "language": "Czech",
+    "voice_id": "czech_female_5_v7",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A steadfast adult female broadcast narrator’s voice in Czech."
+  },
+  {
+    "language": "Czech",
+    "voice_id": "czech_female_2_v2",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A graceful and elegant adult lady’s voice in Czech."
+  },
+  {
+    "language": "Finnish",
+    "voice_id": "finnish_male_3_v1",
+    "gender": "Female",
+    "age": "Young Adult",
+    "description": "An energetic and upbeat young adult female voice in Finnish."
+  },
+  {
+    "language": "Finnish",
+    "voice_id": "finnish_female_4_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A determined and assertive adult female voice in Finnish."
+  },
+  {
+    "language": "Finnish",
+    "voice_id": "finnish_male_1_v2",
+    "gender": "Male",
+    "age": "Young Adult",
+    "description": "A deep and friendly young adult male voice in Finnish."
+  },
+  {
+    "language": "Hindi",
+    "voice_id": "hindi_male_1_v2",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A magnetic and trustworthy adult male advisor’s voice in Hindi."
+  },
+  {
+    "language": "Hindi",
+    "voice_id": "hindi_female_2_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A gentle and tranquil adult female voice in Hindi."
+  },
+  {
+    "language": "Hindi",
+    "voice_id": "hindi_female_1_v2",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A calm adult female news anchor’s voice in Hindi."
+  },
+  {
+    "language": "Bulgarian",
+    "voice_id": "Bulgarian_male_2_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Bulgarian voice with a standard accent, characterized as upbeat and energetic."
+  },
+  {
+    "language": "Bulgarian",
+    "voice_id": "Bulgarian_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Bulgarian voice with a standard accent, characterized as graceful and elegant."
+  },
+  {
+    "language": "Danish",
+    "voice_id": "Danish_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Danish voice with a standard accent, characterized as youthful and full of energy."
+  },
+  {
+    "language": "Danish",
+    "voice_id": "Danish_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Danish voice with a standard accent, characterized as wise and knowledgeable."
+  },
+  {
+    "language": "Hebrew",
+    "voice_id": "Hebrew_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Hebrew voice with a standard accent, characterized as reliable and steady."
+  },
+  {
+    "language": "Hebrew",
+    "voice_id": "Hebrew_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Hebrew voice with a standard accent, characterized as sage-like and calm."
+  },
+  {
+    "language": "Malay",
+    "voice_id": "Malay_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Malay voice with a standard accent, characterized as seasoned and experienced."
+  },
+  {
+    "language": "Malay",
+    "voice_id": "Malay_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Malay voice with a standard accent, characterized as passionate and expressive."
+  },
+  {
+    "language": "Malay",
+    "voice_id": "Malay_female_2_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Malay voice with a a standard accent, characterized as relaxed and welcoming"
+  },
+  {
+    "language": "Persian",
+    "voice_id": "Persian_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Persian voice with a standard accent, characterized as steady and firm."
+  },
+  {
+    "language": "Persian",
+    "voice_id": "Persian_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Persian voice with a standard accent, characterized as professional and clear, suitable for news anchoring."
+  },
+  {
+    "language": "Slovak",
+    "voice_id": "Slovak_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Slovak voice with a standard accent, characterized as amiable and friendly."
+  },
+  {
+    "language": "Slovak",
+    "voice_id": "Slovak_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Slovak voice with a standard accent, characterized as friendly and approachable."
+  },
+  {
+    "language": "Swedish",
+    "voice_id": "Swedish_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Swedish voice with a standard accent, characterized as confident and assertive."
+  },
+  {
+    "language": "Swedish",
+    "voice_id": "Swedish_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Swedish voice with a standard accent, characterized as friendly, warm, and neighborly."
+  },
+  {
+    "language": "Croatian",
+    "voice_id": "Croatian_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Croatian voice with a standard accent, characterized as distinguished and elegant."
+  },
+  {
+    "language": "Croatian",
+    "voice_id": "Croatian_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Croatian voice with a standard accent, characterized as cheerful and lively."
+  },
+  {
+    "language": "Filipino",
+    "voice_id": "Filipino_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Filipino voice with a standard accent, characterized as cheerful and pleasant."
+  },
+  {
+    "language": "Filipino",
+    "voice_id": "Filipino_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Filipino voice with a standard accent, characterized as gentle and kind."
+  },
+  {
+    "language": "Hungarian",
+    "voice_id": "Hungarian_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Hungarian voice with a standard accent, characterized as steady and reliable."
+  },
+  {
+    "language": "Hungarian",
+    "voice_id": "Hungarian_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Hungarian voice with a standard accent, characterized as calm and peaceful."
+  },
+  {
+    "language": "Norwegian",
+    "voice_id": "Norwegian_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Norwegian voice with a standard accent, characterized as reliable and trustworthy."
+  },
+  {
+    "language": "Norwegian",
+    "voice_id": "Norwegian_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Norwegian voice with a standard accent, characterized as upbeat and energetic."
+  },
+  {
+    "language": "Slovenian",
+    "voice_id": "Slovenian_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Slovenian voice with a standard accent, characterized as professional and engaging, suitable for hosting."
+  },
+  {
+    "language": "Slovenian",
+    "voice_id": "Slovenian_female_1_v2",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Slovenian voice with a standard accent, characterized as elegant and sophisticated."
+  },
+  {
+    "language": "Catalan",
+    "voice_id": "Catalan_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Catalan voice with a standard accent, characterized as reliable and sound."
+  },
+  {
+    "language": "Catalan",
+    "voice_id": "Catalan_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Catalan voice with a standard accent, characterized as graceful and gentle."
+  },
+  {
+    "language": "Nynorsk",
+    "voice_id": "Nynorsk_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Nynorsk voice with a standard accent, characterized as young and courteous."
+  },
+  {
+    "language": "Nynorsk",
+    "voice_id": "Nynorsk_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Nynorsk voice with a standard accent, characterized as shy and soft-spoken."
+  },
+  {
+    "language": "Tamil",
+    "voice_id": "Tamil_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Tamil voice with a standard accent, characterized as confident and strong."
+  },
+  {
+    "language": "Tamil",
+    "voice_id": "Tamil_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Tamil voice with a standard accent, characterized as mature and poised."
+  },
+  {
+    "language": "Afrikaans",
+    "voice_id": "Afrikaans_male_1_v1",
+    "gender": "Male",
+    "age": "Adult",
+    "description": "A Male Afrikaans voice with a standard accent, characterized as young and steady."
+  },
+  {
+    "language": "Afrikaans",
+    "voice_id": "Afrikaans_female_1_v1",
+    "gender": "Female",
+    "age": "Adult",
+    "description": "A Female Afrikaans voice with a standard accent, characterized as outgoing and lively."
+  }
+]

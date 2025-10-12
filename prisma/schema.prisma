@@ -46,6 +46,7 @@ model User {
   chats         Chat[]
   savedImages   SavedImage[]
   savedVideos   SavedVideo[]
+  savedAudios   SavedAudio[]
   sessions      Session[]
   preferences   UserPreferences?
 }
@@ -99,6 +100,7 @@ model Generation {
   message     Message          @relation(fields: [messageId], references: [id], onDelete: Cascade)
   savedImages SavedImage[]
   savedVideos SavedVideo[]
+  savedAudios SavedAudio[]
 }
 
 model SavedImage {
@@ -140,6 +142,25 @@ model SavedVideo {
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model SavedAudio {
+  id           String      @id @default(cuid())
+  userId       String
+  title        String?
+  prompt       String
+  originalUrl  String
+  localPath    String
+  fileName     String
+  fileSize     Int?
+  duration     Float?
+  voiceId      String?
+  language     String?
+  generationId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  generation   Generation? @relation(fields: [generationId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model UserPreferences {
   id                String            @id @default(cuid())
   userId            String            @unique
@@ -164,6 +185,7 @@ enum GenerationType {
   TEXT_TO_VIDEO
   IMAGE_TO_VIDEO
   LIPSYNC
+  TEXT_TO_AUDIO
   IMAGE_UPSCALE
 }
 

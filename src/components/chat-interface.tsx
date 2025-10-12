@@ -30,6 +30,7 @@ import {
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { PreferencesMenu } from '@/components/preferences-menu'
+import { GenderSelection } from '@/components/gender-selection'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
 import { getRandomPrompt, getRandomVideoPrompt } from '@/lib/prompt-generator'
 import Image from 'next/image'
@@ -485,6 +486,32 @@ export function ChatInterface() {
     if (textareaRef.current) {
       textareaRef.current.focus()
     }
+  }
+
+  // Generate sample audio prompt for Generate Audio button
+  const generateSampleAudioPrompt = () => {
+    const samplePrompt = 'Generate an audio of a female voice saying "Life is like a box of chocolates, you never know what you\'re gonna get."'
+    setInput(samplePrompt)
+    // Auto-focus the input field so user can see the prompt
+    if (textareaRef.current) {
+      textareaRef.current.focus()
+    }
+  }
+
+  // Handle gender selection for audio requests
+  const handleGenderSelection = async (gender: 'female' | 'male') => {
+    const genderMessage = `I'd like a ${gender} voice for my audio.`
+    setInput(genderMessage)
+    
+    // Auto-submit the gender selection
+    if (textareaRef.current) {
+      textareaRef.current.focus()
+    }
+    
+    // Submit the form automatically
+    const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as any
+    formEvent.preventDefault = () => {}
+    handleSubmit(formEvent)
   }
 
   // Regenerate content with the same prompt
@@ -993,6 +1020,16 @@ export function ChatInterface() {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => window.location.href = '/my-audios'}
+                className="text-gray-400 hover:text-white"
+                title="My Audios"
+              >
+                <Music className="w-4 h-4 mr-2" />
+                My Audios
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={checkGenerations}
                 className="text-gray-400 hover:text-white"
                 title="Refresh generations"
@@ -1035,6 +1072,15 @@ export function ChatInterface() {
             >
               <Video className="w-3 h-3 mr-1" />
               Videos
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = '/my-audios'}
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
+            >
+              <Music className="w-3 h-3 mr-1" />
+              Audios
             </Button>
             <Button
               variant="ghost"
@@ -1086,6 +1132,16 @@ export function ChatInterface() {
                   <Dice6 className="w-4 h-4 mr-2" />
                   Generate Video
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1"
+                  onClick={generateSampleAudioPrompt}
+                  title="Generate a sample audio prompt"
+                >
+                  <Music className="w-4 h-4 mr-2" />
+                  Generate Audio
+                </Button>
               </div>
             </div>
           ) : (
@@ -1117,7 +1173,15 @@ export function ChatInterface() {
                     style={{ maxWidth: 'calc(100vw - 2rem)', wordWrap: 'break-word' }}
                   >
                     {message.content && (
-                      <p className="whitespace-pre-wrap break-words overflow-wrap-anywhere">{message.content}</p>
+                      <div>
+                        <p className="whitespace-pre-wrap break-words overflow-wrap-anywhere">{message.content}</p>
+                        
+                        {/* Show gender selection buttons if AI is asking for gender */}
+                        {message.role === 'ASSISTANT' && 
+                         message.content.includes('**Female** | **Male**') && (
+                          <GenderSelection onGenderSelect={handleGenderSelection} />
+                        )}
+                      </div>
                     )}
                     
                     {message.images && message.images.length > 0 && (
@@ -1197,6 +1261,27 @@ export function ChatInterface() {
                                           <source src={url} type="video/mp4" />
                                           Your browser does not support the video tag.
                                         </video>
+                                      ) : generation.type === 'TEXT_TO_AUDIO' ? (
+                                        <div className="w-full max-w-full bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center">
+                                          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-4">
+                                            <Music className="w-8 h-8 text-white" />
+                                          </div>
+                                          <audio
+                                            controls
+                                            className="w-full max-w-md"
+                                            preload="metadata"
+                                            onError={(e) => {
+                                              console.error('Failed to load generated audio:', url)
+                                              e.currentTarget.style.display = 'none'
+                                            }}
+                                          >
+                                            <source src={url} type="audio/mpeg" />
+                                            Your browser does not support the audio tag.
+                                          </audio>
+                                          <p className="text-gray-300 text-sm mt-2 text-center">
+                                            Generated audio: {generation.prompt}
+                                          </p>
+                                        </div>
                                       ) : (
                                         <Image
                                           src={url}
@@ -1307,6 +1392,27 @@ export function ChatInterface() {
                                       <source src={generation.resultUrl} type="video/mp4" />
                                       Your browser does not support the video tag.
                                     </video>
+                                  ) : generation.type === 'TEXT_TO_AUDIO' ? (
+                                    <div className="w-full max-w-full bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center">
+                                      <div className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center mb-4">
+                                        <Music className="w-8 h-8 text-white" />
+                                      </div>
+                                      <audio
+                                        controls
+                                        className="w-full max-w-md"
+                                        preload="metadata"
+                                        onError={(e) => {
+                                          console.error('Failed to load generated audio:', generation.resultUrl)
+                                          e.currentTarget.style.display = 'none'
+                                        }}
+                                      >
+                                        <source src={generation.resultUrl} type="audio/mpeg" />
+                                        Your browser does not support the audio tag.
+                                      </audio>
+                                      <p className="text-gray-300 text-sm mt-2 text-center">
+                                        Generated audio: {generation.prompt}
+                                      </p>
+                                    </div>
                                   ) : (
                                     <Image
                                       src={generation.resultUrl}

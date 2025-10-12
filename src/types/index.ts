@@ -1,4 +1,4 @@
-export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'IMAGE_UPSCALE'
+export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'TEXT_TO_AUDIO' | 'IMAGE_UPSCALE'
 export type GenerationStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
 export type MessageRole = 'USER' | 'ASSISTANT' | 'SYSTEM'
 
@@ -107,7 +107,7 @@ export interface WavespeedResultResponse {
 
 // AI Orchestrator Types
 export interface AIAnalysisResult {
-  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'chat'
+  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'chat'
   prompt: string
   requiresImages: boolean
   requiresAudio?: boolean

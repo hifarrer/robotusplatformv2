@@ -506,16 +506,180 @@ export async function POST(request: NextRequest) {
         }
         break
 
+      case 'text_to_audio':
+        try {
+          // Extract text from quotes in the prompt
+          const textMatch = analysis.prompt.match(/"([^"]*)"/) || analysis.prompt.match(/'([^']*)'/)
+          const textToSpeak = textMatch ? textMatch[1] : analysis.prompt
+          
+          // Try to match voice description with AI if user provided voice characteristics
+          let voiceId = 'English_compelling_lady1' // Default fallback
+          
+          // Check if user provided voice description
+          const hasVoiceDescription = analysis.prompt.toLowerCase().includes('female') || 
+                                    analysis.prompt.toLowerCase().includes('male') || 
+                                    analysis.prompt.toLowerCase().includes('voice') || 
+                                    analysis.prompt.toLowerCase().includes('accent') ||
+                                    analysis.prompt.toLowerCase().includes('adult') || 
+                                    analysis.prompt.toLowerCase().includes('young') ||
+                                    analysis.prompt.toLowerCase().includes('deep') || 
+                                    analysis.prompt.toLowerCase().includes('soft') ||
+                                    analysis.prompt.toLowerCase().includes('loud') || 
+                                    analysis.prompt.toLowerCase().includes('gentle') ||
+                                    analysis.prompt.toLowerCase().includes('strong') || 
+                                    analysis.prompt.toLowerCase().includes('smooth')
+          
+          if (hasVoiceDescription) {
+            try {
+              // Extract gender from the prompt
+              const isFemale = analysis.prompt.toLowerCase().includes('female')
+              const isMale = analysis.prompt.toLowerCase().includes('male')
+              const gender = isFemale ? 'Female' : isMale ? 'Male' : 'Female' // Default to female
+              
+              // Use AI to match voice
+              const { matchVoiceWithAI } = await import('@/lib/voice-utils')
+              voiceId = await matchVoiceWithAI(analysis.prompt, gender, 'English')
+            } catch (error) {
+              console.error('Voice matching error:', error)
+              // Fall back to default voice
+            }
+          }
+          
+          console.log('Generating audio with text:', textToSpeak) // Debug log
+          
+          // Generate audio using Wavespeed API directly
+          const wavespeedResponse = await fetch('https://api.wavespeed.ai/api/v3/minimax/speech-02-hd', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.WAVESPEED_API_KEY}`
+            },
+            body: JSON.stringify({
+              emotion: 'happy',
+              enable_sync_mode: false,
+              english_normalization: false,
+              pitch: 0,
+              speed: 1,
+              text: textToSpeak,
+              voice_id: voiceId,
+              volume: 1
+            })
+          })
+
+          if (!wavespeedResponse.ok) {
+            const errorText = await wavespeedResponse.text()
+            console.error('Wavespeed API error:', errorText)
+            throw new Error(`Wavespeed API error: ${errorText}`)
+          }
+
+          const wavespeedData = await wavespeedResponse.json()
+          console.log('Wavespeed response:', wavespeedData)
+
+          // Poll for completion
+          let attempts = 0
+          const maxAttempts = 60 // 5 minutes max
+          let audioUrl = null
+
+          while (attempts < maxAttempts && !audioUrl) {
+            await new Promise(resolve => setTimeout(resolve, 5000)) // Wait 5 seconds
+            attempts++
+
+            try {
+              const statusResponse = await fetch(`https://api.wavespeed.ai/api/v3/minimax/speech-02-hd/${wavespeedData.request_id || wavespeedData.id}`, {
+                headers: {
+                  'Authorization': `Bearer ${process.env.WAVESPEED_API_KEY}`
+                }
+              })
+
+              if (statusResponse.ok) {
+                const statusData = await statusResponse.json()
+                console.log('Status check:', statusData)
+
+                if (statusData.status === 'completed' && statusData.outputs && statusData.outputs.length > 0) {
+                  audioUrl = statusData.outputs[0]
+                  break
+                } else if (statusData.status === 'failed') {
+                  throw new Error('Audio generation failed')
+                }
+              }
+            } catch (error) {
+              console.error('Status check error:', error)
+              if (attempts >= maxAttempts) {
+                throw error
+              }
+            }
+          }
+
+          if (!audioUrl) {
+            throw new Error('Audio generation timed out')
+          }
+
+          // Download and save the audio file
+          const audioResponse = await fetch(audioUrl)
+          if (!audioResponse.ok) {
+            throw new Error('Failed to download audio')
+          }
+
+          const audioBuffer = await audioResponse.arrayBuffer()
+          const fileName = `audio_${Date.now()}.mp3`
+          const { saveFile } = await import('@/lib/media-storage')
+          const localPath = await saveFile(audioBuffer, fileName, 'audio')
+
+          // Create generation record with COMPLETED status since we already have the result
+          const generation = await prisma.generation.create({
+            data: {
+              messageId: userMessage.id,
+              type: 'TEXT_TO_AUDIO',
+              status: 'COMPLETED',
+              prompt: textToSpeak,
+              provider: 'wavespeed',
+              model: 'minimax/speech-02-hd',
+              requestId: wavespeedData.request_id || wavespeedData.id,
+              resultUrl: localPath,
+              resultUrls: [localPath],
+            },
+          })
+
+          // Save audio to user's collection
+          await prisma.savedAudio.create({
+            data: {
+              userId: session.user.id,
+              title: `Audio: ${textToSpeak.substring(0, 50)}...`,
+              prompt: textToSpeak,
+              originalUrl: audioUrl,
+              localPath: localPath,
+              fileName: fileName,
+              fileSize: audioBuffer.byteLength,
+              voiceId: voiceId,
+              language: 'English',
+              generationId: generation.id
+            }
+          })
+          
+          generations.push(generation)
+          response = `I've created an audio file with the text: "${textToSpeak}". The audio is ready to play!`
+        } catch (error: any) {
+          console.error('Text-to-audio generation error:', error)
+          response = 'Sorry, I encountered an error while trying to create your audio. Please try again.'
+        }
+        break
+
       case 'chat':
       default:
-        response = `I understand you want to ${analysis.prompt}. I'm an AI assistant specialized in creating and editing images and videos. Here's what I can help you with:
+        // Use the specific prompt from AI orchestrator if it's a detailed response
+        if (analysis.prompt && analysis.prompt.length > 100) {
+          response = analysis.prompt
+        } else {
+          response = `I understand you want to ${analysis.prompt}. I'm an AI assistant specialized in creating and editing images, videos, and audio. Here's what I can help you with:
 
 🖼️ **Create Images**: Describe any image you want me to generate
 🎨 **Edit Images**: Upload images and tell me how to modify them
 🎥 **Create Videos**: Describe a video or upload images to animate
+🎵 **Create Audio**: Ask me to create audio with text in quotes like "Hello world"
 💬 **Ask Questions**: I'm here to help with your creative projects!
 
 What would you like to create today?`
+        }
         break
     }
 

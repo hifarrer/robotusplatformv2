@@ -13,7 +13,7 @@ export async function GET(
     const { type, filename } = await params
 
     // Validate file type
-    if (!['images', 'videos'].includes(type)) {
+    if (!['images', 'videos', 'audios'].includes(type)) {
       return NextResponse.json(
         { error: 'Invalid file type' },
         { status: 400 }
@@ -50,6 +50,12 @@ export async function GET(
       contentType = 'video/mp4'
     } else if (ext === '.webm') {
       contentType = 'video/webm'
+    } else if (ext === '.mp3') {
+      contentType = 'audio/mpeg'
+    } else if (ext === '.wav') {
+      contentType = 'audio/wav'
+    } else if (ext === '.ogg') {
+      contentType = 'audio/ogg'
     }
 
     // Return file with appropriate headers
