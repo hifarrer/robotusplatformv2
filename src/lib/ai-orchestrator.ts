@@ -15,6 +15,7 @@ Available actions:
 5. "lipsync" - User wants to make an image speak/talk (requires image and audio)
 6. "text_to_audio" - User wants to create an audio file from text (requires text in quotes)
 7. "chat" - General conversation that doesn't require image/video generation
+8. "video_duration_selection" - User needs to select video duration (5s/10s for WAN-2.5, 5s/8s for VEO3-Fast)
 
 IMPORTANT WORKFLOW RULES:
 - If 2+ images are attached: ALWAYS choose "image_to_image" (even if user asks for video)
@@ -46,10 +47,18 @@ Keyword Guidelines:
 - If user wants audio with text in quotes but only basic gender (male/female) without detailed characteristics: choose "chat" and ask for voice details
 - If no images and user wants image: choose "text_to_image"
 - For general questions or conversations: choose "chat"
+- If user sends a video prompt without specifying duration (no "5 seconds", "10 seconds", "8 seconds", etc.): choose "video_duration_selection"
+- Look for video-related keywords like "video", "animate", "motion", "cinematic" without duration specification
+- If the prompt contains video keywords but no duration, ask for duration selection
+- If user specifies a duration that's not supported, map it to the closest supported duration and inform the user
+- WAN-2.5 supports: 5 seconds (minimum), 10 seconds (maximum)
+- VEO3-Fast supports: 5 seconds (minimum), 8 seconds (maximum)
+- If user asks for < 5 seconds, use 5 seconds
+- If user asks for > 10 seconds (WAN-2.5) or > 8 seconds (VEO3-Fast), use the maximum supported duration
 
 Return your analysis as JSON with:
 {
-  "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|text_to_audio|chat",
+  "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|text_to_audio|chat|video_duration_selection",
   "prompt": "cleaned and optimized prompt for the AI service",
   "requiresImages": boolean,
   "requiresAudio": boolean (true for lipsync),
@@ -128,7 +137,7 @@ Analyze this request and determine the appropriate action. Pay special attention
     console.log('🤖 AI Analysis Result:', analysis) // Debug log
     
     // Validate the response
-    const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'text_to_audio', 'chat']
+    const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'text_to_audio', 'chat', 'video_duration_selection']
     if (!validActions.includes(analysis.action)) {
       throw new Error('Invalid action returned')
     }
@@ -332,6 +341,18 @@ What kind of voice characteristics would you like for your audio?`,
     } else {
       // With 0-1 images, can generate video directly
       if (lowerMessage.includes('video') || lowerMessage.includes('animation')) {
+        // Check if duration is specified
+        const hasDuration = /\d+\s*seconds?/i.test(message)
+        if (!hasDuration) {
+          return {
+            action: 'video_duration_selection',
+            prompt: message,
+            requiresImages: false,
+            useRecentImage: false,
+            confidence: 0.8,
+            reasoning: 'Fallback: detected video request without duration specification - asking for duration'
+          }
+        }
         return {
           action: 'text_to_video',
           prompt: message,
@@ -371,6 +392,31 @@ What kind of voice characteristics would you like for your audio?`,
       }
     }
   }
+}
+
+// Duration validation and mapping function
+export function validateAndMapVideoDuration(
+  requestedDuration: number, 
+  videoModel: 'WAN_2_5' | 'VEO3_FAST' = 'WAN_2_5'
+): { duration: number; message?: string } {
+  const minDuration = 5
+  const maxDuration = videoModel === 'VEO3_FAST' ? 8 : 10
+  
+  if (requestedDuration < minDuration) {
+    return {
+      duration: minDuration,
+      message: `The minimum video duration is ${minDuration} seconds. I'll create a ${minDuration}-second video instead.`
+    }
+  }
+  
+  if (requestedDuration > maxDuration) {
+    return {
+      duration: maxDuration,
+      message: `The maximum video duration for ${videoModel === 'VEO3_FAST' ? 'Google VEO3-Fast' : 'Alibaba WAN-2.5'} is ${maxDuration} seconds. I'll create a ${maxDuration}-second video instead.`
+    }
+  }
+  
+  return { duration: requestedDuration }
 }
 
 export async function analyzeImageForVideoPrompt(imageUrl: string): Promise<string> {

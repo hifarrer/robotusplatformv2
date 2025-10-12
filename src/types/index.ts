@@ -107,7 +107,7 @@ export interface WavespeedResultResponse {
 
 // AI Orchestrator Types
 export interface AIAnalysisResult {
-  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'chat'
+  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'chat' | 'video_duration_selection'
   prompt: string
   requiresImages: boolean
   requiresAudio?: boolean

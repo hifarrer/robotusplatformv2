@@ -32,6 +32,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
+import { validateAndMapVideoDuration } from '@/lib/ai-orchestrator'
 import { getRandomPrompt, getRandomVideoPrompt } from '@/lib/prompt-generator'
 import Image from 'next/image'
 
@@ -687,12 +688,112 @@ export function ChatInterface() {
     }
   }
 
+  // Edit video prompt - copy prompt to input and hide duration selection
+  const editVideoPrompt = () => {
+    if (videoPrompt) {
+      setInput(videoPrompt)
+      setShowDurationSelection(false)
+      setSelectedImageForVideo(null)
+      setIsGeneratingVideo(false)
+      
+      // Auto-focus the input field so user can see the prompt
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+        // Position cursor at the end of the text
+        textareaRef.current.setSelectionRange(videoPrompt.length, videoPrompt.length)
+      }
+    }
+  }
+
+  // Handle duration selection from chat message buttons
+  const handleDurationSelection = async (duration: number) => {
+    if (isLoading) return
+    
+    setIsLoading(true)
+    
+    try {
+      // Get the last assistant message that contains the duration selection prompt
+      const lastAssistantMessage = messages
+        .filter(msg => msg.role === 'ASSISTANT')
+        .pop()
+      
+      if (!lastAssistantMessage) {
+        throw new Error('No assistant message found')
+      }
+      
+      // Extract the video prompt from the message content
+      const promptMatch = lastAssistantMessage.content.match(/I'd be happy to create a video with your prompt: "([^"]+)"/)
+      const videoPrompt = promptMatch ? promptMatch[1] : 'Create a video'
+      
+      // Validate duration against user's video model preference
+      const videoModel = userPreferences?.videoModel || 'WAN_2_5'
+      const durationValidation = validateAndMapVideoDuration(duration, videoModel)
+      const finalDuration = durationValidation.duration
+      
+      // Send the video generation request with validated duration
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `${videoPrompt} ${finalDuration} seconds`,
+          chatId: chatId,
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate video')
+      }
+      
+      const result = await response.json()
+      
+      // Add the user message
+      const userMessage: ChatMessage = {
+        id: generateId(),
+        role: 'USER',
+        content: `${videoPrompt} ${finalDuration} seconds`,
+        timestamp: new Date(),
+      }
+      
+      setMessages(prev => [...prev, userMessage])
+      
+      // Add the assistant response
+      const assistantMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: result.message,
+        timestamp: new Date(),
+        generations: result.generations || [],
+      }
+      
+      setMessages(prev => [...prev, assistantMessage])
+      
+    } catch (error) {
+      console.error('Error generating video:', error)
+      const errorMessage: ChatMessage = {
+        id: generateId(),
+        role: 'ASSISTANT',
+        content: 'Sorry, I encountered an error while trying to create your video. Please try again.',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Generate video with WAN-2.5 model and selected duration
   const generateVideoWithDuration = async (duration: number) => {
     if (!selectedImageForVideo) return
     
     // Disable buttons immediately
     setIsGeneratingVideo(true)
+    
+    // Validate duration against user's video model preference
+    const videoModel = userPreferences?.videoModel || 'WAN_2_5'
+    const durationValidation = validateAndMapVideoDuration(duration, videoModel)
+    const finalDuration = durationValidation.duration
     
     const imageUrl = selectedImageForVideo.resultUrls?.[0] || selectedImageForVideo.resultUrl
     if (!imageUrl) {
@@ -706,7 +807,7 @@ export function ChatInterface() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: `Generate ${duration}-second video from image using WAN-2.5 model`,
+        message: `Generate ${finalDuration}-second video from image using ${videoModel} model`,
         images: [imageUrl],
         audio: [],
         chatId: chatId,
@@ -718,10 +819,13 @@ export function ChatInterface() {
     }
     
     const messageResult = await messageResponse.json()
+    const modelName = videoModel === 'VEO3_FAST' ? 'Google VEO3-Fast' : 'Alibaba WAN-2.5'
+    const durationMessage = durationValidation.message ? `${durationValidation.message}\n\n` : ''
+    
     const loadingMessage: ChatMessage = {
       id: messageResult.messageId,
       role: 'ASSISTANT',
-      content: `🎬 Generating ${duration}-second video using Alibaba WAN-2.5 model...\n\n⏳ This may take a few minutes. Please wait while we create your video.`,
+      content: `${durationMessage}🎬 Generating ${finalDuration}-second video using ${modelName} model...\n\n⏳ This may take a few minutes. Please wait while we create your video.`,
       timestamp: new Date(),
       generations: messageResult.generations || [],
     }
@@ -738,11 +842,11 @@ export function ChatInterface() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: videoPrompt || `Create a ${duration}-second video from this image`,
+          prompt: videoPrompt || `Create a ${finalDuration}-second video from this image`,
           imageUrls: [imageUrl],
-          model: 'WAN_2_5',
+          model: videoModel,
           aspectRatio: userPreferences?.aspectRatio || 'WIDE',
-          duration: duration,
+          duration: finalDuration,
           messageId: messageResult.messageId, // Pass real message ID for generation record
         }),
       })
@@ -1181,6 +1285,61 @@ export function ChatInterface() {
                          message.content.includes('**Female** | **Male**') && (
                           <GenderSelection onGenderSelect={handleGenderSelection} />
                         )}
+                        
+                        {/* Show duration selection buttons if AI is asking for video duration */}
+                        {message.role === 'ASSISTANT' && 
+                         (message.content.includes('**5 Seconds** | **10 Seconds**') || 
+                          message.content.includes('**5 Seconds** | **8 Seconds**')) && (
+                          <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                            {message.content.includes('**5 Seconds** | **8 Seconds**') ? (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDurationSelection(5)}
+                                  disabled={isLoading}
+                                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                >
+                                  <Video className="w-4 h-4 mr-2" />
+                                  5 Seconds
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDurationSelection(8)}
+                                  disabled={isLoading}
+                                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                >
+                                  <Video className="w-4 h-4 mr-2" />
+                                  8 Seconds
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDurationSelection(5)}
+                                  disabled={isLoading}
+                                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                >
+                                  <Video className="w-4 h-4 mr-2" />
+                                  5 Seconds
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDurationSelection(10)}
+                                  disabled={isLoading}
+                                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                                >
+                                  <Video className="w-4 h-4 mr-2" />
+                                  10 Seconds
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                     
@@ -1569,6 +1728,18 @@ export function ChatInterface() {
                 >
                   <Video className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   10 Seconds
+                </Button>
+              </div>
+              <div className="flex justify-center w-full">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => editVideoPrompt()}
+                  disabled={isLoading || isGeneratingVideo}
+                  className="text-gray-400 hover:text-white text-sm"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit prompt
                 </Button>
               </div>
               <Button

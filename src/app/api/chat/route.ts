@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { VideoModel } from '@prisma/client'
-import { analyzeUserRequest } from '@/lib/ai-orchestrator'
+import { analyzeUserRequest, validateAndMapVideoDuration } from '@/lib/ai-orchestrator'
 import { WavespeedService, WanService } from '@/lib/ai-services'
 import { GenerationType } from '@/types'
 import { getSafeGenerationType } from '@/lib/generation-utils'
@@ -414,6 +414,17 @@ export async function POST(request: NextRequest) {
         response = 'Text-to-video generation is not currently supported. Please upload an image first to create a video from it.'
         break
 
+      case 'video_duration_selection':
+        // Check user's video model preference to determine available durations
+        const videoModel = userPreferences?.videoModel || 'WAN_2_5'
+        if (videoModel === 'VEO3_FAST') {
+          response = `I'd be happy to create a video with your prompt: "${analysis.prompt}"\n\nPlease choose the duration:\n\n**5 Seconds** | **8 Seconds**\n\nNote: Google VEO3-Fast supports 5-8 second videos.`
+        } else {
+          // Default to WAN-2.5 options
+          response = `I'd be happy to create a video with your prompt: "${analysis.prompt}"\n\nPlease choose the duration:\n\n**5 Seconds** | **10 Seconds**\n\nNote: Alibaba WAN-2.5 supports 5-10 second videos.`
+        }
+        break
+
       case 'image_to_video':
         // Handle both uploaded images and recent image references
         const videoImagesToUse = images.length > 0 
@@ -426,11 +437,24 @@ export async function POST(request: NextRequest) {
           response = 'I need images to create a video. Please upload some images or generate an image first that I can reference.'
         } else {
           try {
+            // Extract duration from prompt if specified
+            const durationMatch = analysis.prompt.match(/(\d+)\s*seconds?/i)
+            const requestedDuration = durationMatch ? parseInt(durationMatch[1]) : 5
+            
+            // Determine model based on user preferences
+            const videoModel = userPreferences?.videoModel || 'WAN_2_5'
+            
+            // Validate and map duration to supported values
+            const durationValidation = validateAndMapVideoDuration(requestedDuration, videoModel)
+            const finalDuration = durationValidation.duration
+            const durationMessage = durationValidation.message
+            
             const taskId = await WanService.generateVideo(
               analysis.prompt,
               videoImagesToUse[0],
-              5, // Default duration
-              '720p'
+              finalDuration,
+              '720p',
+              videoModel
             )
             
             const generation = await prisma.generation.create({
@@ -440,7 +464,7 @@ export async function POST(request: NextRequest) {
                 status: 'PROCESSING',
                 prompt: analysis.prompt,
                 provider: 'wavespeed',
-                model: 'wan-2.5',
+                model: videoModel === 'VEO3_FAST' ? 'veo3-fast' : 'wan-2.5',
                 requestId: taskId,
               },
             })
@@ -448,7 +472,10 @@ export async function POST(request: NextRequest) {
             generations.push(generation)
             
             const imageSource = images.length > 0 ? 'your images' : 'the previous image'
-            response = `I'm creating a video from ${imageSource} based on: "${analysis.prompt}". This will take a few minutes...`
+            const baseResponse = `I'm creating a ${finalDuration}-second video from ${imageSource} based on: "${analysis.prompt}". This will take a few minutes...`
+            
+            // Add duration adjustment message if needed
+            response = durationMessage ? `${durationMessage}\n\n${baseResponse}` : baseResponse
           } catch (error) {
             response = 'Sorry, I encountered an error while trying to create your video. Please try again.'
           }
