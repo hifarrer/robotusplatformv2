@@ -88,16 +88,26 @@ export function MyVideosView() {
   const deleteVideo = async (videoId: string) => {
     try {
       setDeleting(videoId)
+      console.log('Deleting video with ID:', videoId)
+      
       const response = await fetch(`/api/my-videos?id=${videoId}`, {
         method: 'DELETE',
       })
       
-      if (!response.ok) throw new Error('Failed to delete video')
+      console.log('Delete response status:', response.status)
+      const data = await response.json()
+      console.log('Delete response data:', data)
       
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete video')
+      }
+      
+      console.log('Video deleted successfully, removing from UI')
       setVideos(prev => prev.filter(vid => vid.id !== videoId))
       setSelectedVideo(null)
     } catch (error) {
       console.error('Error deleting video:', error)
+      alert(`Failed to delete video: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setDeleting(null)
     }

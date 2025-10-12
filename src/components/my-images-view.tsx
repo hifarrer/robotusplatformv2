@@ -91,16 +91,26 @@ export function MyImagesView() {
   const deleteImage = async (imageId: string) => {
     try {
       setDeleting(imageId)
+      console.log('Deleting image with ID:', imageId)
+      
       const response = await fetch(`/api/my-images?id=${imageId}`, {
         method: 'DELETE',
       })
       
-      if (!response.ok) throw new Error('Failed to delete image')
+      console.log('Delete response status:', response.status)
+      const data = await response.json()
+      console.log('Delete response data:', data)
       
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete image')
+      }
+      
+      console.log('Image deleted successfully, removing from UI')
       setImages(prev => prev.filter(img => img.id !== imageId))
       setSelectedImage(null)
     } catch (error) {
       console.error('Error deleting image:', error)
+      alert(`Failed to delete image: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setDeleting(null)
     }
