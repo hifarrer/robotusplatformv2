@@ -64,8 +64,12 @@ export function ChatInterface() {
   const [dragOver, setDragOver] = useState(false)
   const [showImageLibrary, setShowImageLibrary] = useState(false)
   const [libraryImages, setLibraryImages] = useState<SavedImage[]>([])
+  const [libraryVideos, setLibraryVideos] = useState<any[]>([])
+  const [libraryAudios, setLibraryAudios] = useState<any[]>([])
   const [loadingLibrary, setLoadingLibrary] = useState(false)
+  const [loadingLibraryTab, setLoadingLibraryTab] = useState<string | null>(null)
   const [deletingLibraryImageId, setDeletingLibraryImageId] = useState<string | null>(null)
+  const [activeLibraryTab, setActiveLibraryTab] = useState<'images' | 'videos' | 'audios'>('images')
   const [chatId, setChatId] = useState<string | null>(null)
   const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null)
   const [showDurationSelection, setShowDurationSelection] = useState(false)
@@ -200,6 +204,7 @@ export function ChatInterface() {
   const loadLibraryImages = async () => {
     if (libraryImages.length > 0) {
       setShowImageLibrary(true)
+      setActiveLibraryTab('images')
       return
     }
     
@@ -211,8 +216,72 @@ export function ChatInterface() {
       const data = await response.json()
       setLibraryImages(data.images || [])
       setShowImageLibrary(true)
+      setActiveLibraryTab('images')
     } catch (error) {
       console.error('Error loading library images:', error)
+    } finally {
+      setLoadingLibrary(false)
+    }
+  }
+
+  // Handle tab switching
+  const handleTabSwitch = async (tab: 'images' | 'videos' | 'audios') => {
+    setActiveLibraryTab(tab)
+    
+    if (tab === 'videos' && libraryVideos.length === 0) {
+      setLoadingLibraryTab('videos')
+      await loadLibraryVideos()
+      setLoadingLibraryTab(null)
+    } else if (tab === 'audios' && libraryAudios.length === 0) {
+      setLoadingLibraryTab('audios')
+      await loadLibraryAudios()
+      setLoadingLibraryTab(null)
+    }
+  }
+
+  // Load library videos
+  const loadLibraryVideos = async () => {
+    if (libraryVideos.length > 0) {
+      setShowImageLibrary(true)
+      setActiveLibraryTab('videos')
+      return
+    }
+    
+    try {
+      setLoadingLibrary(true)
+      const response = await fetch('/api/my-videos?limit=50')
+      if (!response.ok) throw new Error('Failed to fetch videos')
+      
+      const data = await response.json()
+      setLibraryVideos(data.videos || [])
+      setShowImageLibrary(true)
+      setActiveLibraryTab('videos')
+    } catch (error) {
+      console.error('Error loading library videos:', error)
+    } finally {
+      setLoadingLibrary(false)
+    }
+  }
+
+  // Load library audios
+  const loadLibraryAudios = async () => {
+    if (libraryAudios.length > 0) {
+      setShowImageLibrary(true)
+      setActiveLibraryTab('audios')
+      return
+    }
+    
+    try {
+      setLoadingLibrary(true)
+      const response = await fetch('/api/my-audios?limit=50')
+      if (!response.ok) throw new Error('Failed to fetch audios')
+      
+      const data = await response.json()
+      setLibraryAudios(data.audios || [])
+      setShowImageLibrary(true)
+      setActiveLibraryTab('audios')
+    } catch (error) {
+      console.error('Error loading library audios:', error)
     } finally {
       setLoadingLibrary(false)
     }
@@ -236,6 +305,48 @@ export function ChatInterface() {
       })
       .catch(error => {
         console.error('Error selecting library image:', error)
+      })
+  }
+
+  // Select video from library
+  const selectVideoFromLibrary = (video: any) => {
+    // Create a File-like object from the library video
+    fetch(video.localPath)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], video.fileName, { type: video.mimeType })
+        const newFile: FileUpload = {
+          id: generateId(),
+          file,
+          preview: video.localPath,
+          type: 'video'
+        }
+        setFiles(prev => [...prev, newFile])
+        setShowImageLibrary(false)
+      })
+      .catch(error => {
+        console.error('Error selecting library video:', error)
+      })
+  }
+
+  // Select audio from library
+  const selectAudioFromLibrary = (audio: any) => {
+    // Create a File-like object from the library audio
+    fetch(audio.localPath)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], audio.fileName, { type: audio.mimeType })
+        const newFile: FileUpload = {
+          id: generateId(),
+          file,
+          preview: audio.localPath,
+          type: 'audio'
+        }
+        setFiles(prev => [...prev, newFile])
+        setShowImageLibrary(false)
+      })
+      .catch(error => {
+        console.error('Error selecting library audio:', error)
       })
   }
 
@@ -1884,76 +1995,236 @@ export function ChatInterface() {
         </div>
       </div>
 
-      {/* Image Library Modal */}
+      {/* Library Modal with Tabs */}
       <Dialog open={showImageLibrary} onOpenChange={setShowImageLibrary}>
         <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden bg-gray-900 border-gray-700 mx-4 sm:mx-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-sm sm:text-base">Select from Your Image Library</DialogTitle>
+            <DialogTitle className="text-white text-sm sm:text-base">Select from Your Library</DialogTitle>
           </DialogHeader>
           
+          {/* Tab Navigation */}
+          <div className="flex border-b border-gray-700">
+            <button
+              onClick={() => handleTabSwitch('images')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeLibraryTab === 'images'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              <Images className="w-4 h-4 inline mr-2" />
+              Images
+            </button>
+            <button
+              onClick={() => handleTabSwitch('videos')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeLibraryTab === 'videos'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+              disabled={loadingLibraryTab === 'videos'}
+            >
+              {loadingLibraryTab === 'videos' ? (
+                <div className="spinner w-4 h-4 inline mr-2" />
+              ) : (
+                <Video className="w-4 h-4 inline mr-2" />
+              )}
+              Videos
+            </button>
+            <button
+              onClick={() => handleTabSwitch('audios')}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                activeLibraryTab === 'audios'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+              disabled={loadingLibraryTab === 'audios'}
+            >
+              {loadingLibraryTab === 'audios' ? (
+                <div className="spinner w-4 h-4 inline mr-2" />
+              ) : (
+                <Music className="w-4 h-4 inline mr-2" />
+              )}
+              Audios
+            </button>
+          </div>
+          
           <div className="overflow-auto max-h-[70vh] sm:max-h-[60vh]">
-            {libraryImages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
-                <Images className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-3 sm:mb-4" />
-                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">No Images in Library</h3>
-                <p className="text-gray-400 text-xs sm:text-sm">Generate some images first to see them here!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
-                {libraryImages.map((image) => (
-                  <div
-                    key={image.id}
-                    className="group relative cursor-pointer rounded-lg overflow-hidden border border-gray-700 hover:border-gray-500 transition-colors"
-                    onClick={() => selectFromLibrary(image)}
-                  >
-                    <div className="aspect-square relative">
-                      <Image
-                        src={image.localPath}
-                        alt={image.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                      />
+            {/* Images Tab */}
+            {activeLibraryTab === 'images' && (
+              <>
+                {libraryImages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
+                    <Images className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-3 sm:mb-4" />
+                    <h3 className="text-white font-medium mb-2 text-sm sm:text-base">No Images in Library</h3>
+                    <p className="text-gray-400 text-xs sm:text-sm">Generate some images first to see them here!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
+                    {libraryImages.map((image) => (
+                      <div
+                        key={image.id}
+                        className="group relative cursor-pointer rounded-lg overflow-hidden border border-gray-700 hover:border-gray-500 transition-colors"
+                        onClick={() => selectFromLibrary(image)}
+                      >
+                        <div className="aspect-square relative">
+                          <Image
+                            src={image.localPath}
+                            alt={image.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                          />
 
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <div className="text-white text-center">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-1 sm:mb-2">
-                            <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
+                          {/* Hover overlay */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="text-white text-center">
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-1 sm:mb-2">
+                                <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </div>
+                              <p className="text-xs">Select</p>
+                            </div>
                           </div>
-                          <p className="text-xs">Select</p>
+                          
+                          {/* Delete button - positioned above overlay */}
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-1 right-1 sm:top-2 sm:right-2 w-5 h-5 sm:w-7 sm:h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            onClick={(e) => deleteFromLibrary(e, image.id)}
+                            disabled={deletingLibraryImageId === image.id}
+                            title="Delete image"
+                          >
+                            {deletingLibraryImageId === image.id ? (
+                              <div className="spinner w-2 h-2 sm:w-3 sm:h-3" />
+                            ) : (
+                              <Trash2 className="w-2 h-2 sm:w-3 sm:h-3" />
+                            )}
+                          </Button>
+                        </div>
+                        
+                        {/* Image info */}
+                        <div className="p-1 sm:p-2">
+                          <p className="text-white text-xs font-medium truncate mb-1">
+                            {image.title}
+                          </p>
+                          <p className="text-gray-400 text-xs truncate">
+                            {image.prompt}
+                          </p>
                         </div>
                       </div>
-                      
-                      {/* Delete button - positioned above overlay */}
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1 sm:top-2 sm:right-2 w-5 h-5 sm:w-7 sm:h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                        onClick={(e) => deleteFromLibrary(e, image.id)}
-                        disabled={deletingLibraryImageId === image.id}
-                        title="Delete image"
-                      >
-                        {deletingLibraryImageId === image.id ? (
-                          <div className="spinner w-2 h-2 sm:w-3 sm:h-3" />
-                        ) : (
-                          <Trash2 className="w-2 h-2 sm:w-3 sm:h-3" />
-                        )}
-                      </Button>
-                    </div>
-                    
-                    {/* Image info */}
-                    <div className="p-1 sm:p-2">
-                      <p className="text-white text-xs font-medium truncate mb-1">
-                        {image.title}
-                      </p>
-                      <p className="text-gray-400 text-xs truncate">
-                        {image.prompt}
-                      </p>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+              </>
+            )}
+
+            {/* Videos Tab */}
+            {activeLibraryTab === 'videos' && (
+              <>
+                {loadingLibraryTab === 'videos' ? (
+                  <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
+                    <div className="spinner w-8 h-8 sm:w-12 sm:h-12 mb-3 sm:mb-4" />
+                    <h3 className="text-white font-medium mb-2 text-sm sm:text-base">Loading Videos...</h3>
+                  </div>
+                ) : libraryVideos.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
+                    <Video className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-3 sm:mb-4" />
+                    <h3 className="text-white font-medium mb-2 text-sm sm:text-base">No Videos in Library</h3>
+                    <p className="text-gray-400 text-xs sm:text-sm">Generate some videos first to see them here!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
+                    {libraryVideos.map((video) => (
+                      <div
+                        key={video.id}
+                        className="group relative cursor-pointer rounded-lg overflow-hidden border border-gray-700 hover:border-gray-500 transition-colors"
+                        onClick={() => selectVideoFromLibrary(video)}
+                      >
+                        <div className="aspect-square relative">
+                          <video
+                            src={video.localPath}
+                            className="w-full h-full object-cover"
+                            muted
+                          />
+
+                          {/* Hover overlay */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="text-white text-center">
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-1 sm:mb-2">
+                                <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </div>
+                              <p className="text-xs">Select</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Video info */}
+                        <div className="p-1 sm:p-2">
+                          <p className="text-white text-xs font-medium truncate mb-1">
+                            {video.title || 'Untitled Video'}
+                          </p>
+                          <p className="text-gray-400 text-xs truncate">
+                            {video.prompt}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Audios Tab */}
+            {activeLibraryTab === 'audios' && (
+              <>
+                {loadingLibraryTab === 'audios' ? (
+                  <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
+                    <div className="spinner w-8 h-8 sm:w-12 sm:h-12 mb-3 sm:mb-4" />
+                    <h3 className="text-white font-medium mb-2 text-sm sm:text-base">Loading Audios...</h3>
+                  </div>
+                ) : libraryAudios.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-32 sm:h-48 text-center px-4">
+                    <Music className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mb-3 sm:mb-4" />
+                    <h3 className="text-white font-medium mb-2 text-sm sm:text-base">No Audios in Library</h3>
+                    <p className="text-gray-400 text-xs sm:text-sm">Generate some audios first to see them here!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+                    {libraryAudios.map((audio) => (
+                      <div
+                        key={audio.id}
+                        className="group relative cursor-pointer rounded-lg overflow-hidden border border-gray-700 hover:border-gray-500 transition-colors"
+                        onClick={() => selectAudioFromLibrary(audio)}
+                      >
+                        <div className="p-4 flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
+                            <Music className="w-6 h-6 text-gray-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-medium truncate">
+                              {audio.title || 'Untitled Audio'}
+                            </p>
+                            <p className="text-gray-400 text-xs truncate">
+                              {audio.prompt}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="text-white text-center">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-1 sm:mb-2">
+                              <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </div>
+                            <p className="text-xs">Select</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </DialogContent>
