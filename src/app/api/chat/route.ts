@@ -600,12 +600,17 @@ export async function POST(request: NextRequest) {
                 const statusData = await statusResponse.json()
                 console.log('Status check response:', statusData)
 
-                if (statusData.status === 'completed' && statusData.outputs && statusData.outputs.length > 0) {
-                  audioUrl = statusData.outputs[0]
+                // Extract status and outputs from the response (could be nested in data or at root level)
+                const status = statusData.data?.status || statusData.status
+                const outputs = statusData.data?.outputs || statusData.outputs
+                const error = statusData.data?.error || statusData.error
+
+                if (status === 'completed' && outputs && outputs.length > 0) {
+                  audioUrl = outputs[0]
                   console.log('Audio generation completed! URL:', audioUrl)
                   break
-                } else if (statusData.status === 'failed') {
-                  console.error('Audio generation failed:', statusData.error)
+                } else if (status === 'failed') {
+                  console.error('Audio generation failed:', error)
                   throw new Error('Audio generation failed')
                 }
               } else {
