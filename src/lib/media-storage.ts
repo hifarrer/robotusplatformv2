@@ -234,31 +234,38 @@ export async function getUserVideos(userId: string, page = 1, limit = 20) {
 
 export async function deleteUserImage(userId: string, imageId: string): Promise<boolean> {
   try {
+    console.log('🗑️ Deleting image:', { userId, imageId })
+    
     const image = await prisma.savedImage.findFirst({
       where: { id: imageId, userId },
     })
 
     if (!image) {
+      console.error('❌ Image not found:', { imageId, userId })
       throw new Error('Image not found')
     }
+
+    console.log('📁 Found image:', { fileName: image.fileName, localPath: image.localPath })
 
     // Delete file from filesystem
     const fileName = image.fileName
     const fullPath = path.join(IMAGES_DIR, fileName)
     try {
       await fs.unlink(fullPath)
+      console.log('✅ File deleted from filesystem:', fullPath)
     } catch (error) {
-      console.warn('Could not delete file:', fullPath, error)
+      console.warn('⚠️ Could not delete file:', fullPath, error)
     }
 
     // Delete from database
     await prisma.savedImage.delete({
       where: { id: imageId },
     })
+    console.log('✅ Image deleted from database:', imageId)
 
     return true
   } catch (error) {
-    console.error('Error deleting image:', error)
+    console.error('❌ Error deleting image:', error)
     return false
   }
 }

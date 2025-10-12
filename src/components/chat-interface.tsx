@@ -1131,15 +1131,6 @@ export function ChatInterface() {
                 <Music className="w-4 h-4 mr-2" />
                 My Audios
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={checkGenerations}
-                className="text-gray-400 hover:text-white"
-                title="Refresh generations"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
               <Avatar className="w-8 h-8">
                 <AvatarImage src={session?.user?.image || ''} />
                 <AvatarFallback className="bg-gray-700 text-white">
@@ -1185,15 +1176,6 @@ export function ChatInterface() {
             >
               <Music className="w-3 h-3 mr-1" />
               Audios
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={checkGenerations}
-              className="text-gray-400 hover:text-white text-xs px-2 py-1"
-            >
-              <RefreshCw className="w-3 h-3 mr-1" />
-              Refresh
             </Button>
           </div>
         </div>

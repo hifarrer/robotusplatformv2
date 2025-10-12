@@ -15,7 +15,9 @@ import {
   Play,
   Calendar,
   Volume2,
-  Loader2
+  Loader2,
+  Image as ImageIcon,
+  Video
 } from 'lucide-react'
 import { cn, formatFileSize, formatTimestamp } from '@/lib/utils'
 
@@ -124,48 +126,116 @@ export function MyAudiosView() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header */}
-      <div className="border-b border-gray-800 p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.location.href = '/chat'}
-            className="text-gray-400 hover:text-white"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Chat
-          </Button>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-            <Volume2 className="w-5 h-5 text-white" />
+    <div className="flex h-screen bg-black">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
+        {/* Header */}
+        <div className="border-b border-gray-800 p-3 sm:p-4">
+          {/* Mobile header - stacked layout */}
+          <div className="flex items-center justify-between mb-3 sm:hidden">
+            <div className="flex items-center space-x-2">
+              <Avatar className="w-7 h-7">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-4 h-4 text-white" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-white font-semibold text-sm">Robotus.AI</h1>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/chat'}
+                className="text-gray-400 hover:text-white p-2"
+                title="Back to Chat"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <Avatar className="w-7 h-7">
+                <AvatarImage src={session?.user?.image || ''} />
+                <AvatarFallback className="bg-gray-700 text-white text-xs">
+                  {session?.user?.name?.[0] || <User className="w-3 h-3" />}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-gray-400 hover:text-white p-2"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
-          <div>
-            <h1 className="text-white font-semibold">My Audios</h1>
-            <p className="text-gray-400 text-sm">Your saved generated audios</p>
+          
+          {/* Desktop header - original layout */}
+          <div className="hidden sm:flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-8 h-8">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-5 h-5 text-white" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-white font-semibold">Robotus.AI</h1>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/chat'}
+                className="text-gray-400 hover:text-white"
+                title="Back to Chat"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Chat
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/my-images'}
+                className="text-gray-400 hover:text-white"
+                title="My Images"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                My Images
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/my-videos'}
+                className="text-gray-400 hover:text-white"
+                title="My Videos"
+              >
+                <Video className="w-4 h-4 mr-2" />
+                My Videos
+              </Button>
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={session?.user?.image || ''} />
+                <AvatarFallback className="bg-gray-700 text-white">
+                  {session?.user?.name?.[0] || <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-gray-400 hover:text-white"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
-        
-        <div className="flex items-center space-x-3">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={session?.user?.image || ''} />
-            <AvatarFallback className="bg-gray-700 text-white">
-              {session?.user?.name?.[0] || <User className="w-4 h-4" />}
-            </AvatarFallback>
-          </Avatar>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => signOut()}
-            className="text-gray-400 hover:text-white"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-6">
+        {/* Content */}
+        <div className="flex-1 overflow-auto p-2 sm:p-4">
         {loading && audios.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -391,6 +461,7 @@ export function MyAudiosView() {
           )}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   )
 }

@@ -15,7 +15,9 @@ import {
   Eye,
   Calendar,
   Image as ImageIcon,
-  Loader2
+  Loader2,
+  Video,
+  Music
 } from 'lucide-react'
 import { cn, formatFileSize, formatTimestamp } from '@/lib/utils'
 import Image from 'next/image'
@@ -91,25 +93,25 @@ export function MyImagesView() {
   const deleteImage = async (imageId: string) => {
     try {
       setDeleting(imageId)
-      console.log('Deleting image with ID:', imageId)
+      console.log('🗑️ Frontend: Deleting image with ID:', imageId)
       
       const response = await fetch(`/api/my-images?id=${imageId}`, {
         method: 'DELETE',
       })
       
-      console.log('Delete response status:', response.status)
+      console.log('🗑️ Frontend: Delete response status:', response.status)
       const data = await response.json()
-      console.log('Delete response data:', data)
+      console.log('🗑️ Frontend: Delete response data:', data)
       
       if (!response.ok) {
         throw new Error(data.error || 'Failed to delete image')
       }
       
-      console.log('Image deleted successfully, removing from UI')
+      console.log('✅ Frontend: Image deleted successfully, removing from UI')
       setImages(prev => prev.filter(img => img.id !== imageId))
       setSelectedImage(null)
     } catch (error) {
-      console.error('Error deleting image:', error)
+      console.error('❌ Frontend: Error deleting image:', error)
       alert(`Failed to delete image: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setDeleting(null)
@@ -126,48 +128,116 @@ export function MyImagesView() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header */}
-      <div className="border-b border-gray-800 p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.location.href = '/chat'}
-            className="text-gray-400 hover:text-white"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Chat
-          </Button>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-            <ImageIcon className="w-5 h-5 text-white" />
+    <div className="flex h-screen bg-black">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
+        {/* Header */}
+        <div className="border-b border-gray-800 p-3 sm:p-4">
+          {/* Mobile header - stacked layout */}
+          <div className="flex items-center justify-between mb-3 sm:hidden">
+            <div className="flex items-center space-x-2">
+              <Avatar className="w-7 h-7">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-4 h-4 text-white" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-white font-semibold text-sm">Robotus.AI</h1>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/chat'}
+                className="text-gray-400 hover:text-white p-2"
+                title="Back to Chat"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <Avatar className="w-7 h-7">
+                <AvatarImage src={session?.user?.image || ''} />
+                <AvatarFallback className="bg-gray-700 text-white text-xs">
+                  {session?.user?.name?.[0] || <User className="w-3 h-3" />}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-gray-400 hover:text-white p-2"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
-          <div>
-            <h1 className="text-white font-semibold">My Images</h1>
-            <p className="text-gray-400 text-sm">Your saved generated images</p>
+          
+          {/* Desktop header - original layout */}
+          <div className="hidden sm:flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-8 h-8">
+                <AvatarImage src="https://robotus.ai/assets/images/Robotusavatar.jpg" />
+                <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-500">
+                  <Bot className="w-5 h-5 text-white" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-white font-semibold">Robotus.AI</h1>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/chat'}
+                className="text-gray-400 hover:text-white"
+                title="Back to Chat"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Chat
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/my-videos'}
+                className="text-gray-400 hover:text-white"
+                title="My Videos"
+              >
+                <Video className="w-4 h-4 mr-2" />
+                My Videos
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.location.href = '/my-audios'}
+                className="text-gray-400 hover:text-white"
+                title="My Audios"
+              >
+                <Music className="w-4 h-4 mr-2" />
+                My Audios
+              </Button>
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={session?.user?.image || ''} />
+                <AvatarFallback className="bg-gray-700 text-white">
+                  {session?.user?.name?.[0] || <User className="w-4 h-4" />}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => signOut()}
+                className="text-gray-400 hover:text-white"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
-        
-        <div className="flex items-center space-x-3">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={session?.user?.image || ''} />
-            <AvatarFallback className="bg-gray-700 text-white">
-              {session?.user?.name?.[0] || <User className="w-4 h-4" />}
-            </AvatarFallback>
-          </Avatar>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => signOut()}
-            className="text-gray-400 hover:text-white"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-6">
+        {/* Content */}
+        <div className="flex-1 overflow-auto p-2 sm:p-4">
         {loading && images.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -375,6 +445,7 @@ export function MyImagesView() {
           )}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   )
 }

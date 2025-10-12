@@ -375,7 +375,7 @@ What kind of voice characteristics would you like for your audio?`,
         
         if (hasRecentImageContext) {
           // This is likely an edited video prompt - use recent image
-          const hasDuration = /\d+\s*seconds?/i.test(message)
+          const hasDuration = /\d+\s*(seconds?|s\b)/i.test(message)
           if (!hasDuration) {
             return {
               action: 'video_duration_selection',
@@ -397,7 +397,7 @@ What kind of voice characteristics would you like for your audio?`,
         }
         
         // Check if duration is specified
-        const hasDuration = /\d+\s*seconds?/i.test(message)
+        const hasDuration = /\d+\s*(seconds?|s\b)/i.test(message)
         if (!hasDuration) {
           return {
             action: 'video_duration_selection',

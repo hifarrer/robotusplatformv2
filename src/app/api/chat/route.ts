@@ -469,7 +469,7 @@ export async function POST(request: NextRequest) {
         } else {
           try {
             // Extract duration from prompt if specified
-            const durationMatch = analysis.prompt.match(/(\d+)\s*seconds?/i)
+            const durationMatch = analysis.prompt.match(/(\d+)\s*(seconds?|s\b)/i)
             const requestedDuration = durationMatch ? parseInt(durationMatch[1]) : 5
             
             // Determine model based on user preferences
