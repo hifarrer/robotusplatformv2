@@ -16,7 +16,7 @@ const SYSTEM_PROMPT = `You are an AI orchestrator for a creative AI platform. Yo
 Available actions:
 1. "text_to_image" - User wants to create an image from text description
 2. "image_to_image" - User wants to edit/modify existing images (requires images)
-3. "text_to_video" - User wants to create a video from text description
+3. "text_to_video" - User wants to create a video from text description (will generate image first)
 4. "image_to_video" - User wants to create a video from images (requires images)
 5. "lipsync" - User wants to make an image speak/talk (requires image and audio)
 6. "text_to_audio" - User wants to create an audio file from text (requires text in quotes)

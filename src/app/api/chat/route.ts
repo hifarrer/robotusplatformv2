@@ -412,7 +412,37 @@ export async function POST(request: NextRequest) {
         break
 
       case 'text_to_video':
-        response = 'Text-to-video generation is not currently supported. Please upload an image first to create a video from it.'
+        // Generate an image first, then offer to create video from it
+        try {
+          console.log('🎨 Generating image first for video request:', analysis.prompt)
+          
+          // Generate image using the user's video prompt
+          const imageTaskId = await WavespeedService.textToImage(
+            analysis.prompt,
+            userPreferences?.textToImageModel || 'SEEDREAM_V4',
+            userPreferences?.aspectRatio || 'WIDE'
+          )
+          
+          // Create generation record for the image
+          const imageGeneration = await prisma.generation.create({
+            data: {
+              messageId: userMessage.id,
+              type: 'TEXT_TO_IMAGE',
+              status: 'PROCESSING',
+              prompt: analysis.prompt,
+              provider: 'wavespeed',
+              model: userPreferences?.textToImageModel || 'SEEDREAM_V4',
+              requestId: imageTaskId,
+            },
+          })
+          
+          generations.push(imageGeneration)
+          
+          response = `For better video results, I will be creating an image first from your request: "${analysis.prompt}". Once the image is ready, you'll be able to generate a video from it.`
+        } catch (error: any) {
+          console.error('Error generating image for video request:', error)
+          response = 'Sorry, I encountered an error while trying to create an image from your video request. Please try again.'
+        }
         break
 
       case 'video_duration_selection':
