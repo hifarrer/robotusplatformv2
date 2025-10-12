@@ -575,6 +575,10 @@ export async function POST(request: NextRequest) {
           const wavespeedData = await wavespeedResponse.json()
           console.log('Wavespeed response:', wavespeedData)
 
+          // Extract the request ID from the response
+          const requestId = wavespeedData.data?.id || wavespeedData.id
+          console.log('Request ID:', requestId)
+
           // Poll for completion
           let attempts = 0
           const maxAttempts = 60 // 5 minutes max
@@ -585,7 +589,8 @@ export async function POST(request: NextRequest) {
             attempts++
 
             try {
-              const statusResponse = await fetch(`https://api.wavespeed.ai/api/v3/minimax/speech-02-hd/${wavespeedData.request_id || wavespeedData.id}`, {
+              console.log(`Status check attempt ${attempts}/${maxAttempts}...`)
+              const statusResponse = await fetch(`https://api.wavespeed.ai/api/v3/predictions/${requestId}/result`, {
                 headers: {
                   'Authorization': `Bearer ${process.env.WAVESPEED_API_KEY}`
                 }
@@ -593,14 +598,18 @@ export async function POST(request: NextRequest) {
 
               if (statusResponse.ok) {
                 const statusData = await statusResponse.json()
-                console.log('Status check:', statusData)
+                console.log('Status check response:', statusData)
 
                 if (statusData.status === 'completed' && statusData.outputs && statusData.outputs.length > 0) {
                   audioUrl = statusData.outputs[0]
+                  console.log('Audio generation completed! URL:', audioUrl)
                   break
                 } else if (statusData.status === 'failed') {
+                  console.error('Audio generation failed:', statusData.error)
                   throw new Error('Audio generation failed')
                 }
+              } else {
+                console.error('Status check failed:', statusResponse.status, statusResponse.statusText)
               }
             } catch (error) {
               console.error('Status check error:', error)
@@ -634,7 +643,7 @@ export async function POST(request: NextRequest) {
               prompt: textToSpeak,
               provider: 'wavespeed',
               model: 'minimax/speech-02-hd',
-              requestId: wavespeedData.request_id || wavespeedData.id,
+              requestId: requestId,
               resultUrl: localPath,
               resultUrls: [localPath],
             },
