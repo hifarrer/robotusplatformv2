@@ -1,9 +1,15 @@
 import OpenAI from 'openai'
 import { AIAnalysisResult } from '@/types'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Initialize OpenAI client only when needed (server-side)
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OpenAI API key not configured')
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+}
 
 const SYSTEM_PROMPT = `You are an AI orchestrator for a creative AI platform. Your job is to analyze user requests and determine what action should be taken.
 
@@ -108,6 +114,7 @@ Analyze this request and determine the appropriate action. Pay special attention
 `
 
     console.log('🐤 Calling OpenAI API...') // Debug log
+    const openai = getOpenAIClient()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
@@ -394,30 +401,6 @@ What kind of voice characteristics would you like for your audio?`,
   }
 }
 
-// Duration validation and mapping function
-export function validateAndMapVideoDuration(
-  requestedDuration: number, 
-  videoModel: 'WAN_2_5' | 'VEO3_FAST' = 'WAN_2_5'
-): { duration: number; message?: string } {
-  const minDuration = 5
-  const maxDuration = videoModel === 'VEO3_FAST' ? 8 : 10
-  
-  if (requestedDuration < minDuration) {
-    return {
-      duration: minDuration,
-      message: `The minimum video duration is ${minDuration} seconds. I'll create a ${minDuration}-second video instead.`
-    }
-  }
-  
-  if (requestedDuration > maxDuration) {
-    return {
-      duration: maxDuration,
-      message: `The maximum video duration for ${videoModel === 'VEO3_FAST' ? 'Google VEO3-Fast' : 'Alibaba WAN-2.5'} is ${maxDuration} seconds. I'll create a ${maxDuration}-second video instead.`
-    }
-  }
-  
-  return { duration: requestedDuration }
-}
 
 export async function analyzeImageForVideoPrompt(imageUrl: string): Promise<string> {
   console.log('🎬 === IMAGE TO VIDEO ANALYSIS STARTED ===')
@@ -440,6 +423,7 @@ Return ONLY the video prompt, nothing else. Make it 1-2 sentences maximum.`
     const userPrompt = `Analyze this image and create a video prompt that would animate it: ${imageUrl}`
 
     console.log('🐤 Calling OpenAI Vision API...')
+    const openai = getOpenAIClient()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [

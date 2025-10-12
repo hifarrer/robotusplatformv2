@@ -32,7 +32,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
-import { validateAndMapVideoDuration } from '@/lib/ai-orchestrator'
+import { validateAndMapVideoDuration } from '@/lib/duration-utils'
 import { getRandomPrompt, getRandomVideoPrompt } from '@/lib/prompt-generator'
 import Image from 'next/image'
 

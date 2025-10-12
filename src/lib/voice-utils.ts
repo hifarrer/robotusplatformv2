@@ -2,9 +2,15 @@ import OpenAI from 'openai'
 import { promises as fs } from 'fs'
 import path from 'path'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Initialize OpenAI client only when needed (server-side)
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OpenAI API key not configured')
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+}
 
 interface Voice {
   language: string
@@ -45,6 +51,7 @@ export async function matchVoiceWithAI(description: string, gender: string, lang
     
     Return only the voice_id.`
 
+    const openai = getOpenAIClient()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
