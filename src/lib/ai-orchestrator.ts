@@ -61,6 +61,10 @@ Keyword Guidelines:
 - VEO3-Fast supports: 5 seconds (minimum), 8 seconds (maximum)
 - If user asks for < 5 seconds, use 5 seconds
 - If user asks for > 10 seconds (WAN-2.5) or > 8 seconds (VEO3-Fast), use the maximum supported duration
+- IMPORTANT: If user sends a video prompt and there's recent image generation context, treat it as "image_to_video" not "text_to_video"
+- Video prompts with recent image context should use the most recent generated image for video creation
+- When hasRecentImageGeneration is true and user sends a video prompt, ALWAYS choose "image_to_video" with useRecentImage: true
+- This handles cases where users edit video prompts or send new video prompts after generating images
 
 Return your analysis as JSON with:
 {
@@ -91,6 +95,11 @@ export async function analyzeUserRequest(
   console.log('🌟 === AI ORCHESTRATOR STARTED ===') // Debug log
   try {
     console.log('🔍 Analyzing user request:', { message, hasImages, hasAudio, conversationContext }) // Debug log
+    console.log('🔍 Conversation context details:', {
+      hasRecentImageGeneration: conversationContext?.hasRecentImageGeneration,
+      recentImageUrl: conversationContext?.recentImageUrl,
+      recentMessagesCount: conversationContext?.recentMessages?.length
+    }) // Debug log
     
     // Check if OpenAI API key is available
     if (!process.env.OPENAI_API_KEY) {
@@ -147,6 +156,18 @@ Analyze this request and determine the appropriate action. Pay special attention
     const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'text_to_audio', 'chat', 'video_duration_selection']
     if (!validActions.includes(analysis.action)) {
       throw new Error('Invalid action returned')
+    }
+
+    // Override logic: If there's recent image context and user wants video, force image_to_video
+    if (analysis.action === 'text_to_video' && conversationContext?.hasRecentImageGeneration) {
+      console.log('🔄 Overriding text_to_video to image_to_video due to recent image context')
+      return {
+        ...analysis,
+        action: 'image_to_video',
+        requiresImages: true,
+        useRecentImage: true,
+        reasoning: 'Overridden: Video prompt with recent image context - using recent image for video creation'
+      }
     }
 
     return analysis
@@ -348,6 +369,33 @@ What kind of voice characteristics would you like for your audio?`,
     } else {
       // With 0-1 images, can generate video directly
       if (lowerMessage.includes('video') || lowerMessage.includes('animation')) {
+        // Check if there's recent image context for video generation
+        // This includes any video prompt when there's recent image generation context
+        const hasRecentImageContext = conversationContext?.hasRecentImageGeneration
+        
+        if (hasRecentImageContext) {
+          // This is likely an edited video prompt - use recent image
+          const hasDuration = /\d+\s*seconds?/i.test(message)
+          if (!hasDuration) {
+            return {
+              action: 'video_duration_selection',
+              prompt: message,
+              requiresImages: true,
+              useRecentImage: true,
+              confidence: 0.9,
+              reasoning: 'Fallback: detected edited video prompt with recent image context - asking for duration'
+            }
+          }
+          return {
+            action: 'image_to_video',
+            prompt: message,
+            requiresImages: true,
+            useRecentImage: true,
+            confidence: 0.9,
+            reasoning: 'Fallback: detected edited video prompt with recent image context - using recent image for video'
+          }
+        }
+        
         // Check if duration is specified
         const hasDuration = /\d+\s*seconds?/i.test(message)
         if (!hasDuration) {
