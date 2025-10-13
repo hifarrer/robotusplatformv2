@@ -52,6 +52,18 @@ export default function PricingPage() {
 
   useEffect(() => {
     fetchPlans()
+    
+    // Check for success/cancel query parameters
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('success') === 'true') {
+      alert('Payment successful! Your plan has been upgraded.')
+      // Clean URL
+      window.history.replaceState({}, '', '/pricing')
+    } else if (urlParams.get('canceled') === 'true') {
+      alert('Payment was cancelled.')
+      // Clean URL
+      window.history.replaceState({}, '', '/pricing')
+    }
   }, [])
 
   const fetchPlans = async () => {
@@ -68,26 +80,47 @@ export default function PricingPage() {
     }
   }
 
-  const handleUpgrade = async (planName: string) => {
+  const handleUpgrade = async (planId: string, planName: string) => {
     setIsUpgrading(planName)
     
     try {
-      const response = await fetch('/api/upgrade-plan', {
+      // Free plan doesn't require payment
+      if (planName === 'Free') {
+        const response = await fetch('/api/upgrade-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planName, billingCycle }),
+        })
+
+        if (response.ok) {
+          await fetchPlans()
+          alert(`Successfully switched to ${planName} plan!`)
+        } else {
+          const error = await response.json()
+          alert(error.error || 'Failed to switch plan')
+        }
+        setIsUpgrading(null)
+        return
+      }
+
+      // For paid plans, use Stripe checkout
+      const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planName, billingCycle }),
+        body: JSON.stringify({ planId, billingCycle }),
       })
 
       if (response.ok) {
-        await fetchPlans()
-        alert(`Successfully upgraded to ${planName} plan!`)
+        const { url } = await response.json()
+        // Redirect to Stripe Checkout
+        window.location.href = url
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to upgrade plan')
+        alert(error.error || 'Failed to create checkout session')
+        setIsUpgrading(null)
       }
     } catch (error) {
-      alert('An error occurred while upgrading')
-    } finally {
+      alert('An error occurred while processing your request')
       setIsUpgrading(null)
     }
   }
@@ -287,8 +320,8 @@ export default function PricingPage() {
                     </div>
 
                     <Button
-                      onClick={() => !isCurrentPlan && handleUpgrade(plan.name)}
-                      disabled={isCurrentPlan || isUpgrading === plan.name}
+                      onClick={() => !isCurrentPlan && handleUpgrade(plan.id, plan.name)}
+                      disabled={isCurrentPlan || isUpgrading === plan.name || (plan.name !== 'Free' && !plan.stripeMonthlyPriceId && !plan.stripeYearlyPriceId)}
                       className={`w-full ${
                         isPremium && !isCurrentPlan
                           ? 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700'
@@ -297,12 +330,12 @@ export default function PricingPage() {
                       variant={isCurrentPlan ? 'outline' : 'default'}
                     >
                       {isUpgrading === plan.name 
-                        ? 'Upgrading...' 
+                        ? 'Processing...' 
                         : isCurrentPlan 
                         ? 'Current Plan' 
                         : plan.name === 'Free'
                         ? 'Get Started'
-                        : 'Upgrade Now'
+                        : 'Subscribe Now'
                       }
                     </Button>
                   </div>
