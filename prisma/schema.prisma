@@ -160,6 +160,7 @@ model SavedAudio {
   duration     Float?
   voiceId      String?
   language     String?
+  mimeType     String?
   generationId String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt

@@ -822,6 +822,7 @@ export async function POST(request: NextRequest) {
               fileSize: audioBuffer.byteLength,
               voiceId: voiceId,
               language: 'English',
+              mimeType: 'audio/mpeg',
               generationId: generation.id
             }
           })

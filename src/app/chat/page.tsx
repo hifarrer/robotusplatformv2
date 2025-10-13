@@ -10,5 +10,10 @@ export default async function ChatPage() {
     redirect('/auth/signin')
   }
 
+  // Check if user is admin and redirect to admin dashboard
+  if (session.user.role === 'ADMIN') {
+    redirect('/admin')
+  }
+
   return <ChatInterface />
 }

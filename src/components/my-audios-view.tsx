@@ -32,6 +32,7 @@ interface SavedAudio {
   duration?: number
   voiceId?: string
   language?: string
+  mimeType?: string
   createdAt: string
   generation?: {
     type: string
@@ -256,18 +257,18 @@ export function MyAudiosView() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSelectedAudio(audio)}
-                        className="text-white hover:bg-white/20"
-                      >
-                        <Play className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
                         onClick={() => downloadAudio(audio)}
                         className="text-white hover:bg-white/20"
                       >
                         <Download className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedAudio(audio)}
+                        className="text-white hover:bg-white/20"
+                      >
+                        <Play className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"

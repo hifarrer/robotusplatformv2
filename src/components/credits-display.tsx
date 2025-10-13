@@ -153,47 +153,26 @@ export function CreditsDisplay() {
 
           <Separator />
 
-          {/* Upgrade Options */}
-          {creditsData.plan.name === 'Free' && (
-            <div>
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Upgrade Your Plan
-              </h3>
-              <div className="grid gap-3">
-                <div className="p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-medium">Basic Plan</p>
-                      <p className="text-sm text-muted-foreground">500 credits</p>
-                    </div>
-                    <Badge variant="outline">$15/mo</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Ideal for regular content creators
-                  </p>
-                  <Button size="sm" className="w-full">
-                    Upgrade to Basic
-                  </Button>
-                </div>
-                <div className="p-4 rounded-lg border-2 border-primary hover:border-primary/80 transition-colors cursor-pointer">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-medium">Premium Plan</p>
-                      <p className="text-sm text-muted-foreground">1200 credits</p>
-                    </div>
-                    <Badge>$29/mo</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Best for power users and professionals
-                  </p>
-                  <Button size="sm" className="w-full">
-                    Upgrade to Premium
-                  </Button>
-                </div>
-              </div>
+          {/* Upgrade Plan Button */}
+          <div>
+            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Upgrade Your Plan
+            </h3>
+            <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+              <p className="text-sm text-muted-foreground mb-3">
+                Get more credits and unlock premium features with our flexible plans.
+              </p>
+              <Button 
+                size="sm" 
+                className="w-full"
+                onClick={() => window.location.href = '/pricing'}
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Upgrade Plan
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

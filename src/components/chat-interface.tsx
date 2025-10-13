@@ -202,8 +202,8 @@ export function ChatInterface() {
   }
 
   // Load library images
-  const loadLibraryImages = async () => {
-    if (libraryImages.length > 0) {
+  const loadLibraryImages = async (forceRefresh = false) => {
+    if (libraryImages.length > 0 && !forceRefresh) {
       setShowImageLibrary(true)
       setActiveLibraryTab('images')
       return
@@ -240,9 +240,20 @@ export function ChatInterface() {
     }
   }
 
+  // Refresh current library tab
+  const refreshCurrentLibrary = async () => {
+    if (activeLibraryTab === 'images') {
+      await loadLibraryImages(true)
+    } else if (activeLibraryTab === 'videos') {
+      await loadLibraryVideos(true)
+    } else if (activeLibraryTab === 'audios') {
+      await loadLibraryAudios(true)
+    }
+  }
+
   // Load library videos
-  const loadLibraryVideos = async () => {
-    if (libraryVideos.length > 0) {
+  const loadLibraryVideos = async (forceRefresh = false) => {
+    if (libraryVideos.length > 0 && !forceRefresh) {
       setShowImageLibrary(true)
       setActiveLibraryTab('videos')
       return
@@ -265,8 +276,8 @@ export function ChatInterface() {
   }
 
   // Load library audios
-  const loadLibraryAudios = async () => {
-    if (libraryAudios.length > 0) {
+  const loadLibraryAudios = async (forceRefresh = false) => {
+    if (libraryAudios.length > 0 && !forceRefresh) {
       setShowImageLibrary(true)
       setActiveLibraryTab('audios')
       return
@@ -333,14 +344,38 @@ export function ChatInterface() {
   // Select audio from library
   const selectAudioFromLibrary = (audio: any) => {
     // Create a File-like object from the library audio
-    fetch(audio.localPath)
-      .then(res => res.blob())
+    // Use the full URL for fetching the audio file
+    const audioUrl = audio.localPath.startsWith('http') 
+      ? audio.localPath 
+      : `${window.location.origin}${audio.localPath}`
+    
+    fetch(audioUrl)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch audio: ${res.status} ${res.statusText}`)
+        }
+        return res.blob()
+      })
       .then(blob => {
-        const file = new File([blob], audio.fileName, { type: audio.mimeType })
+        // Determine mime type from file extension if not provided
+        const getMimeTypeFromFileName = (fileName: string): string => {
+          const ext = fileName.toLowerCase().split('.').pop()
+          switch (ext) {
+            case 'mp3': return 'audio/mpeg'
+            case 'wav': return 'audio/wav'
+            case 'ogg': return 'audio/ogg'
+            case 'm4a': return 'audio/mp4'
+            case 'aac': return 'audio/aac'
+            default: return 'audio/mpeg'
+          }
+        }
+        
+        const mimeType = audio.mimeType || getMimeTypeFromFileName(audio.fileName)
+        const file = new File([blob], audio.fileName, { type: mimeType })
         const newFile: FileUpload = {
           id: generateId(),
           file,
-          preview: audio.localPath,
+          preview: audioUrl,
           type: 'audio'
         }
         setFiles(prev => [...prev, newFile])
@@ -348,6 +383,14 @@ export function ChatInterface() {
       })
       .catch(error => {
         console.error('Error selecting library audio:', error)
+        // Show user-friendly error message
+        const errorMessage: ChatMessage = {
+          id: generateId(),
+          role: 'ASSISTANT',
+          content: `Sorry, there was an error loading the audio file: ${error.message}. Please try again or select a different audio.`,
+          timestamp: new Date(),
+        }
+        setMessages(prev => [...prev, errorMessage])
       })
   }
 
@@ -1727,7 +1770,7 @@ export function ChatInterface() {
                     <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
                       <AvatarImage src={session?.user?.image || ''} />
                       <AvatarFallback className="bg-gray-700 text-white">
-                        {session?.user?.name?.[0] || <User className="w-3 h-3 sm:w-4 sm:h-4" />}
+                        {session?.user?.name && session.user.name.length > 0 ? session.user.name[0] : <User className="w-3 h-3 sm:w-4 sm:h-4" />}
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -1924,7 +1967,7 @@ export function ChatInterface() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={loadLibraryImages}
+                  onClick={() => loadLibraryImages()}
                   disabled={loadingLibrary}
                   className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1 sm:flex-none"
                 >
@@ -1967,7 +2010,19 @@ export function ChatInterface() {
       <Dialog open={showImageLibrary} onOpenChange={setShowImageLibrary}>
         <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-hidden bg-gray-900 border-gray-700 mx-4 sm:mx-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-sm sm:text-base">Select from Your Library</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-white text-sm sm:text-base">Select from Your Library</DialogTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={refreshCurrentLibrary}
+                disabled={loadingLibrary}
+                className="text-gray-400 hover:text-white p-2"
+                title="Refresh library"
+              >
+                <RefreshCw className={`w-4 h-4 ${loadingLibrary ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
           </DialogHeader>
           
           {/* Tab Navigation */}
