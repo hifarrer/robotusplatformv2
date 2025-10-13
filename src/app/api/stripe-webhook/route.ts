@@ -250,7 +250,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   // Check if this invoice is for a subscription
   // For subscription invoices, we need to get the subscription from the line items
-  const subscriptionItem = invoice.lines?.data?.find(item => item.type === 'subscription')
+  const subscriptionItem = invoice.lines?.data?.find(item => item.subscription !== null)
   
   if (!subscriptionItem || !subscriptionItem.subscription) {
     // This is not a subscription invoice, skip
@@ -340,7 +340,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   // Check if this invoice is for a subscription
   // For subscription invoices, we need to get the subscription from the line items
-  const subscriptionItem = invoice.lines?.data?.find(item => item.type === 'subscription')
+  const subscriptionItem = invoice.lines?.data?.find(item => item.subscription !== null)
   
   if (!subscriptionItem || !subscriptionItem.subscription) {
     // This is not a subscription invoice, skip
