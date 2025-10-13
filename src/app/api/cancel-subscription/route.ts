@@ -64,7 +64,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Subscription will be cancelled at the end of the current billing period',
-      cancelAt: subscription.current_period_end,
     })
   } catch (error) {
     console.error('Error canceling subscription:', error)
@@ -133,9 +132,9 @@ export async function GET(request: NextRequest) {
       subscription: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodEnd: subscription.current_period_end,
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        cancelAt: subscription.canceled_at,
+        currentPeriodEnd: (subscription as any).current_period_end,
+        cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
+        cancelAt: (subscription as any).canceled_at,
       },
     })
   } catch (error) {
