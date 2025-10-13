@@ -10,7 +10,10 @@ import {
   Sparkles,
   Zap,
   Crown,
-  Gift
+  Gift,
+  CreditCard,
+  X,
+  Settings
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -43,6 +46,8 @@ export default function PricingPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
   const [isUpgrading, setIsUpgrading] = useState<string | null>(null)
+  const [subscriptionStatus, setSubscriptionStatus] = useState<any>(null)
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -52,6 +57,7 @@ export default function PricingPage() {
 
   useEffect(() => {
     fetchPlans()
+    fetchSubscriptionStatus()
     
     // Check for success/cancel query parameters
     const urlParams = new URLSearchParams(window.location.search)
@@ -81,6 +87,18 @@ export default function PricingPage() {
       setPlansData(null)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const response = await fetch('/api/cancel-subscription')
+      if (response.ok) {
+        const data = await response.json()
+        setSubscriptionStatus(data)
+      }
+    } catch (error) {
+      console.error('Error fetching subscription status:', error)
     }
   }
 
@@ -126,6 +144,86 @@ export default function PricingPage() {
     } catch (error) {
       alert('An error occurred while processing your request')
       setIsUpgrading(null)
+    }
+  }
+
+  const handleCancelSubscription = async () => {
+    if (!confirm('Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing period.')) {
+      return
+    }
+
+    setIsLoadingSubscription(true)
+    try {
+      const response = await fetch('/api/cancel-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        alert(data.message)
+        await fetchSubscriptionStatus()
+        await fetchPlans()
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to cancel subscription')
+      }
+    } catch (error) {
+      alert('An error occurred while canceling your subscription')
+    } finally {
+      setIsLoadingSubscription(false)
+    }
+  }
+
+  const handleChangeSubscription = async (planId: string, planName: string) => {
+    setIsUpgrading(planName)
+    
+    try {
+      const response = await fetch('/api/change-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId, billingCycle }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        
+        if (data.checkoutUrl) {
+          // Redirect to Stripe Checkout for new subscription
+          window.location.href = data.checkoutUrl
+        } else {
+          // Subscription updated successfully
+          alert(data.message || 'Subscription updated successfully')
+          await fetchSubscriptionStatus()
+          await fetchPlans()
+        }
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to change subscription')
+      }
+    } catch (error) {
+      alert('An error occurred while changing your subscription')
+    } finally {
+      setIsUpgrading(null)
+    }
+  }
+
+  const handleManageSubscription = async () => {
+    try {
+      const response = await fetch('/api/customer-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        window.location.href = data.url
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to open customer portal')
+      }
+    } catch (error) {
+      alert('An error occurred while opening the customer portal')
     }
   }
 
@@ -208,6 +306,64 @@ export default function PricingPage() {
                     Current Plan: <strong>{plansData.currentPlan.name}</strong>
                   </span>
                   <Badge variant="secondary">{plansData.currentCredits} credits</Badge>
+                </div>
+              )}
+
+              {/* Subscription Management for Paid Plans */}
+              {plansData.currentPlan && plansData.currentPlan.name !== 'Free' && (
+                <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                  <h3 className="text-xl font-semibold text-white mb-4">Manage Your Subscription</h3>
+                  
+                  {subscriptionStatus?.hasActiveSubscription && (
+                    <div className="space-y-4">
+                      {subscriptionStatus.subscription.cancelAtPeriodEnd ? (
+                        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <span className="text-yellow-400 font-medium">Subscription Cancelled</span>
+                          </div>
+                          <p className="text-gray-300 text-sm">
+                            Your subscription will end on{' '}
+                            {new Date(subscriptionStatus.subscription.currentPeriodEnd * 1000).toLocaleDateString()}.
+                            You'll continue to have access until then.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-green-400 font-medium">Active Subscription</span>
+                          </div>
+                          <p className="text-gray-300 text-sm">
+                            Next billing date: {new Date(subscriptionStatus.subscription.currentPeriodEnd * 1000).toLocaleDateString()}
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap gap-3">
+                        <Button
+                          onClick={handleManageSubscription}
+                          variant="outline"
+                          className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                        >
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Manage Billing
+                        </Button>
+                        
+                        {!subscriptionStatus.subscription.cancelAtPeriodEnd && (
+                          <Button
+                            onClick={handleCancelSubscription}
+                            disabled={isLoadingSubscription}
+                            variant="destructive"
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            {isLoadingSubscription ? 'Cancelling...' : 'Cancel Subscription'}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -328,7 +484,16 @@ export default function PricingPage() {
                     </div>
 
                     <Button
-                      onClick={() => !isCurrentPlan && handleUpgrade(plan.id, plan.name)}
+                      onClick={() => {
+                        if (isCurrentPlan) return
+                        // If user is on a paid plan, use change subscription
+                        if (plansData.currentPlan && plansData.currentPlan.name !== 'Free') {
+                          handleChangeSubscription(plan.id, plan.name)
+                        } else {
+                          // If user is on free plan, use upgrade
+                          handleUpgrade(plan.id, plan.name)
+                        }
+                      }}
                       disabled={isCurrentPlan || isUpgrading === plan.name || (plan.name !== 'Free' && !plan.stripeMonthlyPriceId && !plan.stripeYearlyPriceId)}
                       className={`w-full ${
                         isPremium && !isCurrentPlan
@@ -342,8 +507,8 @@ export default function PricingPage() {
                         : isCurrentPlan 
                         ? 'Current Plan' 
                         : plan.name === 'Free'
-                        ? 'Get Started'
-                        : 'Subscribe Now'
+                        ? (plansData.currentPlan && plansData.currentPlan.name !== 'Free' ? 'Downgrade to Free' : 'Get Started')
+                        : (plansData.currentPlan && plansData.currentPlan.name !== 'Free' ? 'Change Plan' : 'Subscribe Now')
                       }
                     </Button>
                   </div>
