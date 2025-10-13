@@ -659,16 +659,24 @@ export function ChatInterface() {
         setChatId(result.chatId)
       }
       
-      // Add AI response
+      // Add user message for the regeneration
+      const userMessage: ChatMessage = {
+        id: result.userMessageId || generateId(),
+        role: 'USER',
+        content: generation.prompt,
+        timestamp: new Date(),
+      }
+      
+      // Add AI response with the proper database ID
       const aiMessage: ChatMessage = {
-        id: generateId(),
+        id: result.messageId || generateId(),
         role: 'ASSISTANT',
         content: result.response || 'Processing your regeneration request...',
         timestamp: new Date(),
         generations: result.generations || [],
       }
       
-      setMessages(prev => [...prev, aiMessage])
+      setMessages(prev => [...prev, userMessage, aiMessage])
     } catch (error: any) {
       console.error('Error regenerating content:', error)
       
