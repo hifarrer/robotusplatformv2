@@ -249,12 +249,17 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   // Check if this invoice is for a subscription
-  const subscriptionId = invoice.subscription_details?.subscription
+  // For subscription invoices, we need to get the subscription from the line items
+  const subscriptionItem = invoice.lines?.data?.find(item => item.type === 'subscription')
   
-  if (!subscriptionId) {
+  if (!subscriptionItem || !subscriptionItem.subscription) {
     // This is not a subscription invoice, skip
     return
   }
+
+  const subscriptionId = typeof subscriptionItem.subscription === 'string' 
+    ? subscriptionItem.subscription 
+    : subscriptionItem.subscription.id
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   const customerId = typeof subscription.customer === 'string' 
@@ -334,12 +339,17 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   // Check if this invoice is for a subscription
-  const subscriptionId = invoice.subscription_details?.subscription
+  // For subscription invoices, we need to get the subscription from the line items
+  const subscriptionItem = invoice.lines?.data?.find(item => item.type === 'subscription')
   
-  if (!subscriptionId) {
+  if (!subscriptionItem || !subscriptionItem.subscription) {
     // This is not a subscription invoice, skip
     return
   }
+
+  const subscriptionId = typeof subscriptionItem.subscription === 'string' 
+    ? subscriptionItem.subscription 
+    : subscriptionItem.subscription.id
 
   const customerId = typeof invoice.customer === 'string' 
     ? invoice.customer 
