@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { UserMenu } from '@/components/user-menu'
+import { CreditsDisplay } from '@/components/credits-display'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { 
   ArrowLeft,
-  LogOut, 
   User,
   Bot,
   Download,
@@ -153,20 +154,8 @@ export function MyVideosView() {
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <Avatar className="w-7 h-7">
-                <AvatarImage src={session?.user?.image || ''} />
-                <AvatarFallback className="bg-gray-700 text-white text-xs">
-                  {session?.user?.name?.[0] || <User className="w-3 h-3" />}
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => signOut()}
-                className="text-gray-400 hover:text-white p-2"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
+              <CreditsDisplay />
+              <UserMenu />
             </div>
           </div>
           

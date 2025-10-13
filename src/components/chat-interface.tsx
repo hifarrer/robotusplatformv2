@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -11,7 +11,6 @@ import {
   Upload, 
   Image as ImageIcon, 
   Video, 
-  LogOut, 
   User,
   Bot,
   X,
@@ -28,6 +27,8 @@ import {
   Edit
 } from 'lucide-react'
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
+import { UserMenu } from '@/components/user-menu'
+import { CreditsDisplay } from '@/components/credits-display'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
@@ -1160,20 +1161,8 @@ export function ChatInterface() {
                 <Plus className="w-4 h-4" />
               </Button>
               <PreferencesMenu onPreferencesChange={handlePreferencesChange} />
-              <Avatar className="w-7 h-7">
-                <AvatarImage src={session?.user?.image || ''} />
-                <AvatarFallback className="bg-gray-700 text-white text-xs">
-                  {session?.user?.name?.[0] || <User className="w-3 h-3" />}
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => signOut()}
-                className="text-gray-400 hover:text-white p-2"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
+              <CreditsDisplay />
+              <UserMenu />
             </div>
           </div>
           
@@ -1233,20 +1222,8 @@ export function ChatInterface() {
                 <Music className="w-4 h-4 mr-2" />
                 My Audios
               </Button>
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={session?.user?.image || ''} />
-                <AvatarFallback className="bg-gray-700 text-white">
-                  {session?.user?.name?.[0] || <User className="w-4 h-4" />}
-                </AvatarFallback>
-              </Avatar>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => signOut()}
-                className="text-gray-400 hover:text-white"
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
+              <CreditsDisplay />
+              <UserMenu />
             </div>
           </div>
           

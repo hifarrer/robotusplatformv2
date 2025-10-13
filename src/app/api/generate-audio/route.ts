@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { saveFile } from '@/lib/media-storage'
 import { matchVoiceWithAI } from '@/lib/voice-utils'
+import { checkAndDeductCreditsForGeneration, refundCredits } from '@/lib/credit-manager'
 
 interface Voice {
   language: string
@@ -26,6 +27,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Text and voiceId are required' }, { status: 400 })
     }
 
+    // Estimate audio duration (rough estimate: ~150 words per minute for speech)
+    const words = text.split(' ').length
+    const estimatedDuration = Math.ceil((words / 150) * 60)
+
+    // Check and deduct credits before generation
+    const creditResult = await checkAndDeductCreditsForGeneration(
+      session.user.id,
+      'TEXT_TO_AUDIO',
+      estimatedDuration
+    )
+
+    if (!creditResult.success) {
+      return NextResponse.json(
+        { 
+          error: creditResult.error || 'Insufficient credits',
+          required: creditResult.cost,
+        },
+        { status: 402 }
+      )
+    }
+
+    console.log(`💳 Credits deducted: ${creditResult.cost}, New balance: ${creditResult.newBalance}`)
+
     // Create generation record
     const generation = await prisma.generation.create({
       data: {
@@ -38,7 +62,8 @@ export async function POST(request: NextRequest) {
         metadata: {
           voiceId,
           language,
-          text
+          text,
+          creditsUsed: creditResult.cost
         }
       }
     })
@@ -132,6 +157,14 @@ export async function POST(request: NextRequest) {
           error: 'Audio generation timed out'
         }
       })
+      
+      // Refund credits on failure
+      await refundCredits(
+        session.user.id,
+        creditResult.cost,
+        `Refund for failed audio generation: ${text.substring(0, 50)}...`
+      )
+      
       return NextResponse.json({ error: 'Audio generation timed out' }, { status: 500 })
     }
 
@@ -176,7 +209,9 @@ export async function POST(request: NextRequest) {
       generationId: generation.id,
       audioUrl: audioUrl,
       localPath: localPath,
-      savedAudioId: savedAudio.id
+      savedAudioId: savedAudio.id,
+      creditsUsed: creditResult.cost,
+      creditsRemaining: creditResult.newBalance
     })
 
   } catch (error: any) {

@@ -40,6 +40,10 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  credits       Int              @default(120)
+  planId        String?
+  role          UserRole         @default(USER)
+  isActive      Boolean          @default(true)
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   accounts      Account[]
@@ -49,6 +53,8 @@ model User {
   savedAudios   SavedAudio[]
   sessions      Session[]
   preferences   UserPreferences?
+  plan          Plan?            @relation(fields: [planId], references: [id])
+  transactions  CreditTransaction[]
 }
 
 model VerificationToken {
@@ -216,4 +222,45 @@ enum ImageToImageModel {
 enum VideoModel {
   WAN_2_5
   VEO3_FAST
+}
+
+model Plan {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  monthlyPrice          Float
+  yearlyPrice           Float
+  stripeMonthlyPriceId  String?
+  stripeYearlyPriceId   String?
+  credits               Int
+  description           String?
+  features              String[] @default([])
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  users                 User[]
+}
+
+model CreditTransaction {
+  id              String           @id @default(cuid())
+  userId          String
+  amount          Int
+  balance         Int
+  type            TransactionType
+  generationType  GenerationType?
+  description     String
+  metadata        Json?
+  createdAt       DateTime         @default(now())
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+  REFUND
+  PURCHASE
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }

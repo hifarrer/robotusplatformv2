@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { WanService } from '@/lib/ai-services'
 import { prisma } from '@/lib/prisma'
+import { checkAndDeductCreditsForGeneration } from '@/lib/credit-manager'
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,10 +40,30 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    // Check and deduct credits before generation
+    const videoDuration = duration || 5
+    const creditResult = await checkAndDeductCreditsForGeneration(
+      session.user.id,
+      'IMAGE_TO_VIDEO',
+      videoDuration
+    )
+
+    if (!creditResult.success) {
+      return NextResponse.json(
+        { 
+          error: creditResult.error || 'Insufficient credits',
+          required: creditResult.cost,
+        },
+        { status: 402 }
+      )
+    }
+
+    console.log(`💳 Credits deducted: ${creditResult.cost}, New balance: ${creditResult.newBalance}`)
+    
     const taskId = await WanService.generateVideo(
       prompt,
       imageUrls[0],
-      duration || 5,
+      videoDuration,
       '720p'
     )
     
@@ -65,7 +86,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       taskId,
-      generation: generation || null
+      generation: generation || null,
+      creditsUsed: creditResult.cost,
+      creditsRemaining: creditResult.newBalance
     })
   } catch (error: any) {
     console.error('Error generating video:', error)

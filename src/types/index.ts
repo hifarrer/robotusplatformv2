@@ -41,6 +41,38 @@ export interface User {
   name?: string
   email: string
   image?: string
+  credits: number
+  planId?: string
+  plan?: Plan
+  createdAt: Date
+}
+
+export interface Plan {
+  id: string
+  name: string
+  monthlyPrice: number
+  yearlyPrice: number
+  stripeMonthlyPriceId?: string | null
+  stripeYearlyPriceId?: string | null
+  credits: number
+  description?: string
+  features?: string[]
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type TransactionType = 'CREDIT' | 'DEBIT' | 'REFUND' | 'PURCHASE'
+
+export interface CreditTransaction {
+  id: string
+  userId: string
+  amount: number
+  balance: number
+  type: TransactionType
+  generationType?: GenerationType
+  description: string
+  metadata?: any
   createdAt: Date
 }
 

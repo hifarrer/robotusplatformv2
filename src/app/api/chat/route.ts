@@ -8,6 +8,7 @@ import { validateAndMapVideoDuration } from '@/lib/duration-utils'
 import { WavespeedService, WanService } from '@/lib/ai-services'
 import { GenerationType } from '@/types'
 import { getSafeGenerationType } from '@/lib/generation-utils'
+import { checkAndDeductCreditsForGeneration, refundCredits } from '@/lib/credit-manager'
 import { z } from 'zod'
 
 const chatRequestSchema = z.object({
@@ -28,6 +29,24 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
     console.log('🔍 Starting upscale process for:', imageUrl) // Debug log
     console.log('🔍 Session user ID:', session.user.id) // Debug log
     console.log('🔍 Chat ID:', chatId) // Debug log
+    
+    // Check and deduct credits
+    const upscaleCredits = await checkAndDeductCreditsForGeneration(
+      session.user.id,
+      'IMAGE_UPSCALE'
+    )
+    
+    if (!upscaleCredits.success) {
+      return NextResponse.json(
+        { 
+          error: `You don't have enough credits to upscale images. You need ${upscaleCredits.cost} credits. Please upgrade your plan to continue.`,
+          required: upscaleCredits.cost,
+        },
+        { status: 402 }
+      )
+    }
+    
+    console.log(`💳 Credits deducted for upscale: ${upscaleCredits.cost}`)
     
     // Create or get chat
     let chat
@@ -58,7 +77,7 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
       data: {
         chatId: chat.id,
         role: 'ASSISTANT',
-        content: 'I\'m upscaling your image to higher resolution. This will take a few moments...',
+        content: `I'm upscaling your image to higher resolution. This will take a few moments... (${upscaleCredits.cost} credits used)`,
       },
     })
     console.log('🔍 Created assistant message:', assistantMessage.id) // Debug log
@@ -78,6 +97,7 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
         provider: 'wavespeed',
         model: 'image-upscaler',
         requestId,
+        metadata: { creditsUsed: upscaleCredits.cost }
       },
     })
     
@@ -330,6 +350,20 @@ export async function POST(request: NextRequest) {
       case 'text_to_image':
         try {
           console.log('Generating image with prompt:', analysis.prompt) // Debug log
+          
+          // Check and deduct credits
+          const imageCredits = await checkAndDeductCreditsForGeneration(
+            session.user.id,
+            'TEXT_TO_IMAGE'
+          )
+          
+          if (!imageCredits.success) {
+            response = `Sorry, you don't have enough credits to generate an image. You need ${imageCredits.cost} credits but only have ${await prisma.user.findUnique({ where: { id: session.user.id }, select: { credits: true } }).then(u => u?.credits || 0)} credits remaining. Please upgrade your plan to continue.`
+            break
+          }
+          
+          console.log(`💳 Credits deducted: ${imageCredits.cost}`)
+          
           const requestId = await WavespeedService.textToImage(
             analysis.prompt,
             userPreferences.textToImageModel,
@@ -345,11 +379,12 @@ export async function POST(request: NextRequest) {
               provider: 'wavespeed',
               model: `${userPreferences.textToImageModel.toLowerCase()}`,
               requestId,
+              metadata: { creditsUsed: imageCredits.cost }
             },
           })
           
           generations.push(generation)
-          response = `I'm creating an image based on your description: "${analysis.prompt}". This will take a few moments...`
+          response = `I'm creating an image based on your description: "${analysis.prompt}". This will take a few moments... (${imageCredits.cost} credits used)`
         } catch (error: any) {
           console.error('Text-to-image generation error:', error)
           console.error('Error details:', error.response?.data) // More detailed error logging
@@ -372,6 +407,19 @@ export async function POST(request: NextRequest) {
             console.log('Sending images to Wavespeed:', imagesToUse) // Debug log
             console.log('Image URLs being sent:', imagesToUse.map(url => ({ url, accessible: 'checking...' }))) // Debug log
             
+            // Check and deduct credits
+            const imageEditCredits = await checkAndDeductCreditsForGeneration(
+              session.user.id,
+              'IMAGE_TO_IMAGE'
+            )
+            
+            if (!imageEditCredits.success) {
+              response = `Sorry, you don't have enough credits to edit images. You need ${imageEditCredits.cost} credits. Please upgrade your plan to continue.`
+              break
+            }
+            
+            console.log(`💳 Credits deducted: ${imageEditCredits.cost}`)
+            
             const requestId = await WavespeedService.imageToImage(
               analysis.prompt,
               imagesToUse,
@@ -388,13 +436,14 @@ export async function POST(request: NextRequest) {
                 provider: 'wavespeed',
                 model: `${userPreferences.imageToImageModel.toLowerCase()}`,
                 requestId,
+                metadata: { creditsUsed: imageEditCredits.cost }
               },
             })
             
             generations.push(generation)
             
             const imageSource = images.length > 0 ? 'uploaded images' : 'previous image'
-            response = `I'm editing your ${imageSource} based on: "${analysis.prompt}". This will take a few moments...`
+            response = `I'm editing your ${imageSource} based on: "${analysis.prompt}". This will take a few moments... (${imageEditCredits.cost} credits used)`
           } catch (error: any) {
             console.error('Image-to-image generation error:', error)
             console.error('Error details:', error.response?.data) // More detailed error logging
@@ -537,6 +586,24 @@ export async function POST(request: NextRequest) {
         } else {
           try {
             console.log('Generating lipsync with:', { image: lipsyncImageToUse, audio: lipsyncAudioToUse, prompt: analysis.prompt }) // Debug log
+            
+            // Estimate lipsync duration (assume 10 seconds for now, can be refined with actual audio duration)
+            const estimatedDuration = 10
+            
+            // Check and deduct credits
+            const lipsyncCredits = await checkAndDeductCreditsForGeneration(
+              session.user.id,
+              'LIPSYNC',
+              estimatedDuration
+            )
+            
+            if (!lipsyncCredits.success) {
+              response = `Sorry, you don't have enough credits to generate a lipsync video. You need ${lipsyncCredits.cost} credits. Please upgrade your plan to continue.`
+              break
+            }
+            
+            console.log(`💳 Credits deducted for lipsync: ${lipsyncCredits.cost}`)
+            
             const requestId = await WavespeedService.lipsync(
               lipsyncAudioToUse,
               lipsyncImageToUse,
@@ -552,13 +619,14 @@ export async function POST(request: NextRequest) {
                 provider: 'wavespeed',
                 model: 'infinitetalk',
                 requestId,
+                metadata: { creditsUsed: lipsyncCredits.cost }
               },
             })
             
             generations.push(generation)
             
             const imageSource = images.length > 0 ? 'your image' : 'the previous image'
-            response = `I'm creating a lipsync video using ${imageSource} and your audio. This will take a few moments...`
+            response = `I'm creating a lipsync video using ${imageSource} and your audio. This will take a few moments... (${lipsyncCredits.cost} credits used)`
           } catch (error: any) {
             console.error('Lipsync generation error:', error)
             console.error('Error details:', error.response?.data) // More detailed error logging
