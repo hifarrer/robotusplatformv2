@@ -1074,6 +1074,11 @@ export function ChatInterface() {
       
       console.log('📊 Chat response data:', result) // Debug log
       
+      // Log voice selection for audio generation
+      if (result.debugInfo?.selectedVoiceId) {
+        console.log('🎤 Selected Voice ID:', result.debugInfo.selectedVoiceId)
+      }
+      
       // Store chatId from response if we don't have one
       if (!chatId && result.chatId) {
         setChatId(result.chatId)

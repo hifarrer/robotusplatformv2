@@ -289,18 +289,18 @@ export function MyVideosView() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSelectedVideo(video)}
-                        className="text-white hover:bg-white/20"
-                      >
-                        <Play className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
                         onClick={() => downloadVideo(video)}
                         className="text-white hover:bg-white/20"
                       >
                         <Download className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedVideo(video)}
+                        className="text-white hover:bg-white/20"
+                      >
+                        <Play className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"

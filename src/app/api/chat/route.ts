@@ -285,6 +285,9 @@ export async function POST(request: NextRequest) {
     console.log('🔄 Calling analyzeUserRequest...') // Debug log
     const analysis = await analyzeUserRequest(message, images.length > 0, audio.length > 0, conversationContext)
     
+    // Initialize voiceId for potential use in response
+    let voiceId = null
+    
     console.log('🎯 Analysis result:', analysis) // Debug log
     console.log('🎯 Analysis action:', analysis.action) // Debug log
     
@@ -566,62 +569,89 @@ export async function POST(request: NextRequest) {
 
       case 'text_to_audio':
         try {
-          // Extract text from quotes in the prompt
-          const textMatch = analysis.prompt.match(/"([^"]*)"/) || analysis.prompt.match(/'([^']*)'/)
+          // Extract text from quotes in the ORIGINAL MESSAGE (not analysis.prompt)
+          const textMatch = message.match(/"([^"]*)"/) || message.match(/'([^']*)'/)
           const textToSpeak = textMatch ? textMatch[1] : analysis.prompt
           
           // Try to match voice description with AI if user provided voice characteristics
-          let voiceId = 'English_compelling_lady1' // Default fallback
+          voiceId = 'English_compelling_lady1' // Default fallback
           
-          // Check if user provided voice description
-          const hasVoiceDescription = analysis.prompt.toLowerCase().includes('female') || 
-                                    analysis.prompt.toLowerCase().includes('male') || 
-                                    analysis.prompt.toLowerCase().includes('voice') || 
-                                    analysis.prompt.toLowerCase().includes('accent') ||
-                                    analysis.prompt.toLowerCase().includes('adult') || 
-                                    analysis.prompt.toLowerCase().includes('young') ||
-                                    analysis.prompt.toLowerCase().includes('deep') || 
-                                    analysis.prompt.toLowerCase().includes('soft') ||
-                                    analysis.prompt.toLowerCase().includes('loud') || 
-                                    analysis.prompt.toLowerCase().includes('gentle') ||
-                                    analysis.prompt.toLowerCase().includes('strong') || 
-                                    analysis.prompt.toLowerCase().includes('smooth')
+          // Check if user provided voice description in the ORIGINAL MESSAGE
+          const hasVoiceDescription = message.toLowerCase().includes('female') || 
+                                    message.toLowerCase().includes('male') || 
+                                    message.toLowerCase().includes('voice') || 
+                                    message.toLowerCase().includes('accent') ||
+                                    message.toLowerCase().includes('adult') || 
+                                    message.toLowerCase().includes('young') ||
+                                    message.toLowerCase().includes('old') ||
+                                    message.toLowerCase().includes('deep') || 
+                                    message.toLowerCase().includes('soft') ||
+                                    message.toLowerCase().includes('loud') || 
+                                    message.toLowerCase().includes('gentle') ||
+                                    message.toLowerCase().includes('strong') || 
+                                    message.toLowerCase().includes('smooth')
+          
+          console.log('🎤 Voice description check:', {
+            originalMessage: message,
+            extractedPrompt: analysis.prompt,
+            hasVoiceDescription,
+            containsMale: message.toLowerCase().includes('male'),
+            containsOld: message.toLowerCase().includes('old')
+          })
           
           if (hasVoiceDescription) {
             try {
-              // Extract gender from the prompt
-              const isFemale = analysis.prompt.toLowerCase().includes('female')
-              const isMale = analysis.prompt.toLowerCase().includes('male')
+              // Extract gender from the ORIGINAL MESSAGE
+              const isFemale = message.toLowerCase().includes('female')
+              const isMale = message.toLowerCase().includes('male')
               const gender = isFemale ? 'Female' : isMale ? 'Male' : 'Female' // Default to female
               
-              // Use AI to match voice
-              const { matchVoiceWithAI } = await import('@/lib/voice-utils')
-              voiceId = await matchVoiceWithAI(analysis.prompt, gender, 'English')
+          console.log('🎤 Voice matching - Gender:', gender, 'Description:', message)
+          
+          // Use AI to match voice using the ORIGINAL MESSAGE (contains voice description)
+          const { matchVoiceWithAI } = await import('@/lib/voice-utils')
+          voiceId = await matchVoiceWithAI(message, gender, 'English')
+          
+          console.log('🎤 ✅ FINAL SELECTED VOICE ID:', voiceId)
+          console.log('🎤 ✅ Voice ID being sent to Wavespeed API:', voiceId)
             } catch (error) {
               console.error('Voice matching error:', error)
-              // Fall back to default voice
+              
+              // Better fallback based on gender from ORIGINAL MESSAGE
+              if (message.toLowerCase().includes('male')) {
+                voiceId = 'English_magnetic_voiced_man' // Male fallback
+                console.log('🎤 Using male fallback voice:', voiceId)
+              } else {
+                voiceId = 'English_compelling_lady1' // Female fallback
+                console.log('🎤 Using female fallback voice:', voiceId)
+              }
             }
           }
           
-          console.log('Generating audio with text:', textToSpeak) // Debug log
+          console.log('🎤 Generating audio with text:', textToSpeak) // Debug log
+          console.log('🎤 Final voice ID being used:', voiceId) // Debug log
           
           // Generate audio using Wavespeed API directly
+          const requestBody = {
+            emotion: 'happy',
+            enable_sync_mode: false,
+            english_normalization: false,
+            pitch: 0,
+            speed: 1,
+            text: textToSpeak,
+            voice_id: voiceId,
+            volume: 1
+          }
+          
+          console.log('🎤 Wavespeed API request body:', JSON.stringify(requestBody, null, 2))
+          
           const wavespeedResponse = await fetch('https://api.wavespeed.ai/api/v3/minimax/speech-02-hd', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${process.env.WAVESPEED_API_KEY}`
             },
-            body: JSON.stringify({
-              emotion: 'happy',
-              enable_sync_mode: false,
-              english_normalization: false,
-              pitch: 0,
-              speed: 1,
-              text: textToSpeak,
-              voice_id: voiceId,
-              volume: 1
-            })
+            body: JSON.stringify(requestBody)
           })
 
           if (!wavespeedResponse.ok) {
@@ -701,7 +731,7 @@ export async function POST(request: NextRequest) {
           const generation = await prisma.generation.create({
             data: {
               messageId: userMessage.id,
-              type: 'TEXT_TO_AUDIO',
+              type: 'TEXT_TO_AUDIO' as any,
               status: 'COMPLETED',
               prompt: textToSpeak,
               provider: 'wavespeed',
@@ -789,6 +819,9 @@ What would you like to create today?`
       userMessageId: userMessage.id,
       analysis,
       generations: updatedAssistantMessage?.generations || [],
+      debugInfo: {
+        selectedVoiceId: analysis.action === 'text_to_audio' ? voiceId : null
+      }
     })
 
   } catch (error: any) {
