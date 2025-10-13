@@ -156,7 +156,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  const customerId = subscription.customer as string
+  const customerId = typeof subscription.customer === 'string' 
+    ? subscription.customer 
+    : subscription.customer?.id
+  
+  if (!customerId) {
+    console.error('No customer ID found in subscription')
+    return
+  }
+
   const customer = await stripe.customers.retrieve(customerId)
   
   if (customer.deleted) {
@@ -200,7 +208,15 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  const customerId = subscription.customer as string
+  const customerId = typeof subscription.customer === 'string' 
+    ? subscription.customer 
+    : subscription.customer?.id
+  
+  if (!customerId) {
+    console.error('No customer ID found in subscription')
+    return
+  }
+
   const customer = await stripe.customers.retrieve(customerId)
   
   if (customer.deleted) {
@@ -232,14 +248,24 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string
+  const subscriptionId = typeof invoice.subscription === 'string' 
+    ? invoice.subscription 
+    : invoice.subscription?.id
   
   if (!subscriptionId) {
     return
   }
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-  const customerId = subscription.customer as string
+  const customerId = typeof subscription.customer === 'string' 
+    ? subscription.customer 
+    : subscription.customer?.id
+  
+  if (!customerId) {
+    console.error('No customer ID found in subscription')
+    return
+  }
+
   const customer = await stripe.customers.retrieve(customerId)
   
   if (customer.deleted) {
@@ -307,7 +333,14 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  const customerId = invoice.customer as string
+  const customerId = typeof invoice.customer === 'string' 
+    ? invoice.customer 
+    : invoice.customer?.id
+  
+  if (!customerId) {
+    return
+  }
+
   const customer = await stripe.customers.retrieve(customerId)
   
   if (customer.deleted) {
