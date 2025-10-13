@@ -249,14 +249,12 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   // Check if this invoice is for a subscription
-  if (!invoice.subscription) {
+  const subscriptionId = invoice.subscription_details?.subscription
+  
+  if (!subscriptionId) {
     // This is not a subscription invoice, skip
     return
   }
-
-  const subscriptionId = typeof invoice.subscription === 'string' 
-    ? invoice.subscription 
-    : invoice.subscription.id
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   const customerId = typeof subscription.customer === 'string' 
@@ -336,7 +334,9 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   // Check if this invoice is for a subscription
-  if (!invoice.subscription) {
+  const subscriptionId = invoice.subscription_details?.subscription
+  
+  if (!subscriptionId) {
     // This is not a subscription invoice, skip
     return
   }
