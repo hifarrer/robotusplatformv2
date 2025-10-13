@@ -72,9 +72,13 @@ export default function PricingPage() {
       if (response.ok) {
         const data = await response.json()
         setPlansData(data)
+      } else {
+        console.error('Failed to fetch plans:', response.status, response.statusText)
+        setPlansData(null)
       }
     } catch (error) {
       console.error('Error fetching plans:', error)
+      setPlansData(null)
     } finally {
       setIsLoading(false)
     }
@@ -236,8 +240,12 @@ export default function PricingPage() {
 
             {/* Plans Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              {plansData.plans.map((plan) => {
-                const isCurrentPlan = plansData.currentPlan?.id === plan.id
+              {plansData?.plans?.length > 0 ? plansData.plans.map((plan) => {
+                if (!plan || !plan.id || !plan.name) {
+                  return null
+                }
+                
+                const isCurrentPlan = plansData?.currentPlan?.id === plan.id
                 const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice
                 const isPremium = plan.name === 'Premium'
                 
@@ -340,7 +348,11 @@ export default function PricingPage() {
                     </Button>
                   </div>
                 )
-              })}
+              }) : (
+                <div className="col-span-full text-center text-gray-400">
+                  No plans available. Please try again later.
+                </div>
+              )}
             </div>
 
             {/* Credit Costs Section */}
