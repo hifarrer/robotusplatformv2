@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/admin-auth'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
@@ -18,8 +18,9 @@ export async function PATCH(
     if (planId !== undefined) updateData.planId = planId || null
     if (isActive !== undefined) updateData.isActive = isActive
 
+    const resolvedParams = await params
     const user = await prisma.user.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: updateData,
       select: {
         id: true,
@@ -52,14 +53,15 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
 
     // Prevent deleting admin user
+    const resolvedParams = await params
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       select: { email: true, role: true },
     })
 
@@ -71,7 +73,7 @@ export async function DELETE(
     }
 
     await prisma.user.delete({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
     })
 
     return NextResponse.json({ success: true })

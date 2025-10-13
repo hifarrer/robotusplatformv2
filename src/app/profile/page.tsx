@@ -411,15 +411,6 @@ export default function ProfilePage() {
                   <span className="text-gray-400">Account Type</span>
                   <span className="text-white">{creditsData?.plan.name || 'Free'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Member Since</span>
-                  <span className="text-white">
-                    {session.user.createdAt 
-                      ? formatDate(session.user.createdAt)
-                      : 'N/A'
-                    }
-                  </span>
-                </div>
               </div>
             </div>
           </div>

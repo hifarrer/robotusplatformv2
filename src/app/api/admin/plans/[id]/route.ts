@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/admin-auth'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
@@ -31,8 +31,9 @@ export async function PATCH(
     if (features !== undefined) updateData.features = features
     if (isActive !== undefined) updateData.isActive = isActive
 
+    const resolvedParams = await params
     const plan = await prisma.plan.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: updateData,
     })
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { UserMenu } from '@/components/user-menu'
 import { CreditsDisplay } from '@/components/credits-display'
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,8 @@ import {
   Image as ImageIcon,
   Loader2,
   Video,
-  Music
+  Music,
+  LogOut
 } from 'lucide-react'
 import { cn, formatFileSize, formatTimestamp } from '@/lib/utils'
 import Image from 'next/image'
