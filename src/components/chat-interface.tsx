@@ -1076,7 +1076,7 @@ export function ChatInterface() {
         id: generateId(),
         role: 'USER',
         content: input,
-        images: files.map(f => f.preview), // Keep preview URLs for display
+        images: files.filter(f => f.type === 'image').map(f => f.preview), // Only include image files
         timestamp: new Date(),
       }
       
