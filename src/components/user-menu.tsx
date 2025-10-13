@@ -30,6 +30,11 @@ export function UserMenu() {
     return null
   }
 
+  // Additional safety check
+  if (!session.user.name && !session.user.email) {
+    return null
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

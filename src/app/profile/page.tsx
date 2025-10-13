@@ -176,6 +176,15 @@ export default function ProfilePage() {
     )
   }
 
+  // Additional safety check for session
+  if (!session?.user?.email) {
+    return (
+      <div className="flex h-screen bg-black items-center justify-center">
+        <div className="text-white">Please log in to access your profile.</div>
+      </div>
+    )
+  }
+
   if (!session?.user) {
     return null
   }
@@ -286,13 +295,13 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-gray-800 rounded-lg p-4">
                     <p className="text-sm text-gray-400 mb-1">Available Credits</p>
-                    <p className="text-3xl font-bold text-white">{creditsData.balance}</p>
+                    <p className="text-3xl font-bold text-white">{creditsData?.balance || 0}</p>
                   </div>
                   <div className="bg-gray-800 rounded-lg p-4">
                     <p className="text-sm text-gray-400 mb-1">Current Plan</p>
                     <div className="flex items-center gap-2">
-                      <p className="text-2xl font-bold text-white">{creditsData.plan.name}</p>
-                      <Badge variant="secondary">${creditsData.plan.monthlyPrice}/mo</Badge>
+                      <p className="text-2xl font-bold text-white">{creditsData?.plan?.name || 'Free'}</p>
+                      <Badge variant="secondary">${creditsData?.plan?.monthlyPrice || 0}/mo</Badge>
                     </div>
                   </div>
                 </div>
