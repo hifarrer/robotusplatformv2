@@ -1770,7 +1770,7 @@ export function ChatInterface() {
                     <Avatar className="w-6 h-6 sm:w-8 sm:h-8 mt-1 flex-shrink-0">
                       <AvatarImage src={session?.user?.image || ''} />
                       <AvatarFallback className="bg-gray-700 text-white">
-                        {session?.user?.name && session.user.name.length > 0 ? session.user.name[0] : <User className="w-3 h-3 sm:w-4 sm:h-4" />}
+                        {session?.user?.name && session.user.name.length > 0 ? session.user.name[0].toUpperCase() : <User className="w-3 h-3 sm:w-4 sm:h-4" />}
                       </AvatarFallback>
                     </Avatar>
                   )}

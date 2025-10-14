@@ -112,17 +112,44 @@ export const authOptions: NextAuthOptions = {
       }
       return true
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // When user signs in, store their data in the token
       if (user) {
         token.id = user.id
         token.role = user.role
+        token.name = user.name
+        token.email = user.email
+        token.image = user.image
       }
+      
+      // For OAuth providers, we might need to fetch additional user data
+      if (account?.provider === 'google' && user?.email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email }
+          })
+          
+          if (dbUser) {
+            token.id = dbUser.id
+            token.role = dbUser.role
+            token.name = dbUser.name || user.name
+            token.email = dbUser.email
+            token.image = dbUser.image || user.image
+          }
+        } catch (error) {
+          console.error('Error fetching user data in JWT callback:', error)
+        }
+      }
+      
       return token
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
+        session.user.image = token.image as string
       }
       return session
     },

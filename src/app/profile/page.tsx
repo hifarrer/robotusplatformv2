@@ -69,6 +69,8 @@ export default function ProfilePage() {
   useEffect(() => {
     if (session?.user?.name) {
       setName(session.user.name)
+    } else {
+      setName('')
     }
     fetchCredits()
   }, [session])
