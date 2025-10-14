@@ -1240,15 +1240,6 @@ export function ChatInterface() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowHelpModal(true)}
-                className="text-gray-400 hover:text-white p-2"
-                title="Help & Examples"
-              >
-                <HelpCircle className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
                 onClick={startNewConversation}
                 className="text-gray-400 hover:text-white p-2"
                 title="New Conversation"
@@ -1276,16 +1267,6 @@ export function ChatInterface() {
             </div>
             
             <div className="flex items-center space-x-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowHelpModal(true)}
-                className="text-gray-400 hover:text-white"
-                title="Help & Examples"
-              >
-                <HelpCircle className="w-4 h-4 mr-2" />
-                Help Me
-              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -2040,6 +2021,18 @@ export function ChatInterface() {
                   )}
                   <span className="hidden sm:inline">Select from Library</span>
                   <span className="sm:hidden">Library</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowHelpModal(true)}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 flex-1 sm:flex-none"
+                  title="Help & Examples"
+                >
+                  <HelpCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Help Me</span>
+                  <span className="sm:hidden">Help</span>
                 </Button>
               </div>
 
