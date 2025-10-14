@@ -117,9 +117,9 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = user.role
-        token.name = user.name
-        token.email = user.email
-        token.image = user.image
+        token.name = user.name || undefined
+        token.email = user.email || undefined
+        token.image = user.image || undefined
       }
       
       // For OAuth providers, we might need to fetch additional user data
@@ -132,9 +132,9 @@ export const authOptions: NextAuthOptions = {
           if (dbUser) {
             token.id = dbUser.id
             token.role = dbUser.role
-            token.name = dbUser.name || user.name
+            token.name = dbUser.name || user.name || undefined
             token.email = dbUser.email
-            token.image = dbUser.image || user.image
+            token.image = dbUser.image || user.image || undefined
           }
         } catch (error) {
           console.error('Error fetching user data in JWT callback:', error)
