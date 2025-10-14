@@ -410,7 +410,7 @@ export class WanService {
 export async function pollForResult<T>(
   pollFunction: () => Promise<T>,
   isComplete: (result: T) => boolean,
-  maxAttempts: number = 30,
+  maxAttempts: number = 120, // 10 minutes max (120 * 2 seconds = 240 seconds = 4 minutes, but can be overridden)
   interval: number = 2000
 ): Promise<T> {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {

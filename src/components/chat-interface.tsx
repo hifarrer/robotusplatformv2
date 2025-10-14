@@ -24,7 +24,8 @@ import {
   ZoomIn,
   Trash2,
   Download,
-  Edit
+  Edit,
+  HelpCircle
 } from 'lucide-react'
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
 import { UserMenu } from '@/components/user-menu'
@@ -32,6 +33,7 @@ import { CreditsDisplay } from '@/components/credits-display'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
+import { HelpModal } from '@/components/help-modal'
 import { useCredits } from '@/contexts/credits-context'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
 import { validateAndMapVideoDuration } from '@/lib/duration-utils'
@@ -79,6 +81,7 @@ export function ChatInterface() {
   const [selectedImageForVideo, setSelectedImageForVideo] = useState<any>(null)
   const [videoPrompt, setVideoPrompt] = useState<string>('')
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -1204,6 +1207,16 @@ export function ChatInterface() {
     }
   }
 
+  const handleHelpPromptSelect = (prompt: string) => {
+    setInput(prompt)
+    // Focus the textarea after setting the prompt
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus()
+      }
+    }, 100)
+  }
+
   return (
     <div className="flex h-screen bg-black">
       {/* Main chat area */}
@@ -1224,6 +1237,15 @@ export function ChatInterface() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHelpModal(true)}
+                className="text-gray-400 hover:text-white p-2"
+                title="Help & Examples"
+              >
+                <HelpCircle className="w-4 h-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -1254,6 +1276,16 @@ export function ChatInterface() {
             </div>
             
             <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHelpModal(true)}
+                className="text-gray-400 hover:text-white"
+                title="Help & Examples"
+              >
+                <HelpCircle className="w-4 h-4 mr-2" />
+                Help Me
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -2282,6 +2314,13 @@ export function ChatInterface() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+        onPromptSelect={handleHelpPromptSelect}
+      />
     </div>
   )
 }

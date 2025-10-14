@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     // Poll for completion
     let attempts = 0
-    const maxAttempts = 60 // 5 minutes max
+    const maxAttempts = 120 // 10 minutes max (120 * 5 seconds = 600 seconds = 10 minutes)
     let audioUrl = null
 
     while (attempts < maxAttempts && !audioUrl) {

@@ -31,7 +31,7 @@ This guide will help you set up Google OAuth for your Robotus AI platform.
 3. Choose "Web application" as the application type
 4. Add authorized redirect URIs:
    - For development: `http://localhost:3000/api/auth/callback/google`
-   - For production: `https://yourdomain.com/api/auth/callback/google`
+   - For production: `https://app.robotus.ai/api/auth/callback/google`
 5. Click "Create"
 6. Copy the Client ID and Client Secret
 
