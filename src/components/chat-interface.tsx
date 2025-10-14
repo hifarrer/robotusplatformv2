@@ -32,6 +32,7 @@ import { CreditsDisplay } from '@/components/credits-display'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
+import { useCredits } from '@/contexts/credits-context'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
 import { validateAndMapVideoDuration } from '@/lib/duration-utils'
 import { getRandomPrompt, getRandomVideoPrompt } from '@/lib/prompt-generator'
@@ -57,6 +58,7 @@ interface SavedImage {
 
 export function ChatInterface() {
   const { data: session } = useSession()
+  const { refreshCredits } = useCredits()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [files, setFiles] = useState<FileUpload[]>([])
@@ -79,6 +81,28 @@ export function ChatInterface() {
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    const scrollToBottom = () => {
+      if (scrollAreaRef.current) {
+        const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]')
+        if (scrollContainer) {
+          // Use smooth scrolling for better UX
+          scrollContainer.scrollTo({
+            top: scrollContainer.scrollHeight,
+            behavior: 'smooth'
+          })
+        }
+      }
+    }
+
+    // Use setTimeout to ensure the scroll happens after DOM updates
+    const timeoutId = setTimeout(scrollToBottom, 100)
+    
+    return () => clearTimeout(timeoutId)
+  }, [messages])
 
   // Poll for generation updates
   const checkGenerations = async () => {
@@ -110,6 +134,12 @@ export function ChatInterface() {
           console.log('📋 Message IDs:', prev.map(m => m.id))
           console.log('📋 Generation messageIds:', result.generations.map((g: any) => g.messageId))
           console.log('📋 Generation details:', result.generations.map((g: any) => ({ id: g.id, messageId: g.messageId, status: g.status, type: g.type, model: g.model })))
+          
+          // Refresh credits when generations complete
+          const hasCompletedGenerations = result.generations.some((g: any) => g.status === 'COMPLETED')
+          if (hasCompletedGenerations) {
+            refreshCredits()
+          }
           
           const updatedMessages = prev.map(message => {
             // Find all generations that belong to this message (by messageId)
@@ -1303,7 +1333,7 @@ export function ChatInterface() {
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-2 sm:p-4">
+        <ScrollArea ref={scrollAreaRef} className="flex-1 p-2 sm:p-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <Avatar className="w-12 h-12 sm:w-16 sm:h-16 mb-4">

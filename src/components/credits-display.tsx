@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { CreditCard, Sparkles, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,42 +12,10 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-
-interface Plan {
-  id: string
-  name: string
-  monthlyPrice: number
-  yearlyPrice: number
-  credits: number
-  description?: string
-}
-
-interface CreditsData {
-  balance: number
-  plan: Plan | null
-}
+import { useCredits } from '@/contexts/credits-context'
 
 export function CreditsDisplay() {
-  const [creditsData, setCreditsData] = useState<CreditsData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    fetchCredits()
-  }, [])
-
-  const fetchCredits = async () => {
-    try {
-      const response = await fetch('/api/credits')
-      if (response.ok) {
-        const data = await response.json()
-        setCreditsData(data)
-      }
-    } catch (error) {
-      console.error('Error fetching credits:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const { creditsData, isLoading } = useCredits()
 
   if (isLoading || !creditsData) {
     return (

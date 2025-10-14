@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import { UserMenu } from '@/components/user-menu'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { useCredits } from '@/contexts/credits-context'
 
 interface Plan {
   id: string
@@ -51,8 +52,8 @@ interface CreditsData {
 export default function ProfilePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [creditsData, setCreditsData] = useState<CreditsData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { creditsData, isLoading, refreshCredits } = useCredits()
+  const [transactions, setTransactions] = useState<CreditTransaction[]>([])
   const [name, setName] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -72,20 +73,18 @@ export default function ProfilePage() {
     } else {
       setName('')
     }
-    fetchCredits()
+    fetchTransactions()
   }, [session])
 
-  const fetchCredits = async () => {
+  const fetchTransactions = async () => {
     try {
       const response = await fetch('/api/credits?limit=10')
       if (response.ok) {
         const data = await response.json()
-        setCreditsData(data)
+        setTransactions(data.transactions || [])
       }
     } catch (error) {
-      console.error('Error fetching credits:', error)
-    } finally {
-      setIsLoading(false)
+      console.error('Error fetching transactions:', error)
     }
   }
 
@@ -320,7 +319,7 @@ export default function ProfilePage() {
             )}
 
             {/* Recent Transactions */}
-            {creditsData && creditsData.transactions.length > 0 && (
+            {transactions.length > 0 && (
               <div className="bg-gray-900 rounded-lg p-6 space-y-4">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                   <History className="w-5 h-5" />
@@ -328,7 +327,7 @@ export default function ProfilePage() {
                 </h2>
                 
                 <div className="space-y-2">
-                  {creditsData.transactions.map((transaction) => (
+                  {transactions.map((transaction) => (
                     <div 
                       key={transaction.id} 
                       className="bg-gray-800 rounded-lg p-4 flex items-center justify-between"
