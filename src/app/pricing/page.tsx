@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 import { 
   Check, 
   ArrowLeft, 
@@ -102,6 +103,26 @@ export default function PricingPage() {
     }
   }
 
+  // Google Ads conversion tracking function
+  const gtag_report_conversion = (url?: string) => {
+    const callback = function () {
+      if (typeof(url) != 'undefined') {
+        window.location = url;
+      }
+    };
+    
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17548478207/UEmACLiqy5kbEP-N4q9B',
+        'value': 1.0,
+        'currency': 'USD',
+        'transaction_id': '',
+        'event_callback': callback
+      });
+    }
+    return false;
+  }
+
   const handleUpgrade = async (planId: string, planName: string) => {
     setIsUpgrading(planName)
     
@@ -134,8 +155,8 @@ export default function PricingPage() {
 
       if (response.ok) {
         const { url } = await response.json()
-        // Redirect to Stripe Checkout
-        window.location.href = url
+        // Track conversion before redirecting to Stripe Checkout
+        gtag_report_conversion(url)
       } else {
         const error = await response.json()
         alert(error.error || 'Failed to create checkout session')
@@ -189,8 +210,8 @@ export default function PricingPage() {
         const data = await response.json()
         
         if (data.checkoutUrl) {
-          // Redirect to Stripe Checkout for new subscription
-          window.location.href = data.checkoutUrl
+          // Track conversion before redirecting to Stripe Checkout
+          gtag_report_conversion(data.checkoutUrl)
         } else {
           // Subscription updated successfully
           alert(data.message || 'Subscription updated successfully')
@@ -258,8 +279,34 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="flex h-screen bg-black">
-      <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full">
+    <>
+      {/* Google Ads Conversion Tracking Script */}
+      <Script
+        id="google-ads-conversion"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            function gtag_report_conversion(url) {
+              var callback = function () {
+                if (typeof(url) != 'undefined') {
+                  window.location = url;
+                }
+              };
+              gtag('event', 'conversion', {
+                  'send_to': 'AW-17548478207/UEmACLiqy5kbEP-N4q9B',
+                  'value': 1.0,
+                  'currency': 'USD',
+                  'transaction_id': '',
+                  'event_callback': callback
+              });
+              return false;
+            }
+          `,
+        }}
+      />
+      
+      <div className="flex h-screen bg-black">
+        <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full">
         {/* Header */}
         <div className="border-b border-gray-800 p-4">
           <div className="flex items-center justify-between">
@@ -550,6 +597,7 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 
