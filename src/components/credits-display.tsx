@@ -25,7 +25,7 @@ interface Plan {
 
 interface CreditsData {
   balance: number
-  plan: Plan
+  plan: Plan | null
 }
 
 export function CreditsDisplay() {
@@ -102,21 +102,21 @@ export function CreditsDisplay() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold">Current Plan</h3>
-              <Badge variant="secondary">{creditsData.plan.name}</Badge>
+              <Badge variant="secondary">{creditsData.plan?.name || 'Free'}</Badge>
             </div>
             <div className="p-4 rounded-lg border">
-              <p className="font-medium mb-2">{creditsData.plan.name} Plan</p>
-              {creditsData.plan.description && (
+              <p className="font-medium mb-2">{creditsData.plan?.name || 'Free'} Plan</p>
+              {creditsData.plan?.description && (
                 <p className="text-sm text-muted-foreground mb-3">{creditsData.plan.description}</p>
               )}
               <div className="flex items-center gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Monthly: </span>
-                  <span className="font-semibold">${creditsData.plan.monthlyPrice}</span>
+                  <span className="font-semibold">${creditsData.plan?.monthlyPrice || 0}</span>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Credits: </span>
-                  <span className="font-semibold">{creditsData.plan.credits}</span>
+                  <span className="font-semibold">{creditsData.plan?.credits || 120}</span>
                 </div>
               </div>
             </div>

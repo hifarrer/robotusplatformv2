@@ -44,7 +44,7 @@ interface CreditTransaction {
 
 interface CreditsData {
   balance: number
-  plan: Plan
+  plan: Plan | null
   transactions: CreditTransaction[]
 }
 
@@ -420,7 +420,7 @@ export default function ProfilePage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Account Type</span>
-                  <span className="text-white">{creditsData?.plan.name || 'Free'}</span>
+                  <span className="text-white">{creditsData?.plan?.name || 'Free'}</span>
                 </div>
               </div>
             </div>

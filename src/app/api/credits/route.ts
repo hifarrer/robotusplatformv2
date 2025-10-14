@@ -37,7 +37,19 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       balance: user.credits,
-      plan: user.plan,
+      plan: user.plan || {
+        id: 'free',
+        name: 'Free',
+        monthlyPrice: 0,
+        yearlyPrice: 0,
+        credits: 120,
+        description: 'Free plan with basic features',
+        features: ['Basic AI generation', 'Limited credits'],
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        users: []
+      },
       transactions,
     })
   } catch (error) {
