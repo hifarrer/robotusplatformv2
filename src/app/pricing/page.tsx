@@ -107,7 +107,7 @@ export default function PricingPage() {
   const gtag_report_conversion = (url?: string) => {
     const callback = function () {
       if (typeof(url) != 'undefined') {
-        window.location = url;
+        window.location.href = url;
       }
     };
     
@@ -289,7 +289,7 @@ export default function PricingPage() {
             function gtag_report_conversion(url) {
               var callback = function () {
                 if (typeof(url) != 'undefined') {
-                  window.location = url;
+                  window.location.href = url;
                 }
               };
               gtag('event', 'conversion', {
