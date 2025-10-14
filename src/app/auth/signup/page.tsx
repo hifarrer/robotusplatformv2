@@ -83,21 +83,13 @@ export default function SignUpPage() {
     setError('')
 
     try {
-      const result = await signIn('google', {
-        redirect: false,
+      // Use redirect: true for OAuth providers to complete the full flow
+      await signIn('google', {
+        callbackUrl: '/chat',
+        redirect: true,
       })
-
-      if (result?.error) {
-        setError('Google sign-in failed. Please try again.')
-      } else {
-        // Refresh session and redirect
-        await getSession()
-        router.push('/chat')
-        router.refresh()
-      }
     } catch (error) {
       setError('An error occurred. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }

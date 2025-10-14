@@ -61,18 +61,24 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/signin',
   },
+  events: {
+    async linkAccount({ user, account, profile }) {
+      // This event is called when a new account is linked
+      console.log('Account linked:', { userId: user.id, provider: account.provider })
+    },
+  },
   callbacks: {
     async signIn({ user, account, profile }) {
-      // If signing in with Google
-      if (account?.provider === 'google') {
+      // For Google OAuth, check if we need to link accounts
+      if (account?.provider === 'google' && user.email) {
         try {
-          // Check if user with this email already exists
+          // Check if there's an existing user with this email
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! }
+            where: { email: user.email }
           })
 
           if (existingUser) {
-            // Check if Google account is already linked
+            // Check if Google account is already linked to this user
             const existingAccount = await prisma.account.findFirst({
               where: {
                 userId: existingUser.id,
@@ -81,7 +87,7 @@ export const authOptions: NextAuthOptions = {
             })
 
             if (!existingAccount) {
-              // Link the Google account to existing user
+              // Link the Google account to the existing user
               await prisma.account.create({
                 data: {
                   userId: existingUser.id,
@@ -98,14 +104,10 @@ export const authOptions: NextAuthOptions = {
                 }
               })
             }
-            
-            // Update user object to use existing user's data
-            user.id = existingUser.id
-            user.role = existingUser.role
           }
         } catch (error) {
-          console.error('Error linking Google account:', error)
-          return false
+          console.error('Error in signIn callback:', error)
+          // Don't block the sign-in process
         }
       }
       return true
