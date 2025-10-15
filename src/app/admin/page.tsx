@@ -166,7 +166,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <Button
                 onClick={() => router.push('/admin/users')}
                 className="h-auto p-4 flex flex-col items-start space-y-2 bg-gray-900 hover:bg-gray-800"
@@ -185,6 +185,16 @@ export default function AdminDashboard() {
                 <CreditCard className="w-6 h-6 text-green-500" />
                 <span className="text-white font-semibold">Manage Plans</span>
                 <span className="text-sm text-gray-400">Edit Plans & Pricing</span>
+              </Button>
+
+              <Button
+                onClick={() => router.push('/admin/history')}
+                className="h-auto p-4 flex flex-col items-start space-y-2 bg-gray-900 hover:bg-gray-800"
+                variant="outline"
+              >
+                <BarChart3 className="w-6 h-6 text-cyan-500" />
+                <span className="text-white font-semibold">Generations History</span>
+                <span className="text-sm text-gray-400">View All User Generations</span>
               </Button>
 
               <Button
