@@ -23,7 +23,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { UserMenu } from '@/components/user-menu'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface GenerationHistory {
   id: string
@@ -224,14 +223,14 @@ export default function AdminHistory() {
             </div>
 
             {/* Generations Table */}
-            <Card className="bg-gray-900 border-gray-800">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+            <div className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+              <div className="p-6 border-b border-gray-800">
+                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
                   Recent Generations
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </h2>
+              </div>
+              <div className="p-6">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
@@ -382,8 +381,8 @@ export default function AdminHistory() {
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
