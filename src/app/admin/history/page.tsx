@@ -135,13 +135,8 @@ export default function AdminHistory() {
   }
 
   const handleThumbnailClick = (thumbnailUrl: string, mediaType: string) => {
-    if (mediaType === 'video') {
-      // For videos, open in new tab
-      window.open(`/api/serve-file?path=${encodeURIComponent(thumbnailUrl)}`, '_blank')
-    } else {
-      // For images and audio, open in new tab
-      window.open(`/api/serve-file?path=${encodeURIComponent(thumbnailUrl)}`, '_blank')
-    }
+    // The thumbnailUrl already contains the correct path, so use it directly
+    window.open(thumbnailUrl, '_blank')
   }
 
   if (status === 'loading' || isLoading) {
