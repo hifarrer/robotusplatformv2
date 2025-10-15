@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CheckCircle, Mail, AlertCircle, Loader2 } from 'lucide-react'
 
 export default function VerifyEmailPage() {
@@ -105,109 +103,114 @@ export default function VerifyEmailPage() {
   if (isVerified) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
             <div className="flex justify-center mb-4">
               <CheckCircle className="h-16 w-16 text-green-500" />
             </div>
-            <CardTitle className="text-2xl text-white">Email Verified!</CardTitle>
-            <CardDescription className="text-gray-400">
+            <h1 className="text-4xl font-bold text-white mb-2">Email Verified!</h1>
+            <p className="text-gray-400">
               Your email has been successfully verified.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Alert className="mb-4">
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
+            </p>
+          </div>
+          
+          <div className="bg-green-900/20 border border-green-500/20 rounded-lg p-4 mb-4">
+            <div className="flex items-center">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              <p className="text-green-400 text-sm">
                 You can now sign in to your account.
-              </AlertDescription>
-            </Alert>
-            <Button 
-              onClick={() => router.push('/auth/signin')}
-              className="w-full"
-            >
-              Continue to Sign In
-            </Button>
-          </CardContent>
-        </Card>
+              </p>
+            </div>
+          </div>
+          
+          <Button 
+            onClick={() => router.push('/auth/signin')}
+            className="w-full"
+          >
+            Continue to Sign In
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
           <div className="flex justify-center mb-4">
             <Mail className="h-16 w-16 text-blue-500" />
           </div>
-          <CardTitle className="text-2xl text-white">Verify Your Email</CardTitle>
-          <CardDescription className="text-gray-400">
+          <h1 className="text-4xl font-bold text-white mb-2">Verify Your Email</h1>
+          <p className="text-gray-400">
             We've sent a verification link to your email address.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {message && (
-            <Alert>
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>{message}</AlertDescription>
-            </Alert>
-          )}
+          </p>
+        </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                className="bg-gray-800 border-gray-600 text-white"
-                disabled={isLoading || isResending}
-              />
+        {message && (
+          <div className="bg-green-900/20 border border-green-500/20 rounded-lg p-4">
+            <div className="flex items-center">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              <p className="text-green-400 text-sm">{message}</p>
             </div>
+          </div>
+        )}
 
+        {error && (
+          <div className="bg-red-900/20 border border-red-500/20 rounded-lg p-4">
+            <div className="flex items-center">
+              <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+              Email Address
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500"
+              disabled={isLoading || isResending}
+            />
+          </div>
+
+          <Button
+            onClick={handleResendVerification}
+            disabled={isLoading || isResending || !email}
+            className="w-full"
+          >
+            {isResending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              'Resend Verification Email'
+            )}
+          </Button>
+
+          <div className="text-center">
             <Button
-              onClick={handleResendVerification}
-              disabled={isLoading || isResending || !email}
+              variant="outline"
+              onClick={() => router.push('/auth/signin')}
               className="w-full"
             >
-              {isResending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                'Resend Verification Email'
-              )}
+              Back to Sign In
             </Button>
-
-            <div className="text-center">
-              <Button
-                variant="outline"
-                onClick={() => router.push('/auth/signin')}
-                className="w-full"
-              >
-                Back to Sign In
-              </Button>
-            </div>
           </div>
+        </div>
 
-          <div className="text-sm text-gray-400 text-center">
-            <p>Didn't receive the email? Check your spam folder or try resending.</p>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="text-sm text-gray-400 text-center">
+          <p>Didn't receive the email? Check your spam folder or try resending.</p>
+        </div>
+      </div>
     </div>
   )
 }
