@@ -1247,7 +1247,6 @@ export function ChatInterface() {
                 <Plus className="w-4 h-4" />
               </Button>
               <PreferencesMenu onPreferencesChange={handlePreferencesChange} />
-              <CreditsDisplay />
               <UserMenu />
             </div>
           </div>
@@ -1342,6 +1341,7 @@ export function ChatInterface() {
               <Music className="w-3 h-3 mr-1" />
               Audios
             </Button>
+            <CreditsDisplay isMobile={true} />
           </div>
         </div>
 

@@ -14,14 +14,14 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useCredits } from '@/contexts/credits-context'
 
-export function CreditsDisplay() {
+export function CreditsDisplay({ isMobile = false }: { isMobile?: boolean }) {
   const { creditsData, isLoading } = useCredits()
 
   if (isLoading || !creditsData) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50">
-        <Sparkles className="h-4 w-4 animate-pulse" />
-        <span className="text-sm font-medium">Loading...</span>
+      <div className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50 ${isMobile ? 'px-2 py-1' : ''}`}>
+        <Sparkles className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} animate-pulse`} />
+        <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>Loading...</span>
       </div>
     )
   }
@@ -36,12 +36,12 @@ export function CreditsDisplay() {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          size="sm"
-          className="gap-2 hover:bg-primary/5 transition-colors"
+          size={isMobile ? "sm" : "sm"}
+          className={`gap-2 hover:bg-primary/5 transition-colors ${isMobile ? 'text-xs px-2 py-1' : ''}`}
         >
-          <Sparkles className={`h-4 w-4 ${creditColor}`} />
-          <span className="font-semibold">{creditsData.balance}</span>
-          <span className="text-muted-foreground">credits</span>
+          <Sparkles className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} ${creditColor}`} />
+          <span className={`${isMobile ? 'text-xs' : 'font-semibold'}`}>{creditsData.balance}</span>
+          {!isMobile && <span className="text-muted-foreground">credits</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">

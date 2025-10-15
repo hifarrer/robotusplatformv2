@@ -18,7 +18,8 @@ import {
   Volume2,
   Loader2,
   Image as ImageIcon,
-  Video
+  Video,
+  Music
 } from 'lucide-react'
 import { cn, formatFileSize, formatTimestamp } from '@/lib/utils'
 
@@ -156,7 +157,6 @@ export function MyAudiosView() {
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
-              <CreditsDisplay />
               <UserMenu />
             </div>
           </div>
@@ -209,6 +209,38 @@ export function MyAudiosView() {
               <CreditsDisplay />
               <UserMenu />
             </div>
+          </div>
+          
+          {/* Mobile navigation menu */}
+          <div className="flex sm:hidden items-center justify-center space-x-4 pt-2 border-t border-gray-700">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = '/my-images'}
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
+            >
+              <ImageIcon className="w-3 h-3 mr-1" />
+              Images
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = '/my-videos'}
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
+            >
+              <Video className="w-3 h-3 mr-1" />
+              Videos
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.location.href = '/my-audios'}
+              className="text-gray-400 hover:text-white text-xs px-2 py-1"
+            >
+              <Music className="w-3 h-3 mr-1" />
+              Audios
+            </Button>
+            <CreditsDisplay isMobile={true} />
           </div>
         </div>
 
