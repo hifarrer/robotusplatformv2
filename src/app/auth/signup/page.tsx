@@ -59,7 +59,14 @@ export default function SignUpPage() {
         return
       }
 
-      // Automatically sign in after registration
+      // Check if email verification is required
+      if (result.requiresVerification) {
+        // Redirect to verification page instead of auto sign-in
+        router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`)
+        return
+      }
+
+      // Automatically sign in after registration (for OAuth users)
       const signInResult = await signIn('credentials', {
         email: data.email,
         password: data.password,
