@@ -532,6 +532,20 @@ export async function POST(request: NextRequest) {
             const finalDuration = durationValidation.duration
             const durationMessage = durationValidation.message
             
+            // Check and deduct credits for video generation
+            const videoCredits = await checkAndDeductCreditsForGeneration(
+              session.user.id,
+              'IMAGE_TO_VIDEO',
+              finalDuration
+            )
+            
+            if (!videoCredits.success) {
+              response = `Sorry, you don't have enough credits to generate a video. You need ${videoCredits.cost} credits but only have ${await prisma.user.findUnique({ where: { id: session.user.id }, select: { credits: true } }).then(u => u?.credits || 0)} credits remaining. Please upgrade your plan to continue.`
+              break
+            }
+            
+            console.log(`💳 Credits deducted for video: ${videoCredits.cost}, New balance: ${videoCredits.newBalance}`)
+            
             const taskId = await WanService.generateVideo(
               analysis.prompt,
               videoImagesToUse[0],
@@ -555,7 +569,7 @@ export async function POST(request: NextRequest) {
             generations.push(generation)
             
             const imageSource = images.length > 0 ? 'your images' : 'the previous image'
-            const baseResponse = `I'm creating a ${finalDuration}-second video from ${imageSource} based on: "${analysis.prompt}". This will take a few minutes...`
+            const baseResponse = `I'm creating a ${finalDuration}-second video from ${imageSource} based on: "${analysis.prompt}". This will take a few minutes... (${videoCredits.cost} credits used)`
             
             // Add duration adjustment message if needed
             response = durationMessage ? `${durationMessage}\n\n${baseResponse}` : baseResponse

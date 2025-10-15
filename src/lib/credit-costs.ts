@@ -56,9 +56,9 @@ export function calculateAudioCost(durationSeconds: number): number {
  */
 export function calculateVideoCost(durationSeconds: number): number {
   // Round to nearest supported duration
-  if (durationSeconds <= 5) return CREDIT_COSTS.TEXT_TO_VIDEO[5]
-  if (durationSeconds <= 8) return CREDIT_COSTS.TEXT_TO_VIDEO[8]
-  return CREDIT_COSTS.TEXT_TO_VIDEO[10]
+  if (durationSeconds <= 5) return CREDIT_COSTS.IMAGE_TO_VIDEO[5]
+  if (durationSeconds <= 8) return CREDIT_COSTS.IMAGE_TO_VIDEO[8]
+  return CREDIT_COSTS.IMAGE_TO_VIDEO[10]
 }
 
 /**
