@@ -291,7 +291,19 @@ export default function AdminHistory() {
                                 className="p-1 h-auto"
                               >
                                 {generation.mediaType === 'image' ? (
-                                  <ImageIcon className="w-6 h-6 text-blue-500" />
+                                  <div className="relative">
+                                    <img 
+                                      src={generation.thumbnailUrl} 
+                                      alt="Preview" 
+                                      className="w-12 h-12 object-cover rounded border border-gray-600"
+                                      onError={(e) => {
+                                        // Fallback to icon if image fails to load
+                                        e.currentTarget.style.display = 'none'
+                                        e.currentTarget.nextElementSibling?.classList.remove('hidden')
+                                      }}
+                                    />
+                                    <ImageIcon className="w-6 h-6 text-blue-500 hidden" />
+                                  </div>
                                 ) : generation.mediaType === 'video' ? (
                                   <Video className="w-6 h-6 text-purple-500" />
                                 ) : (
