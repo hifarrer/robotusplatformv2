@@ -862,6 +862,99 @@ export function ChatInterface() {
     }
   }
 
+  // ReImagine image with WAVESPEED.ai Soul model
+  const reimagineImage = async (generation: any) => {
+    // Get the image URL to reimagine
+    const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
+    if (!imageUrl) {
+      throw new Error('No image URL found to reimagine')
+    }
+    
+    // Add immediate feedback message
+    const loadingMessage: ChatMessage = {
+      id: generateId(),
+      role: 'ASSISTANT',
+      content: 'I\'m reimagining your image with creative AI variations. This will take a few moments...',
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, loadingMessage])
+    
+    try {
+      setIsLoading(true)
+      
+      console.log('🎨 Reimagining image:', imageUrl)
+      
+      const response = await fetch('/api/reimagine-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageUrl: imageUrl,
+          chatId: chatId,
+        }),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `ReImagine failed: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      
+      // Store chatId from response if we don't have one
+      if (!chatId && result.chatId) {
+        setChatId(result.chatId)
+      }
+      
+      // Handle reimagine response - add the reimagine message to chat
+      if (result.isReimagining && result.messageId) {
+        console.log('🔄 Adding reimagine message to chat:', result.messageId)
+        const reimagineMessage: ChatMessage = {
+          id: result.messageId,
+          role: 'ASSISTANT',
+          content: result.response || 'Here\'s your reimagined image!',
+          generations: result.generations || [],
+          timestamp: new Date(),
+        }
+        
+        // Remove the loading message and add the reimagine message
+        setMessages(prev => {
+          const filteredMessages = prev.filter(msg => msg.id !== loadingMessage.id)
+          return [...filteredMessages, reimagineMessage]
+        })
+      } else {
+        // Replace the loading message with the actual response
+        setMessages(prev => prev.map(msg => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                content: result.response || 'Here\'s your reimagined image!',
+                generations: result.generations || [],
+              }
+            : msg
+        ))
+      }
+      
+      // Refresh credits after reimagining
+      await refreshCredits()
+    } catch (error: any) {
+      console.error('❌ Error reimagining image:', error)
+      
+      // Replace the loading message with error message
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: `Sorry, there was an error reimagining your image: ${error?.message || 'Unknown error'}`,
+            }
+          : msg
+      ))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Enhance image with FAL.ai
   const enhanceImage = async (generation: any) => {
     // Get the image URL to enhance
@@ -1745,7 +1838,7 @@ export function ChatInterface() {
                                   ))}
                                 </div>
                                 
-                                {/* Action buttons: New, Upscale, Enhance, Edit, and Video */}
+                                {/* Action buttons: New, Edit, ReImagine, Enhance, Upscale, Video */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1757,21 +1850,34 @@ export function ChatInterface() {
                                     <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                     New
                                   </Button>
-                                  {/* Show upscale button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {/* Show edit button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => upscaleImage(generation)}
+                                      onClick={() => editImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                      className="text-blue-400 border-blue-600 hover:bg-blue-500 hover:text-white text-xs sm:text-sm"
                                     >
-                                      <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      Upscale
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Edit
+                                    </Button>
+                                  )}
+                                  {/* Show reimagine button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => reimagineImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-purple-400 border-purple-600 hover:bg-purple-500 hover:text-white text-xs sm:text-sm"
+                                    >
+                                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      ReImagine
                                     </Button>
                                   )}
                                   {/* Show enhance button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
@@ -1783,27 +1889,27 @@ export function ChatInterface() {
                                       Enhance
                                     </Button>
                                   )}
-                                  {/* Show edit button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {/* Show upscale button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => editImage(generation)}
+                                      onClick={() => upscaleImage(generation)}
                                       disabled={isLoading}
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
-                                      <Edit className="w-4 h-4 mr-2" />
-                                      Edit
+                                      <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      Upscale
                                     </Button>
                                   )}
                                   {/* Show generate video button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={() => generateVideoFromImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                      className="text-red-400 border-red-600 hover:bg-red-500 hover:text-white text-xs sm:text-sm"
                                     >
                                       <Video className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                       Video
@@ -1884,7 +1990,7 @@ export function ChatInterface() {
                                   </Button>
                                 </div>
                                 
-                                {/* Action buttons: New, Upscale, Enhance, Edit, and Video */}
+                                {/* Action buttons: New, Edit, ReImagine, Enhance, Upscale, Video */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1896,21 +2002,34 @@ export function ChatInterface() {
                                     <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                     New
                                   </Button>
-                                  {/* Show upscale button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {/* Show edit button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => upscaleImage(generation)}
+                                      onClick={() => editImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                      className="text-blue-400 border-blue-600 hover:bg-blue-500 hover:text-white text-xs sm:text-sm"
                                     >
-                                      <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      Upscale
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Edit
+                                    </Button>
+                                  )}
+                                  {/* Show reimagine button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => reimagineImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-purple-400 border-purple-600 hover:bg-purple-500 hover:text-white text-xs sm:text-sm"
+                                    >
+                                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      ReImagine
                                     </Button>
                                   )}
                                   {/* Show enhance button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
@@ -1922,27 +2041,27 @@ export function ChatInterface() {
                                       Enhance
                                     </Button>
                                   )}
-                                  {/* Show edit button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {/* Show upscale button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      onClick={() => editImage(generation)}
+                                      onClick={() => upscaleImage(generation)}
                                       disabled={isLoading}
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
-                                      <Edit className="w-4 h-4 mr-2" />
-                                      Edit
+                                      <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      Upscale
                                     </Button>
                                   )}
                                   {/* Show generate video button only for completed image generations */}
-                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
                                     <Button
                                       variant="outline"
                                       size="sm"
                                       onClick={() => generateVideoFromImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                      className="text-red-400 border-red-600 hover:bg-red-500 hover:text-white text-xs sm:text-sm"
                                     >
                                       <Video className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                       Video

@@ -195,6 +195,7 @@ enum GenerationType {
   TEXT_TO_AUDIO
   IMAGE_UPSCALE
   IMAGE_ENHANCEMENT
+  IMAGE_REIMAGINE
 }
 
 enum GenerationStatus {

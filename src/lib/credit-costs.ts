@@ -9,6 +9,7 @@ export const CREDIT_COSTS = {
   IMAGE_TO_IMAGE: 5,
   IMAGE_UPSCALE: 5,
   IMAGE_ENHANCEMENT: 8, // Face and skin enhancement via FAL.ai
+  IMAGE_REIMAGINE: 6, // Reimagine image via WAVESPEED.ai Soul model
 
   // Audio generation: 1 credit per 15 seconds
   TEXT_TO_AUDIO: {
@@ -89,6 +90,9 @@ export function calculateGenerationCost(
     case 'IMAGE_ENHANCEMENT':
       return CREDIT_COSTS.IMAGE_ENHANCEMENT
 
+    case 'IMAGE_REIMAGINE':
+      return CREDIT_COSTS.IMAGE_REIMAGINE
+
     case 'TEXT_TO_AUDIO':
       if (!durationSeconds) {
         throw new Error('Duration required for audio generation')
@@ -132,6 +136,9 @@ export function getCreditCostDescription(type: GenerationType): string {
 
     case 'IMAGE_ENHANCEMENT':
       return '8 credits per image'
+
+    case 'IMAGE_REIMAGINE':
+      return '6 credits per image'
 
     case 'TEXT_TO_AUDIO':
       return '1 credit per 15 seconds'

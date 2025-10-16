@@ -19,7 +19,8 @@ import {
   Loader2,
   Video,
   Music,
-  LogOut
+  LogOut,
+  Sparkles
 } from 'lucide-react'
 import { cn, formatFileSize, formatTimestamp } from '@/lib/utils'
 import Image from 'next/image'
@@ -58,6 +59,7 @@ export function MyImagesView() {
   const [totalPages, setTotalPages] = useState(1)
   const [selectedImage, setSelectedImage] = useState<SavedImage | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [reimagining, setReimagining] = useState<string | null>(null)
 
   const fetchImages = async (pageNum = 1) => {
     try {
@@ -127,6 +129,42 @@ export function MyImagesView() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+  }
+
+  const reimagineImage = async (image: SavedImage) => {
+    try {
+      setReimagining(image.id)
+      console.log('🎨 Frontend: Reimagining image with ID:', image.id)
+      
+      const response = await fetch('/api/reimagine-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageUrl: image.localPath,
+        }),
+      })
+      
+      console.log('🎨 Frontend: Reimagine response status:', response.status)
+      const data = await response.json()
+      console.log('🎨 Frontend: Reimagine response data:', data)
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reimagine image')
+      }
+      
+      console.log('✅ Frontend: Image reimagined successfully')
+      alert('Image reimagined successfully! Check your images library for the new version.')
+      
+      // Refresh the images list
+      fetchImages(1)
+    } catch (error) {
+      console.error('❌ Frontend: Error reimagining image:', error)
+      alert(`Failed to reimagine image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setReimagining(null)
+    }
   }
 
   return (
@@ -308,14 +346,30 @@ export function MyImagesView() {
                         size="sm"
                         onClick={() => setSelectedImage(image)}
                         className="text-white hover:bg-white/20"
+                        title="View"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => reimagineImage(image)}
+                        disabled={reimagining === image.id}
+                        className="text-purple-400 hover:bg-purple-500/20"
+                        title="ReImagine"
+                      >
+                        {reimagining === image.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => downloadImage(image)}
                         className="text-white hover:bg-white/20"
+                        title="Download"
                       >
                         <Download className="w-4 h-4" />
                       </Button>
@@ -325,6 +379,7 @@ export function MyImagesView() {
                         onClick={() => deleteImage(image.id)}
                         disabled={deleting === image.id}
                         className="text-red-400 hover:bg-red-500/20"
+                        title="Delete"
                       >
                         {deleting === image.id ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -394,13 +449,13 @@ export function MyImagesView() {
           {selectedImage && (
             <div className="space-y-4">
               {/* Image */}
-              <div className="relative max-h-96 overflow-hidden rounded-lg">
+              <div className="relative rounded-lg">
                 <Image
                   src={selectedImage.localPath}
                   alt={selectedImage.title}
                   width={selectedImage.width || 512}
                   height={selectedImage.height || 512}
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto object-contain max-h-[70vh]"
                 />
               </div>
               
@@ -440,14 +495,30 @@ export function MyImagesView() {
               
               {/* Actions */}
               <div className="flex items-center justify-between pt-4 border-t border-gray-700">
-                <Button
-                  variant="outline"
-                  onClick={() => downloadImage(selectedImage)}
-                  className="text-gray-300 border-gray-600 hover:bg-gray-700"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => downloadImage(selectedImage)}
+                    className="text-gray-300 border-gray-600 hover:bg-gray-700"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={() => reimagineImage(selectedImage)}
+                    disabled={reimagining === selectedImage.id}
+                    className="text-purple-400 border-purple-600 hover:bg-purple-500/20"
+                  >
+                    {reimagining === selectedImage.id ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4 mr-2" />
+                    )}
+                    ReImagine
+                  </Button>
+                </div>
                 
                 <Button
                   variant="destructive"

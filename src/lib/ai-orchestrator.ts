@@ -21,8 +21,9 @@ Available actions:
 5. "lipsync" - User wants to make an image speak/talk (requires image and audio)
 6. "text_to_audio" - User wants to create an audio file from text (requires text in quotes)
 7. "image_enhancement" - User wants to enhance face and skin details in images (requires images)
-8. "chat" - General conversation that doesn't require image/video generation
-9. "video_duration_selection" - User needs to select video duration (5s/10s for WAN-2.5, 5s/8s for VEO3-Fast)
+8. "image_reimagine" - User wants to reimagine/recreate an image with AI variations (requires images)
+9. "chat" - General conversation that doesn't require image/video generation
+10. "video_duration_selection" - User needs to select video duration (5s/10s for WAN-2.5, 5s/8s for VEO3-Fast)
 
 IMPORTANT WORKFLOW RULES:
 - If 2+ images are attached: ALWAYS choose "image_to_image" (even if user asks for video)
@@ -44,6 +45,7 @@ Keyword Guidelines:
 - Look for "speak", "talk", "lipsync", "voice", "saying", "talking" for lipsync requests
 - Look for "audio", "sound", "voice", "speak", "say" with text in quotes for audio requests
 - Look for "enhance", "enhancement", "better quality", "face details", "skin details", "improve face", "improve skin", "hyperreal", "hyper real", "hyper realistic", "hyperrealistic" for enhancement requests
+- Look for "reimagine", "reimagine this", "recreate", "new version", "different version", "variations", "rethink", "reinvent" for reimagine requests
 - If user wants audio but doesn't specify DETAILED voice characteristics, ask them to describe the voice they want
 - DETAILED voice characteristics include: accent (American/British/etc), age (young/adult), tone (deep/soft/loud/gentle/strong/smooth), style (professional/energetic/captivating)
 - Basic gender (male/female) alone is NOT sufficient - need additional characteristics for "text_to_audio"
@@ -71,7 +73,7 @@ Keyword Guidelines:
 
 Return your analysis as JSON with:
 {
-  "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|text_to_audio|image_enhancement|chat|video_duration_selection",
+  "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|text_to_audio|image_enhancement|image_reimagine|chat|video_duration_selection",
   "prompt": "cleaned and optimized prompt for the AI service",
   "requiresImages": boolean,
   "requiresAudio": boolean (true for lipsync),
@@ -156,7 +158,7 @@ Analyze this request and determine the appropriate action. Pay special attention
     console.log('🤖 AI Analysis Result:', analysis) // Debug log
     
     // Validate the response
-    const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'text_to_audio', 'image_enhancement', 'chat', 'video_duration_selection']
+    const validActions = ['text_to_image', 'image_to_image', 'text_to_video', 'image_to_video', 'lipsync', 'text_to_audio', 'image_enhancement', 'image_reimagine', 'chat', 'video_duration_selection']
     if (!validActions.includes(analysis.action)) {
       throw new Error('Invalid action returned')
     }
@@ -222,6 +224,10 @@ Analyze this request and determine the appropriate action. Pay special attention
     // Check for enhancement keywords
     const enhanceKeywords = ['enhance', 'enhancement', 'better quality', 'face details', 'skin details', 'improve face', 'improve skin', 'hyperreal', 'hyper real', 'hyper realistic', 'hyperrealistic']
     const isEnhanceRequest = enhanceKeywords.some(keyword => lowerMessage.includes(keyword))
+    
+    // Check for reimagine keywords
+    const reimagineKeywords = ['reimagine', 'recreate', 'new version', 'different version', 'variations', 'rethink', 'reinvent']
+    const isReimagineRequest = reimagineKeywords.some(keyword => lowerMessage.includes(keyword))
     
     // Check for lipsync keywords
     const lipsyncKeywords = ['speak', 'talk', 'lipsync', 'voice', 'saying', 'talking']
@@ -328,6 +334,29 @@ What kind of voice characteristics would you like for your audio?`,
         useRecentImage: false,
         confidence: 0.9,
         reasoning: 'Fallback: asking for voice characteristics'
+      }
+    }
+    
+    // Reimagine takes priority if detected with images
+    if (isReimagineRequest) {
+      if (hasImages || hasContextualReference) {
+        return {
+          action: 'image_reimagine',
+          prompt: message,
+          requiresImages: true,
+          useRecentImage: hasContextualReference && !hasImages,
+          confidence: 0.9,
+          reasoning: 'Fallback: detected reimagine request with image'
+        }
+      } else {
+        return {
+          action: 'chat',
+          prompt: 'To reimagine an image, I need an image to work with. Please upload an image or select one from your library.',
+          requiresImages: false,
+          useRecentImage: false,
+          confidence: 0.9,
+          reasoning: 'Fallback: reimagine requested but missing image'
+        }
       }
     }
     

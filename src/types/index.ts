@@ -1,4 +1,4 @@
-export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'TEXT_TO_AUDIO' | 'IMAGE_UPSCALE' | 'IMAGE_ENHANCEMENT'
+export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'TEXT_TO_AUDIO' | 'IMAGE_UPSCALE' | 'IMAGE_ENHANCEMENT' | 'IMAGE_REIMAGINE'
 export type GenerationStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
 export type MessageRole = 'USER' | 'ASSISTANT' | 'SYSTEM'
 
@@ -109,6 +109,15 @@ export interface WavespeedUpscaleRequest {
   target_resolution: string
 }
 
+export interface WavespeedReimagineRequest {
+  image: string
+  prompt: string
+  quality: string
+  size: string
+  strength: number
+  style: string
+}
+
 export interface WavespeedResponse {
   data: {
     id: string
@@ -139,7 +148,7 @@ export interface WavespeedResultResponse {
 
 // AI Orchestrator Types
 export interface AIAnalysisResult {
-  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'image_enhancement' | 'chat' | 'video_duration_selection'
+  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'image_enhancement' | 'image_reimagine' | 'chat' | 'video_duration_selection'
   prompt: string
   requiresImages: boolean
   requiresAudio?: boolean

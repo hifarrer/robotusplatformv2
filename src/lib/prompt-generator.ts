@@ -68,12 +68,16 @@ export const CREATIVE_PROMPTS: PromptCategory[] = [
 ]
 
 /**
- * Gets a random prompt from all categories
+ * Gets a random prompt from all categories (excluding video prompts)
  */
 export function getRandomPrompt(): string {
-  const allPrompts = CREATIVE_PROMPTS.flatMap(category => category.prompts)
-  const randomIndex = Math.floor(Math.random() * allPrompts.length)
-  return allPrompts[randomIndex]
+  // Filter out video/animation category to only get image prompts
+  const imagePrompts = CREATIVE_PROMPTS
+    .filter(category => category.category !== "Video & Animation")
+    .flatMap(category => category.prompts)
+  
+  const randomIndex = Math.floor(Math.random() * imagePrompts.length)
+  return imagePrompts[randomIndex]
 }
 
 /**
@@ -90,12 +94,16 @@ export function getRandomPromptFromCategory(categoryName: string): string {
 }
 
 /**
- * Gets multiple random prompts (no duplicates)
+ * Gets multiple random prompts (no duplicates, excluding video prompts)
  */
 export function getRandomPrompts(count: number = 3): string[] {
-  const allPrompts = CREATIVE_PROMPTS.flatMap(category => category.prompts)
-  const shuffled = [...allPrompts].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, Math.min(count, allPrompts.length))
+  // Filter out video/animation category to only get image prompts
+  const imagePrompts = CREATIVE_PROMPTS
+    .filter(category => category.category !== "Video & Animation")
+    .flatMap(category => category.prompts)
+  
+  const shuffled = [...imagePrompts].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, Math.min(count, imagePrompts.length))
 }
 
 /**

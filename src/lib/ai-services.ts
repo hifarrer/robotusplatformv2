@@ -5,6 +5,7 @@ import {
   WavespeedImageToImageRequest,
   WavespeedLipsyncRequest,
   WavespeedUpscaleRequest,
+  WavespeedReimagineRequest,
   WavespeedResponse,
   WavespeedResultResponse,
   AspectRatio,
@@ -255,6 +256,53 @@ export class WavespeedService {
       console.error('Wavespeed upscale error:', error)
       console.error('Error response:', error.response?.data) // More detailed error
       throw new Error('Failed to start image upscaling')
+    }
+  }
+
+  static async reimagineImage(
+    imageUrl: string,
+    prompt: string = 'reimagine this picture',
+    quality: string = 'medium',
+    size: string = '1152*1536',
+    strength: number = 0.5,
+    style: string = 'Realistic'
+  ): Promise<string> {
+    try {
+      if (!WAVESPEED_API_KEY) {
+        throw new Error('WAVESPEED_API_KEY environment variable is not set')
+      }
+      
+      console.log('🎨 Reimagining image:', imageUrl) // Debug log
+      console.log('🎨 API Key present:', !!WAVESPEED_API_KEY) // Debug log
+      
+      const request: WavespeedReimagineRequest = {
+        image: imageUrl,
+        prompt,
+        quality,
+        size,
+        strength,
+        style,
+      }
+
+      console.log('Sending reimagine request to Wavespeed:', { request }) // Debug log
+
+      const response = await axios.post<WavespeedResponse>(
+        `${WAVESPEED_BASE_URL}/higgsfield/soul/image-to-image`,
+        request,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${WAVESPEED_API_KEY}`,
+          },
+        }
+      )
+
+      console.log('Wavespeed reimagine response:', response.data) // Debug log
+      return response.data.data.id
+    } catch (error: any) {
+      console.error('Wavespeed reimagine error:', error)
+      console.error('Error response:', error.response?.data) // More detailed error
+      throw new Error('Failed to start image reimagining')
     }
   }
 
