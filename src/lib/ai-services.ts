@@ -230,7 +230,7 @@ export class WavespeedService {
       console.log('Sending upscale request to Wavespeed:', { request }) // Debug log
 
       const response = await axios.post<WavespeedResponse>(
-        `${WAVESPEED_BASE_URL}/wavespeed-ai/ultimate-image-upscaler`,
+        `${WAVESPEED_BASE_URL}/wavespeed-ai/image-upscaler`,
         request,
         {
           headers: {
