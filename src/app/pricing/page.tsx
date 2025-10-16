@@ -74,17 +74,35 @@ export default function PricingPage() {
   }, [])
 
   const fetchPlans = async () => {
+    console.log('📋 [PRICING] Fetching plans...')
     try {
       const response = await fetch('/api/plans')
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ [PRICING] Plans fetched successfully:', data)
+        
+        // Log each plan with its price IDs
+        if (data.plans) {
+          data.plans.forEach((plan: Plan) => {
+            console.log(`📦 [PRICING] Plan: ${plan.name}`, {
+              id: plan.id,
+              monthlyPrice: plan.monthlyPrice,
+              yearlyPrice: plan.yearlyPrice,
+              stripeMonthlyPriceId: plan.stripeMonthlyPriceId,
+              stripeYearlyPriceId: plan.stripeYearlyPriceId,
+              hasMonthlyPrice: !!plan.stripeMonthlyPriceId,
+              hasYearlyPrice: !!plan.stripeYearlyPriceId
+            })
+          })
+        }
+        
         setPlansData(data)
       } else {
-        console.error('Failed to fetch plans:', response.status, response.statusText)
+        console.error('❌ [PRICING] Failed to fetch plans:', response.status, response.statusText)
         setPlansData(null)
       }
     } catch (error) {
-      console.error('Error fetching plans:', error)
+      console.error('❌ [PRICING] Error fetching plans:', error)
       setPlansData(null)
     } finally {
       setIsLoading(false)
@@ -124,11 +142,13 @@ export default function PricingPage() {
   }
 
   const handleUpgrade = async (planId: string, planName: string) => {
+    console.log('🚀 [PRICING] Starting upgrade process:', { planId, planName, billingCycle })
     setIsUpgrading(planName)
     
     try {
       // Free plan doesn't require payment
       if (planName === 'Free') {
+        console.log('📝 [PRICING] Switching to Free plan')
         const response = await fetch('/api/upgrade-plan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -136,10 +156,12 @@ export default function PricingPage() {
         })
 
         if (response.ok) {
+          console.log('✅ [PRICING] Successfully switched to Free plan')
           await fetchPlans()
           alert(`Successfully switched to ${planName} plan!`)
         } else {
           const error = await response.json()
+          console.error('❌ [PRICING] Failed to switch to Free plan:', error)
           alert(error.error || 'Failed to switch plan')
         }
         setIsUpgrading(null)
@@ -147,22 +169,44 @@ export default function PricingPage() {
       }
 
       // For paid plans, use Stripe checkout
+      console.log('💳 [PRICING] Creating Stripe checkout session for:', { planId, billingCycle })
+      const requestBody = { planId, billingCycle }
+      console.log('📤 [PRICING] Request body:', JSON.stringify(requestBody))
+      
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, billingCycle }),
+        body: JSON.stringify(requestBody),
       })
 
+      console.log('📥 [PRICING] Response status:', response.status)
+      console.log('📥 [PRICING] Response ok:', response.ok)
+
       if (response.ok) {
-        const { url } = await response.json()
+        const data = await response.json()
+        console.log('✅ [PRICING] Checkout session created:', data)
+        
+        if (!data.url) {
+          console.error('❌ [PRICING] No URL in response:', data)
+          alert('Failed to create checkout session: No redirect URL received')
+          setIsUpgrading(null)
+          return
+        }
+        
+        console.log('🔄 [PRICING] Redirecting to Stripe:', data.url)
         // Track conversion before redirecting to Stripe Checkout
-        gtag_report_conversion(url)
+        gtag_report_conversion(data.url)
       } else {
         const error = await response.json()
+        console.error('❌ [PRICING] Failed to create checkout session:', { 
+          status: response.status,
+          error 
+        })
         alert(error.error || 'Failed to create checkout session')
         setIsUpgrading(null)
       }
     } catch (error) {
+      console.error('❌ [PRICING] Exception in handleUpgrade:', error)
       alert('An error occurred while processing your request')
       setIsUpgrading(null)
     }
@@ -451,6 +495,22 @@ export default function PricingPage() {
                 const isCurrentPlan = plansData?.currentPlan?.id === plan.id
                 const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice
                 const isPremium = plan.name === 'Premium'
+                const isButtonDisabled = isCurrentPlan || isUpgrading === plan.name || (plan.name !== 'Free' && !plan.stripeMonthlyPriceId && !plan.stripeYearlyPriceId)
+                
+                // Log button state for debugging
+                if (plan.name !== 'Free') {
+                  console.log(`🔘 [PRICING] Rendering plan card: ${plan.name}`, {
+                    isCurrentPlan,
+                    isUpgrading: isUpgrading === plan.name,
+                    hasMonthlyPrice: !!plan.stripeMonthlyPriceId,
+                    hasYearlyPrice: !!plan.stripeYearlyPriceId,
+                    isButtonDisabled,
+                    reason: isCurrentPlan ? 'Current plan' : 
+                            isUpgrading === plan.name ? 'Currently upgrading' :
+                            (plan.name !== 'Free' && !plan.stripeMonthlyPriceId && !plan.stripeYearlyPriceId) ? 'Missing price IDs' :
+                            'Not disabled'
+                  })
+                }
                 
                 return (
                   <div
@@ -532,16 +592,28 @@ export default function PricingPage() {
 
                     <Button
                       onClick={() => {
-                        if (isCurrentPlan) return
+                        console.log('🔘 [PRICING] Button clicked for plan:', plan.name, {
+                          planId: plan.id,
+                          isCurrentPlan,
+                          currentPlanName: plansData.currentPlan?.name
+                        })
+                        
+                        if (isCurrentPlan) {
+                          console.log('⚠️ [PRICING] Button clicked but is current plan, ignoring')
+                          return
+                        }
+                        
                         // If user is on a paid plan, use change subscription
                         if (plansData.currentPlan && plansData.currentPlan.name !== 'Free') {
+                          console.log('🔄 [PRICING] Using change subscription flow')
                           handleChangeSubscription(plan.id, plan.name)
                         } else {
                           // If user is on free plan, use upgrade
+                          console.log('⬆️ [PRICING] Using upgrade flow')
                           handleUpgrade(plan.id, plan.name)
                         }
                       }}
-                      disabled={isCurrentPlan || isUpgrading === plan.name || (plan.name !== 'Free' && !plan.stripeMonthlyPriceId && !plan.stripeYearlyPriceId)}
+                      disabled={isButtonDisabled}
                       className={`w-full ${
                         isPremium && !isCurrentPlan
                           ? 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700'
