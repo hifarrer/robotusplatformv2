@@ -1714,7 +1714,7 @@ export function ChatInterface() {
                                   ))}
                                 </div>
                                 
-                                {/* Generate New, Upscale, Enhance, Edit, and Generate Video buttons */}
+                                {/* Action buttons: New, Upscale, Enhance, Edit, and Video */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1724,8 +1724,7 @@ export function ChatInterface() {
                                     className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                   >
                                     <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                    <span className="hidden sm:inline">Generate New</span>
-                                    <span className="sm:hidden">New</span>
+                                    New
                                   </Button>
                                   {/* Show upscale button only for completed image generations */}
                                   {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
@@ -1737,8 +1736,7 @@ export function ChatInterface() {
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      <span className="hidden sm:inline">Upscale</span>
-                                      <span className="sm:hidden">Scale</span>
+                                      Upscale
                                     </Button>
                                   )}
                                   {/* Show enhance button only for completed image generations */}
@@ -1751,8 +1749,7 @@ export function ChatInterface() {
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      <span className="hidden sm:inline">Enhance</span>
-                                      <span className="sm:hidden">Enhance</span>
+                                      Enhance
                                     </Button>
                                   )}
                                   {/* Show edit button only for completed image generations */}
@@ -1778,8 +1775,7 @@ export function ChatInterface() {
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <Video className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      <span className="hidden sm:inline">Generate Video</span>
-                                      <span className="sm:hidden">Video</span>
+                                      Video
                                     </Button>
                                   )}
                                 </div>
@@ -1857,7 +1853,7 @@ export function ChatInterface() {
                                   </Button>
                                 </div>
                                 
-                                {/* Generate New, Upscale, Enhance, Edit, and Generate Video buttons */}
+                                {/* Action buttons: New, Upscale, Enhance, Edit, and Video */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1867,8 +1863,7 @@ export function ChatInterface() {
                                     className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                   >
                                     <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                    <span className="hidden sm:inline">Generate New</span>
-                                    <span className="sm:hidden">New</span>
+                                    New
                                   </Button>
                                   {/* Show upscale button only for completed image generations */}
                                   {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
@@ -1880,8 +1875,7 @@ export function ChatInterface() {
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      <span className="hidden sm:inline">Upscale</span>
-                                      <span className="sm:hidden">Scale</span>
+                                      Upscale
                                     </Button>
                                   )}
                                   {/* Show enhance button only for completed image generations */}
@@ -1894,8 +1888,7 @@ export function ChatInterface() {
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      <span className="hidden sm:inline">Enhance</span>
-                                      <span className="sm:hidden">Enhance</span>
+                                      Enhance
                                     </Button>
                                   )}
                                   {/* Show edit button only for completed image generations */}
@@ -1921,8 +1914,7 @@ export function ChatInterface() {
                                       className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
                                     >
                                       <Video className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      <span className="hidden sm:inline">Generate Video</span>
-                                      <span className="sm:hidden">Video</span>
+                                      Video
                                     </Button>
                                   )}
                                 </div>
