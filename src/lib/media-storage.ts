@@ -6,7 +6,14 @@ import { prisma } from './prisma'
 
 // Use Render's persistent disk storage in production, fallback to public/uploads in development
 const isProduction = process.env.NODE_ENV === 'production'
-const isRender = process.env.RENDER === 'true' || process.env.NODE_ENV === 'production'
+// Check multiple Render-specific environment variables for more reliable detection
+const isRender = Boolean(
+  process.env.RENDER === 'true' || 
+  process.env.RENDER_SERVICE_NAME || 
+  process.env.RENDER_INSTANCE_ID ||
+  process.env.RENDER_EXTERNAL_URL ||
+  (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
+)
 const UPLOADS_DIR = isRender 
   ? '/temp-uploads' 
   : path.join(process.cwd(), 'public', 'uploads')
@@ -18,6 +25,10 @@ const AUDIOS_DIR = path.join(UPLOADS_DIR, 'audios')
 console.log('🔧 Media Storage Config:', {
   NODE_ENV: process.env.NODE_ENV,
   RENDER: process.env.RENDER,
+  RENDER_SERVICE_NAME: process.env.RENDER_SERVICE_NAME,
+  RENDER_INSTANCE_ID: process.env.RENDER_INSTANCE_ID,
+  RENDER_EXTERNAL_URL: process.env.RENDER_EXTERNAL_URL,
+  VERCEL: process.env.VERCEL,
   isProduction,
   isRender,
   UPLOADS_DIR,

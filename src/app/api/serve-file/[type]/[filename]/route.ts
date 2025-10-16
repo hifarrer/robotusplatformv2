@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
 import path from 'path'
 
-const isProduction = process.env.NODE_ENV === 'production'
-const UPLOADS_DIR = isProduction ? '/temp-uploads' : path.join(process.cwd(), 'public', 'uploads')
+// Check multiple Render-specific environment variables for more reliable detection
+const isRender = Boolean(
+  process.env.RENDER === 'true' || 
+  process.env.RENDER_SERVICE_NAME || 
+  process.env.RENDER_INSTANCE_ID ||
+  process.env.RENDER_EXTERNAL_URL ||
+  (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
+)
+const UPLOADS_DIR = isRender ? '/temp-uploads' : path.join(process.cwd(), 'public', 'uploads')
 
 export async function GET(
   request: NextRequest,
