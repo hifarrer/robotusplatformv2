@@ -11,6 +11,7 @@ import { getSafeGenerationType } from '@/lib/generation-utils'
 import { checkAndDeductCreditsForGeneration, refundCredits } from '@/lib/credit-manager'
 import { downloadAndSaveImage } from '@/lib/media-storage'
 import { containsProfanity, getProfanityErrorMessage } from '@/lib/profanity-filter'
+import { checkPromptSafety, getSafetyErrorMessage } from '@/lib/safety-checker'
 import { z } from 'zod'
 
 const chatRequestSchema = z.object({
@@ -391,6 +392,33 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       )
+    }
+
+    // AI-powered safety check (only for typed prompts, not button actions)
+    // Skip safety check for very short messages or button-like actions
+    const isButtonAction = message.length < 20 && (
+      message.toLowerCase().includes('upscale') ||
+      message.toLowerCase().includes('enhance') ||
+      message.toLowerCase().includes('edit')
+    )
+    
+    if (!isButtonAction) {
+      console.log('🛡️ Running AI safety check...')
+      const safetyCheck = await checkPromptSafety(message)
+      
+      if (!safetyCheck.isSafe) {
+        console.log('🚫 Safety check failed')
+        return NextResponse.json(
+          { 
+            error: getSafetyErrorMessage(safetyCheck.reason),
+            isUnsafe: true,
+          },
+          { status: 400 }
+        )
+      }
+      console.log('✅ Safety check passed')
+    } else {
+      console.log('⏭️ Skipping safety check for button action')
     }
 
     // Get user preferences

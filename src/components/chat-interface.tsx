@@ -1257,6 +1257,20 @@ export function ChatInterface() {
           return
         }
         
+        // Handle safety check failures
+        if (errorData.isUnsafe) {
+          const errorMessage: ChatMessage = {
+            id: generateId(),
+            role: 'ASSISTANT',
+            content: `🛡️ ${errorData.error || 'Your prompt did not pass our safety guidelines.'}`,
+            timestamp: new Date(),
+          }
+          setMessages(prev => [...prev, errorMessage])
+          setInput('') // Clear the input
+          setFiles([]) // Clear any files
+          return
+        }
+        
         throw new Error(errorData.error || `Chat API failed: ${response.status} ${response.statusText}`)
       }
       
@@ -1763,7 +1777,7 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => enhanceImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                      className="text-yellow-400 border-yellow-500 hover:bg-yellow-500 hover:text-black text-xs sm:text-sm"
                                     >
                                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                       Enhance
@@ -1902,7 +1916,7 @@ export function ChatInterface() {
                                       size="sm"
                                       onClick={() => enhanceImage(generation)}
                                       disabled={isLoading}
-                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                      className="text-yellow-400 border-yellow-500 hover:bg-yellow-500 hover:text-black text-xs sm:text-sm"
                                     >
                                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                       Enhance
