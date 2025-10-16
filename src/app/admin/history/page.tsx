@@ -17,7 +17,9 @@ import {
   Calendar,
   User,
   CreditCard,
-  Loader2
+  Loader2,
+  X,
+  FileText
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -65,6 +67,8 @@ export default function AdminHistory() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null)
+  const [isPromptModalOpen, setIsPromptModalOpen] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -137,6 +141,16 @@ export default function AdminHistory() {
   const handleThumbnailClick = (thumbnailUrl: string, mediaType: string) => {
     // The thumbnailUrl already contains the correct path, so use it directly
     window.open(thumbnailUrl, '_blank')
+  }
+
+  const handlePromptClick = (prompt: string) => {
+    setSelectedPrompt(prompt)
+    setIsPromptModalOpen(true)
+  }
+
+  const closePromptModal = () => {
+    setIsPromptModalOpen(false)
+    setSelectedPrompt(null)
   }
 
   if (status === 'loading' || isLoading) {
@@ -272,9 +286,13 @@ export default function AdminHistory() {
                             {getStatusBadge(generation.status)}
                           </td>
                           <td className="p-3 max-w-xs">
-                            <p className="text-gray-300 text-sm truncate" title={generation.prompt}>
+                            <button
+                              onClick={() => handlePromptClick(generation.prompt)}
+                              className="text-gray-300 text-sm truncate hover:text-white hover:underline cursor-pointer text-left w-full"
+                              title="Click to view full prompt"
+                            >
                               {generation.prompt}
-                            </p>
+                            </button>
                           </td>
                           <td className="p-3">
                             <div className="flex items-center space-x-1">
@@ -393,6 +411,44 @@ export default function AdminHistory() {
           </div>
         </div>
       </div>
+
+      {/* Prompt Modal */}
+      {isPromptModalOpen && selectedPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg border border-gray-700 max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-700">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-blue-500" />
+                <h3 className="text-lg font-semibold text-white">Full Prompt</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closePromptModal}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="p-4">
+              <div className="bg-gray-800 rounded-lg p-4 max-h-96 overflow-y-auto">
+                <p className="text-gray-300 text-sm whitespace-pre-wrap leading-relaxed">
+                  {selectedPrompt}
+                </p>
+              </div>
+              <div className="flex justify-end mt-4">
+                <Button
+                  variant="outline"
+                  onClick={closePromptModal}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-800"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

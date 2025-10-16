@@ -130,7 +130,7 @@ Analyze this request and determine the appropriate action. Pay special attention
     console.log('🐤 Calling OpenAI API...') // Debug log
     const openai = getOpenAIClient()
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4.1',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt }
