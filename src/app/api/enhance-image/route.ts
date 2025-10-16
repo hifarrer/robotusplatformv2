@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { saveFile } from '@/lib/media-storage'
+import { downloadAndSaveImage } from '@/lib/media-storage'
 import { checkAndDeductCreditsForGeneration, refundCredits } from '@/lib/credit-manager'
 import { FalService } from '@/lib/ai-services'
 
@@ -65,16 +65,6 @@ export async function POST(request: NextRequest) {
       const enhancedImageUrl = await FalService.enhanceImage(imageUrl)
       console.log('✅ Image enhanced successfully:', enhancedImageUrl)
 
-      // Download and save the enhanced image
-      const imageResponse = await fetch(enhancedImageUrl)
-      if (!imageResponse.ok) {
-        throw new Error('Failed to download enhanced image')
-      }
-
-      const imageBuffer = await imageResponse.arrayBuffer()
-      const fileName = `enhanced_${Date.now()}.jpg`
-      const localPath = await saveFile(imageBuffer, fileName, 'image')
-
       // Update generation with result
       await prisma.generation.update({
         where: { id: generation.id },
@@ -85,27 +75,27 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      // Save enhanced image to user's collection
-      const savedImage = await prisma.savedImage.create({
-        data: {
-          userId: session.user.id,
-          title: 'Enhanced Image',
-          prompt: `Enhanced from: ${imageUrl}`,
-          originalUrl: enhancedImageUrl,
-          localPath: localPath,
-          fileName: fileName,
-          fileSize: imageBuffer.byteLength,
-          mimeType: 'image/jpeg',
-          generationId: generation.id
-        }
-      })
+      // Download and save the enhanced image using the same method as other endpoints
+      let savedImageId: string | undefined
+      try {
+        savedImageId = await downloadAndSaveImage(
+          session.user.id,
+          enhancedImageUrl,
+          `Enhanced Image - ${new Date().toLocaleDateString()}`,
+          generation.id,
+          'Enhanced Image'
+        )
+        console.log('✅ Enhanced image saved successfully')
+      } catch (saveError) {
+        console.error('Error saving enhanced image:', saveError)
+        // Don't throw - the enhancement succeeded, just saving failed
+      }
 
       return NextResponse.json({
         success: true,
         generationId: generation.id,
         imageUrl: enhancedImageUrl,
-        localPath: localPath,
-        savedImageId: savedImage.id,
+        savedImageId: savedImageId,
         creditsUsed: creditResult.cost,
         creditsRemaining: creditResult.newBalance
       })
