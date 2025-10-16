@@ -71,10 +71,10 @@ export const createCheckoutSession = async ({
 
     // Create checkout session
     console.log('🔨 [STRIPE] Creating checkout session with Stripe API...')
-    const sessionParams = {
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
-      mode: 'subscription' as const,
-      payment_method_types: ['card'] as const,
+      mode: 'subscription',
+      payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,
@@ -84,7 +84,7 @@ export const createCheckoutSession = async ({
       success_url: successUrl,
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
-      billing_address_collection: 'auto' as const,
+      billing_address_collection: 'auto',
       metadata: {
         userId,
       },
