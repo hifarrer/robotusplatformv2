@@ -194,8 +194,27 @@ export default function PricingPage() {
         }
         
         console.log('🔄 [PRICING] Redirecting to Stripe:', data.url)
-        // Track conversion before redirecting to Stripe Checkout
-        gtag_report_conversion(data.url)
+        
+        // Track conversion with gtag if available (don't wait for it)
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          try {
+            (window as any).gtag('event', 'conversion', {
+              'send_to': 'AW-17548478207/UEmACLiqy5kbEP-N4q9B',
+              'value': 1.0,
+              'currency': 'USD',
+              'transaction_id': '',
+            })
+            console.log('📊 [PRICING] Google Ads conversion tracked')
+          } catch (error) {
+            console.warn('⚠️ [PRICING] Failed to track conversion:', error)
+          }
+        } else {
+          console.log('ℹ️ [PRICING] Google Analytics not available, skipping conversion tracking')
+        }
+        
+        // Redirect immediately (don't wait for gtag callback)
+        console.log('🚀 [PRICING] Performing redirect now...')
+        window.location.href = data.url
       } else {
         const error = await response.json()
         console.error('❌ [PRICING] Failed to create checkout session:', { 
@@ -254,8 +273,25 @@ export default function PricingPage() {
         const data = await response.json()
         
         if (data.checkoutUrl) {
-          // Track conversion before redirecting to Stripe Checkout
-          gtag_report_conversion(data.checkoutUrl)
+          console.log('🔄 [PRICING] Change subscription - redirecting to checkout:', data.checkoutUrl)
+          
+          // Track conversion with gtag if available (don't wait for it)
+          if (typeof window !== 'undefined' && (window as any).gtag) {
+            try {
+              (window as any).gtag('event', 'conversion', {
+                'send_to': 'AW-17548478207/UEmACLiqy5kbEP-N4q9B',
+                'value': 1.0,
+                'currency': 'USD',
+                'transaction_id': '',
+              })
+              console.log('📊 [PRICING] Google Ads conversion tracked')
+            } catch (error) {
+              console.warn('⚠️ [PRICING] Failed to track conversion:', error)
+            }
+          }
+          
+          // Redirect immediately (don't wait for gtag callback)
+          window.location.href = data.checkoutUrl
         } else {
           // Subscription updated successfully
           alert(data.message || 'Subscription updated successfully')
