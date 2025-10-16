@@ -6,14 +6,30 @@ import { prisma } from './prisma'
 
 // Use Render's persistent disk storage in production, fallback to public/uploads in development
 const isProduction = process.env.NODE_ENV === 'production'
-// Check multiple Render-specific environment variables for more reliable detection
-const isRender = Boolean(
-  process.env.RENDER === 'true' || 
-  process.env.RENDER_SERVICE_NAME || 
-  process.env.RENDER_INSTANCE_ID ||
-  process.env.RENDER_EXTERNAL_URL ||
-  (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
-)
+// Check if /temp-uploads directory exists (Render's persistent disk mount)
+let isRender = false
+try {
+  const fs = require('fs')
+  isRender = fs.existsSync('/temp-uploads')
+  if (!isRender && isProduction) {
+    // Fallback to environment variable checks
+    isRender = Boolean(
+      process.env.RENDER === 'true' || 
+      process.env.RENDER_SERVICE_NAME || 
+      process.env.RENDER_INSTANCE_ID ||
+      process.env.RENDER_EXTERNAL_URL
+    )
+  }
+} catch (error) {
+  // If fs check fails, fall back to environment variables
+  isRender = Boolean(
+    process.env.RENDER === 'true' || 
+    process.env.RENDER_SERVICE_NAME || 
+    process.env.RENDER_INSTANCE_ID ||
+    process.env.RENDER_EXTERNAL_URL ||
+    (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
+  )
+}
 const UPLOADS_DIR = isRender 
   ? '/temp-uploads' 
   : path.join(process.cwd(), 'public', 'uploads')
@@ -29,6 +45,7 @@ console.log('🔧 Media Storage Config:', {
   RENDER_INSTANCE_ID: process.env.RENDER_INSTANCE_ID,
   RENDER_EXTERNAL_URL: process.env.RENDER_EXTERNAL_URL,
   VERCEL: process.env.VERCEL,
+  '/temp-uploads exists': (() => { try { return require('fs').existsSync('/temp-uploads') } catch { return 'unknown' } })(),
   isProduction,
   isRender,
   UPLOADS_DIR,
@@ -36,6 +53,12 @@ console.log('🔧 Media Storage Config:', {
   VIDEOS_DIR,
   AUDIOS_DIR
 })
+
+// CRITICAL: Verify we're using Render paths in production
+if (isProduction && !isRender) {
+  console.error('⚠️ WARNING: Running in production but isRender is false! Images may not be saved correctly.')
+  console.error('⚠️ Please ensure RENDER environment variable is set or /temp-uploads mount exists.')
+}
 
 // Ensure upload directories exist
 async function ensureDirectories() {

@@ -1,16 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
+import { promises as fs, existsSync } from 'fs'
 import path from 'path'
 
-// Check multiple Render-specific environment variables for more reliable detection
-const isRender = Boolean(
-  process.env.RENDER === 'true' || 
-  process.env.RENDER_SERVICE_NAME || 
-  process.env.RENDER_INSTANCE_ID ||
-  process.env.RENDER_EXTERNAL_URL ||
-  (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
-)
+// Check if /temp-uploads directory exists (Render's persistent disk mount)
+let isRender = false
+try {
+  isRender = existsSync('/temp-uploads')
+  if (!isRender && process.env.NODE_ENV === 'production') {
+    // Fallback to environment variable checks
+    isRender = Boolean(
+      process.env.RENDER === 'true' || 
+      process.env.RENDER_SERVICE_NAME || 
+      process.env.RENDER_INSTANCE_ID ||
+      process.env.RENDER_EXTERNAL_URL
+    )
+  }
+} catch (error) {
+  // If fs check fails, fall back to environment variables
+  isRender = Boolean(
+    process.env.RENDER === 'true' || 
+    process.env.RENDER_SERVICE_NAME || 
+    process.env.RENDER_INSTANCE_ID ||
+    process.env.RENDER_EXTERNAL_URL ||
+    (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
+  )
+}
 const UPLOADS_DIR = isRender ? '/temp-uploads' : path.join(process.cwd(), 'public', 'uploads')
+
+console.log('🔧 Serve File Config:', {
+  isRender,
+  UPLOADS_DIR,
+  '/temp-uploads exists': (() => { try { return existsSync('/temp-uploads') } catch { return 'unknown' } })()
+})
 
 export async function GET(
   request: NextRequest,
