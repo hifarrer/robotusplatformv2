@@ -1238,9 +1238,26 @@ export function ChatInterface() {
       
       if (!response.ok) {
         console.error('❌ Chat API failed:', response.status, response.statusText) // Debug log
-        const errorText = await response.text()
-        console.error('❌ Error response:', errorText) // Debug log
-        throw new Error(`Chat API failed: ${response.status} ${response.statusText}`)
+        
+        // Try to parse error response as JSON
+        const errorData = await response.json().catch(() => ({ error: `Chat API failed: ${response.status}` }))
+        console.error('❌ Error response:', errorData) // Debug log
+        
+        // Handle profanity errors specially
+        if (errorData.isProfanity) {
+          const errorMessage: ChatMessage = {
+            id: generateId(),
+            role: 'ASSISTANT',
+            content: `🚫 ${errorData.error || 'Your message contains inappropriate content that is not permitted.'}`,
+            timestamp: new Date(),
+          }
+          setMessages(prev => [...prev, errorMessage])
+          setInput('') // Clear the input
+          setFiles([]) // Clear any files
+          return
+        }
+        
+        throw new Error(errorData.error || `Chat API failed: ${response.status} ${response.statusText}`)
       }
       
       console.log('📋 Parsing response JSON...') // Debug log

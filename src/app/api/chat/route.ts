@@ -10,6 +10,7 @@ import { GenerationType } from '@/types'
 import { getSafeGenerationType } from '@/lib/generation-utils'
 import { checkAndDeductCreditsForGeneration, refundCredits } from '@/lib/credit-manager'
 import { downloadAndSaveImage } from '@/lib/media-storage'
+import { containsProfanity, getProfanityErrorMessage } from '@/lib/profanity-filter'
 import { z } from 'zod'
 
 const chatRequestSchema = z.object({
@@ -378,6 +379,19 @@ export async function POST(request: NextRequest) {
     const { message, images = [], audio = [], chatId } = chatRequestSchema.parse(body)
     
     console.log('📝 Parsed request:', { message, images: images.length, audio: audio.length, chatId }) // Debug log
+
+    // Check for profanity
+    const profanityCheck = containsProfanity(message)
+    if (profanityCheck.containsProfanity) {
+      console.log('🚫 Profanity detected:', profanityCheck.foundWords)
+      return NextResponse.json(
+        { 
+          error: getProfanityErrorMessage(),
+          isProfanity: true,
+        },
+        { status: 400 }
+      )
+    }
 
     // Get user preferences
     let userPreferences
