@@ -20,6 +20,7 @@ import {
   Images,
   Plus,
   Music,
+  Mic,
   Dice6,
   ZoomIn,
   Trash2,
@@ -83,7 +84,10 @@ export function ChatInterface() {
   const [videoPrompt, setVideoPrompt] = useState<string>('')
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
   const [showHelpModal, setShowHelpModal] = useState(false)
+  const [showTalkModal, setShowTalkModal] = useState(false)
+  const [selectedImageForTalk, setSelectedImageForTalk] = useState<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const audioInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
@@ -414,6 +418,11 @@ export function ChatInterface() {
         }
         setFiles(prev => [...prev, newFile])
         setShowImageLibrary(false)
+        
+        // If audio was selected from Talk button, pre-populate the prompt
+        if (selectedImageForTalk) {
+          setInput('Make the person in the image talk')
+        }
       })
       .catch(error => {
         console.error('Error selecting library audio:', error)
@@ -1169,6 +1178,61 @@ export function ChatInterface() {
     }
   }
 
+  // Handle Talk button click
+  const handleTalkImage = (generation: any) => {
+    setSelectedImageForTalk(generation)
+    setShowTalkModal(true)
+  }
+
+  // Handle audio file upload for lipsync
+  const handleAudioUploadForTalk = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file || !selectedImageForTalk) return
+    
+    setShowTalkModal(false)
+    
+    // Add audio file to files array
+    const audioUrl = URL.createObjectURL(file)
+    const newFile: FileUpload = {
+      id: generateId(),
+      file,
+      preview: audioUrl,
+      type: 'audio'
+    }
+    setFiles(prev => [...prev, newFile])
+    
+    // Pre-populate the prompt
+    setInput('Make the person in the image talk')
+    
+    // Reset audio input
+    if (event.target) {
+      event.target.value = ''
+    }
+  }
+
+  // Handle audio generation from text
+  const handleGenerateAudioForTalk = async () => {
+    setShowTalkModal(false)
+    
+    const examplePrompt = 'Generate an audio of an enthusiastic female voice with american accent saying "Life is like a box of chocolates, you never know what you\'re gonna get."'
+    
+    const helpMessage: ChatMessage = {
+      id: generateId(),
+      role: 'ASSISTANT',
+      content: `To generate audio for your image to talk, please send a message with your audio generation request. Here's an example:\n\n"${examplePrompt}"\n\nMake sure to include:\n- Voice characteristics (gender, accent, tone)\n- The text you want spoken (in quotes)\n\nOnce the audio is generated, I'll automatically combine it with your image to create a talking animation!`,
+      timestamp: new Date(),
+    }
+    
+    setMessages(prev => [...prev, helpMessage])
+    setSelectedImageForTalk(null)
+  }
+
+  // Handle audio selection from library
+  const handleSelectAudioFromLibrary = async () => {
+    setShowTalkModal(false)
+    await loadLibraryAudios()
+  }
+
   // Generate video with WAN-2.5 model and selected duration
   const generateVideoWithDuration = async (duration: number) => {
     if (!selectedImageForVideo) return
@@ -1294,6 +1358,14 @@ export function ChatInterface() {
       const imageDataUrls = imageFiles.map((img: any) => img.fullUrl)
       const audioDataUrls = audioFiles.map((audio: any) => audio.fullUrl)
       
+      // If there's a selected image for talk, add it to the images array
+      if (selectedImageForTalk) {
+        const talkImageUrl = selectedImageForTalk.resultUrls?.[0] || selectedImageForTalk.resultUrl
+        if (talkImageUrl && !imageDataUrls.includes(talkImageUrl)) {
+          imageDataUrls.unshift(talkImageUrl) // Add at the beginning
+        }
+      }
+      
       // Create user message
       const userMessage: ChatMessage = {
         id: generateId(),
@@ -1306,6 +1378,11 @@ export function ChatInterface() {
       setMessages(prev => [...prev, userMessage])
       setInput('')
       setFiles([])
+      
+      // Reset selected image for talk after message is sent
+      if (selectedImageForTalk) {
+        setSelectedImageForTalk(null)
+      }
       
       // Send to AI orchestrator with base64 images
       console.log('📤 Preparing chat API request...') // Debug log
@@ -1915,6 +1992,19 @@ export function ChatInterface() {
                                       Video
                                     </Button>
                                   )}
+                                  {/* Show talk button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleTalkImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-green-400 border-green-600 hover:bg-green-500 hover:text-white text-xs sm:text-sm"
+                                    >
+                                      <Mic className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      Talk
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -2067,6 +2157,19 @@ export function ChatInterface() {
                                       Video
                                     </Button>
                                   )}
+                                  {/* Show talk button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE' || generation.type === 'IMAGE_REIMAGINE' || generation.type === 'IMAGE_UPSCALE' || generation.type === 'IMAGE_ENHANCEMENT') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleTalkImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-green-400 border-green-600 hover:bg-green-500 hover:text-white text-xs sm:text-sm"
+                                    >
+                                      <Mic className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      Talk
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -2172,8 +2275,102 @@ export function ChatInterface() {
           </div>
         )}
 
+        {/* Talk Modal - Upload Audio or Generate from Text */}
+        {showTalkModal && (
+          <div className="border-t border-gray-800 p-3 sm:p-4 bg-gray-900">
+            <div className="flex flex-col items-center space-y-3 sm:space-y-4">
+              <div className="text-center max-w-3xl">
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2">Make Your Image Talk</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Choose how you want to add voice to your image:</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-3xl">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => audioInputRef.current?.click()}
+                  disabled={isLoading}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-4 py-3 flex-1"
+                >
+                  <Upload className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-xs sm:text-sm">Upload Audio File</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleSelectAudioFromLibrary}
+                  disabled={isLoading}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-4 py-3 flex-1"
+                >
+                  <Folder className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-xs sm:text-sm">Select from Library</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleGenerateAudioForTalk}
+                  disabled={isLoading}
+                  className="text-gray-300 border-gray-600 hover:bg-gray-700 px-4 py-3 flex-1"
+                >
+                  <Music className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="text-xs sm:text-sm">Generate from Text</span>
+                </Button>
+              </div>
+              <div className="w-full max-w-3xl">
+                <div className="p-3 bg-gray-800 rounded-lg text-left">
+                  <p className="text-gray-400 text-xs mb-1">
+                    <strong className="text-gray-300">Example prompt:</strong>
+                  </p>
+                  <p className="text-gray-300 text-xs italic">
+                    "Generate an audio of an enthusiastic female voice with american accent saying 'Life is like a box of chocolates, you never know what you're gonna get.'"
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowTalkModal(false)
+                  setSelectedImageForTalk(null)
+                }}
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Input area */}
         <div className="border-t border-gray-800 p-3 sm:p-4">
+          {/* Selected image for talk preview */}
+          {selectedImageForTalk && (
+            <div className="mb-3 bg-blue-900/20 border border-blue-500/30 rounded-lg p-2">
+              <div className="flex items-center gap-2">
+                <div className="w-12 h-12 rounded-lg overflow-hidden border border-blue-500/50">
+                  <Image
+                    src={selectedImageForTalk.resultUrls?.[0] || selectedImageForTalk.resultUrl}
+                    alt="Selected image"
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-blue-400 font-medium">Image for Talk</p>
+                  <p className="text-xs text-gray-400">This image will be used for lipsync</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-6 h-6 text-gray-400 hover:text-white"
+                  onClick={() => setSelectedImageForTalk(null)}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+          )}
+          
           {/* File previews */}
           {files.length > 0 && (
             <div className="mb-3 sm:mb-4 flex flex-wrap gap-2">
@@ -2261,6 +2458,13 @@ export function ChatInterface() {
                       handleFileSelect(Array.from(e.target.files))
                     }
                   }}
+                />
+                <input
+                  ref={audioInputRef}
+                  type="file"
+                  accept="audio/*"
+                  className="hidden"
+                  onChange={handleAudioUploadForTalk}
                 />
                 <Button
                   type="button"

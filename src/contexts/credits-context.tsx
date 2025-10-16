@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useSession } from 'next-auth/react'
 
 interface Plan {
@@ -30,7 +30,7 @@ export function CreditsProvider({ children }: { children: ReactNode }) {
   const [creditsData, setCreditsData] = useState<CreditsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchCredits = async () => {
+  const fetchCredits = useCallback(async () => {
     if (!session?.user?.id) {
       setIsLoading(false)
       return
@@ -47,16 +47,16 @@ export function CreditsProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [session?.user?.id])
 
-  const refreshCredits = async () => {
+  const refreshCredits = useCallback(async () => {
     setIsLoading(true)
     await fetchCredits()
-  }
+  }, [fetchCredits])
 
   useEffect(() => {
     fetchCredits()
-  }, [session?.user?.id])
+  }, [fetchCredits])
 
   return (
     <CreditsContext.Provider value={{ creditsData, isLoading, refreshCredits }}>
