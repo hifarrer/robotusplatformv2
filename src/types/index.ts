@@ -1,4 +1,4 @@
-export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'TEXT_TO_AUDIO' | 'IMAGE_UPSCALE'
+export type GenerationType = 'TEXT_TO_IMAGE' | 'IMAGE_TO_IMAGE' | 'TEXT_TO_VIDEO' | 'IMAGE_TO_VIDEO' | 'LIPSYNC' | 'TEXT_TO_AUDIO' | 'IMAGE_UPSCALE' | 'IMAGE_ENHANCEMENT'
 export type GenerationStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
 export type MessageRole = 'USER' | 'ASSISTANT' | 'SYSTEM'
 
@@ -139,7 +139,7 @@ export interface WavespeedResultResponse {
 
 // AI Orchestrator Types
 export interface AIAnalysisResult {
-  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'chat' | 'video_duration_selection'
+  action: 'text_to_image' | 'image_to_image' | 'text_to_video' | 'image_to_video' | 'lipsync' | 'text_to_audio' | 'image_enhancement' | 'chat' | 'video_duration_selection'
   prompt: string
   requiresImages: boolean
   requiresAudio?: boolean
@@ -207,3 +207,23 @@ export const VIDEO_MODEL_OPTIONS: ModelOption[] = [
   { value: 'WAN_2_5', label: 'Alibaba WAN-2.5', description: 'Image-to-video generation with duration options' },
   { value: 'VEO3_FAST', label: 'Google Veo3-Fast', description: 'Fast video generation with 5s or 8s duration' }
 ]
+
+// FAL.ai Types
+export interface FalEnhanceImageRequest {
+  model: string
+  upscale_factor: number
+  image_url: string
+  output_format: string
+  subject_detection: string
+  face_enhancement: boolean
+  face_enhancement_strength: number
+}
+
+export interface FalEnhanceImageResponse {
+  image: {
+    url: string
+    content_type: string
+    file_name: string
+    file_size: number
+  }
+}

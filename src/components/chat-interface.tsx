@@ -25,7 +25,8 @@ import {
   Trash2,
   Download,
   Edit,
-  HelpCircle
+  HelpCircle,
+  Sparkles
 } from 'lucide-react'
 import { FileUpload, ChatMessage, UserPreferences } from '@/types'
 import { UserMenu } from '@/components/user-menu'
@@ -861,6 +862,102 @@ export function ChatInterface() {
     }
   }
 
+  // Enhance image with FAL.ai
+  const enhanceImage = async (generation: any) => {
+    // Get the image URL to enhance
+    const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
+    if (!imageUrl) {
+      throw new Error('No image URL found to enhance')
+    }
+    
+    // Add immediate feedback message
+    const loadingMessage: ChatMessage = {
+      id: generateId(),
+      role: 'ASSISTANT',
+      content: 'I\'m enhancing your image with face and skin details. This will take a few moments...',
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, loadingMessage])
+    
+    try {
+      setIsLoading(true)
+      
+      const requestBody = {
+        action: 'enhance',
+        imageUrl: imageUrl,
+        chatId: chatId,
+      }
+      
+      console.log('✨ Enhancing image:', imageUrl)
+      
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Chat API failed: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      
+      // Store chatId from response if we don't have one
+      if (!chatId && result.chatId) {
+        setChatId(result.chatId)
+      }
+      
+      // Handle enhance response - add the enhance message to chat
+      if (result.isEnhancing && result.messageId) {
+        console.log('🔄 Adding enhance message to chat:', result.messageId)
+        const enhanceMessage: ChatMessage = {
+          id: result.messageId,
+          role: 'ASSISTANT',
+          content: result.response || 'Enhancing your image...',
+          generations: result.generations || [],
+          timestamp: new Date(),
+        }
+        
+        // Remove the loading message and add the enhance message
+        setMessages(prev => {
+          const filteredMessages = prev.filter(msg => msg.id !== loadingMessage.id)
+          return [...filteredMessages, enhanceMessage]
+        })
+      } else {
+        // Replace the loading message with the actual response
+        setMessages(prev => prev.map(msg => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                content: result.response || 'Enhancing your image...',
+                generations: result.generations || [],
+              }
+            : msg
+        ))
+      }
+      
+      // Refresh credits after enhancing
+      await refreshCredits()
+    } catch (error: any) {
+      console.error('Error enhancing image:', error)
+      
+      // Replace the loading message with error message
+      setMessages(prev => prev.map(msg => 
+        msg.id === loadingMessage.id 
+          ? {
+              ...msg,
+              content: `Sorry, there was an error enhancing your image: ${error?.message || 'Unknown error'}`,
+            }
+          : msg
+      ))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Edit image - send chatbot message and populate input
   const editImage = (generation: any) => {
     // Add chatbot response message
@@ -1617,7 +1714,7 @@ export function ChatInterface() {
                                   ))}
                                 </div>
                                 
-                                {/* Generate New, Upscale, Edit, and Generate Video buttons */}
+                                {/* Generate New, Upscale, Enhance, Edit, and Generate Video buttons */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1642,6 +1739,20 @@ export function ChatInterface() {
                                       <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                       <span className="hidden sm:inline">Upscale</span>
                                       <span className="sm:hidden">Scale</span>
+                                    </Button>
+                                  )}
+                                  {/* Show enhance button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => enhanceImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                    >
+                                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      <span className="hidden sm:inline">Enhance</span>
+                                      <span className="sm:hidden">Enhance</span>
                                     </Button>
                                   )}
                                   {/* Show edit button only for completed image generations */}
@@ -1746,7 +1857,7 @@ export function ChatInterface() {
                                   </Button>
                                 </div>
                                 
-                                {/* Generate New, Upscale, Edit, and Generate Video buttons */}
+                                {/* Generate New, Upscale, Enhance, Edit, and Generate Video buttons */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1771,6 +1882,20 @@ export function ChatInterface() {
                                       <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                                       <span className="hidden sm:inline">Upscale</span>
                                       <span className="sm:hidden">Scale</span>
+                                    </Button>
+                                  )}
+                                  {/* Show enhance button only for completed image generations */}
+                                  {(generation.type === 'TEXT_TO_IMAGE' || generation.type === 'IMAGE_TO_IMAGE') && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => enhanceImage(generation)}
+                                      disabled={isLoading}
+                                      className="text-gray-300 border-gray-600 hover:bg-gray-700 text-xs sm:text-sm"
+                                    >
+                                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                                      <span className="hidden sm:inline">Enhance</span>
+                                      <span className="sm:hidden">Enhance</span>
                                     </Button>
                                   )}
                                   {/* Show edit button only for completed image generations */}

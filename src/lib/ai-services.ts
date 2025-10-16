@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { fal } from '@fal-ai/client'
 import {
   WavespeedTextToImageRequest,
   WavespeedImageToImageRequest,
@@ -14,6 +15,14 @@ import {
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY!
 const WAVESPEED_BASE_URL = 'https://api.wavespeed.ai/api/v3'
+const FAL_API_KEY = process.env.FAL_API_KEY!
+
+// Configure FAL client
+if (FAL_API_KEY) {
+  fal.config({
+    credentials: FAL_API_KEY,
+  })
+}
 
 
 // Utility functions
@@ -402,6 +411,92 @@ export class WanService {
         return { status: 'processing', error: 'Task not found' }
       }
       throw new Error('Failed to get video result')
+    }
+  }
+}
+
+// FAL.ai Image Enhancement Service
+export class FalService {
+  static async enhanceImage(imageUrl: string): Promise<string> {
+    try {
+      if (!FAL_API_KEY) {
+        throw new Error('FAL_API_KEY environment variable is not set')
+      }
+
+      console.log('🎨 FAL.ai: Starting image enhancement for:', imageUrl)
+
+      const result = await fal.subscribe("fal-ai/topaz/upscale/image", {
+        input: {
+          model: "Standard V2",
+          upscale_factor: 2,
+          image_url: imageUrl,
+          output_format: "jpeg",
+          subject_detection: "All",
+          face_enhancement: true,
+          face_enhancement_strength: 0.8
+        },
+        logs: true,
+        onQueueUpdate: (update) => {
+          if (update.status === "IN_PROGRESS") {
+            update.logs.map((log) => log.message).forEach(console.log)
+          }
+        },
+      })
+
+      console.log('🎨 FAL.ai: Enhancement completed:', result.data)
+      console.log('🎨 FAL.ai: Request ID:', result.requestId)
+
+      // Return the enhanced image URL
+      if (result.data && result.data.image && result.data.image.url) {
+        return result.data.image.url
+      }
+
+      throw new Error('Invalid response from FAL.ai - no image URL returned')
+    } catch (error: any) {
+      console.error('FAL.ai enhancement error:', error)
+      console.error('Error details:', error.message)
+      throw new Error('Failed to enhance image with FAL.ai')
+    }
+  }
+
+  static async getEnhancementStatus(requestId: string): Promise<any> {
+    try {
+      if (!FAL_API_KEY) {
+        throw new Error('FAL_API_KEY environment variable is not set')
+      }
+
+      console.log('🔍 FAL.ai: Checking status for request:', requestId)
+
+      const status = await fal.queue.status("fal-ai/topaz/upscale/image", {
+        requestId: requestId,
+        logs: true,
+      })
+
+      console.log('📊 FAL.ai: Status response:', status)
+      return status
+    } catch (error: any) {
+      console.error('FAL.ai status check error:', error)
+      throw new Error('Failed to get enhancement status')
+    }
+  }
+
+  static async getEnhancementResult(requestId: string): Promise<any> {
+    try {
+      if (!FAL_API_KEY) {
+        throw new Error('FAL_API_KEY environment variable is not set')
+      }
+
+      console.log('🔍 FAL.ai: Getting result for request:', requestId)
+
+      const result = await fal.queue.result("fal-ai/topaz/upscale/image", {
+        requestId: requestId
+      })
+
+      console.log('📊 FAL.ai: Result response:', result.data)
+      return result
+    } catch (error: any) {
+      console.error('FAL.ai result fetch error:', error)
+      throw new Error('Failed to get enhancement result')
     }
   }
 }

@@ -194,6 +194,7 @@ enum GenerationType {
   LIPSYNC
   TEXT_TO_AUDIO
   IMAGE_UPSCALE
+  IMAGE_ENHANCEMENT
 }
 
 enum GenerationStatus {

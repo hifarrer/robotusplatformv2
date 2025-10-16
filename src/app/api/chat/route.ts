@@ -5,10 +5,11 @@ import { prisma } from '@/lib/prisma'
 import { VideoModel } from '@prisma/client'
 import { analyzeUserRequest } from '@/lib/ai-orchestrator'
 import { validateAndMapVideoDuration } from '@/lib/duration-utils'
-import { WavespeedService, WanService } from '@/lib/ai-services'
+import { WavespeedService, WanService, FalService } from '@/lib/ai-services'
 import { GenerationType } from '@/types'
 import { getSafeGenerationType } from '@/lib/generation-utils'
 import { checkAndDeductCreditsForGeneration, refundCredits } from '@/lib/credit-manager'
+import { saveFile } from '@/lib/media-storage'
 import { z } from 'zod'
 
 const chatRequestSchema = z.object({
@@ -20,6 +21,12 @@ const chatRequestSchema = z.object({
 
 const upscaleRequestSchema = z.object({
   action: z.literal('upscale'),
+  imageUrl: z.string().min(1, 'Image URL is required'),
+  chatId: z.string().optional().nullable(),
+})
+
+const enhanceRequestSchema = z.object({
+  action: z.literal('enhance'),
   imageUrl: z.string().min(1, 'Image URL is required'),
   chatId: z.string().optional().nullable(),
 })
@@ -148,6 +155,202 @@ async function handleUpscaleRequest(session: any, imageUrl: string, chatId?: str
   }
 }
 
+async function handleEnhanceRequest(session: any, imageUrl: string, chatId?: string | null) {
+  try {
+    console.log('✨ Starting enhance process for:', imageUrl)
+    console.log('✨ Session user ID:', session.user.id)
+    console.log('✨ Chat ID:', chatId)
+    
+    // Check and deduct credits
+    const enhanceCredits = await checkAndDeductCreditsForGeneration(
+      session.user.id,
+      'IMAGE_ENHANCEMENT'
+    )
+    
+    if (!enhanceCredits.success) {
+      return NextResponse.json(
+        { 
+          error: `You don't have enough credits to enhance images. You need ${enhanceCredits.cost} credits. Please upgrade your plan to continue.`,
+          required: enhanceCredits.cost,
+        },
+        { status: 402 }
+      )
+    }
+    
+    console.log(`💳 Credits deducted for enhance: ${enhanceCredits.cost}`)
+    
+    // Create or get chat
+    let chat
+    if (chatId) {
+      chat = await prisma.chat.findFirst({
+        where: {
+          id: chatId,
+          userId: session.user.id,
+        },
+      })
+      console.log('✨ Found existing chat:', chat?.id)
+    }
+    
+    if (!chat) {
+      console.log('✨ Creating new chat')
+      chat = await prisma.chat.create({
+        data: {
+          userId: session.user.id,
+          title: 'Image Enhancement',
+        },
+      })
+      console.log('✨ Created new chat:', chat.id)
+    }
+
+    // Create assistant message for the enhance operation
+    console.log('✨ Creating assistant message')
+    const assistantMessage = await prisma.message.create({
+      data: {
+        chatId: chat.id,
+        role: 'ASSISTANT',
+        content: `I'm enhancing your image with face and skin details. This will take a few moments... (${enhanceCredits.cost} credits used)`,
+      },
+    })
+    console.log('✨ Created assistant message:', assistantMessage.id)
+
+    // Create generation record
+    const generation = await prisma.generation.create({
+      data: {
+        messageId: assistantMessage.id,
+        type: getSafeGenerationType('IMAGE_ENHANCEMENT', 'TEXT_TO_IMAGE') as any,
+        status: 'PENDING',
+        prompt: `Enhance image with face and skin details: ${imageUrl}`,
+        provider: 'fal-ai',
+        model: 'topaz/upscale/image',
+        metadata: {
+          originalImageUrl: imageUrl,
+          creditsUsed: enhanceCredits.cost
+        }
+      }
+    })
+
+    try {
+      // Update status to processing
+      await prisma.generation.update({
+        where: { id: generation.id },
+        data: { status: 'PROCESSING' }
+      })
+
+      // Call FAL.ai service to enhance the image
+      console.log('🎨 Starting image enhancement with FAL.ai...')
+      const enhancedImageUrl = await FalService.enhanceImage(imageUrl)
+      console.log('✅ Image enhanced successfully:', enhancedImageUrl)
+
+      // Download and save the enhanced image
+      const imageResponse = await fetch(enhancedImageUrl)
+      if (!imageResponse.ok) {
+        throw new Error('Failed to download enhanced image')
+      }
+
+      const imageBuffer = await imageResponse.arrayBuffer()
+      const fileName = `enhanced_${Date.now()}.jpg`
+      const localPath = await saveFile(imageBuffer, fileName, 'image')
+
+      // Update generation with result
+      await prisma.generation.update({
+        where: { id: generation.id },
+        data: {
+          status: 'COMPLETED',
+          resultUrl: enhancedImageUrl,
+          resultUrls: [enhancedImageUrl]
+        }
+      })
+
+      // Save enhanced image to user's collection
+      await prisma.savedImage.create({
+        data: {
+          userId: session.user.id,
+          title: 'Enhanced Image',
+          prompt: `Enhanced from: ${imageUrl}`,
+          originalUrl: enhancedImageUrl,
+          localPath: localPath,
+          fileName: fileName,
+          fileSize: imageBuffer.byteLength,
+          mimeType: 'image/jpeg',
+          generationId: generation.id
+        }
+      })
+
+      // Update assistant message
+      await prisma.message.update({
+        where: { id: assistantMessage.id },
+        data: {
+          content: `✨ I've enhanced your image with face and skin details! (${enhanceCredits.cost} credits used)`
+        }
+      })
+
+    } catch (enhanceError: any) {
+      console.error('Image enhancement error:', enhanceError)
+      
+      // Update generation status to failed
+      await prisma.generation.update({
+        where: { id: generation.id },
+        data: {
+          status: 'FAILED',
+          error: enhanceError.message || 'Image enhancement failed'
+        }
+      })
+
+      // Refund credits on failure
+      await refundCredits(
+        session.user.id,
+        enhanceCredits.cost,
+        `Refund for failed image enhancement: ${imageUrl}`
+      )
+
+      throw enhanceError
+    }
+
+    // Get the updated assistant message with generations
+    const updatedAssistantMessage = await prisma.message.findUnique({
+      where: { id: assistantMessage.id },
+      include: { generations: true },
+    })
+
+    // Get the user message ID from the previous message in the chat
+    const userMessage = await prisma.message.findFirst({
+      where: {
+        chatId: chat.id,
+        role: 'USER',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    
+    return NextResponse.json({
+      response: `✨ I've enhanced your image with face and skin details! (${enhanceCredits.cost} credits used)`,
+      chatId: chat.id,
+      messageId: assistantMessage.id,
+      userMessageId: userMessage?.id,
+      generations: updatedAssistantMessage?.generations || [],
+      isEnhancing: true, // Flag to indicate this is an enhance operation
+    })
+  } catch (error: any) {
+    console.error('❌ Enhance error:', error)
+    console.error('❌ Error stack:', error?.stack)
+    console.error('❌ Error details:', {
+      message: error?.message,
+      name: error?.name,
+      code: error?.code,
+      response: error?.response?.data
+    })
+    return NextResponse.json(
+      { 
+        error: 'Failed to start image enhancement', 
+        details: error?.message,
+        stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+      },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   console.log('🌟 === CHAT API STARTED ===') // Debug log
   try {
@@ -172,6 +375,13 @@ export async function POST(request: NextRequest) {
       const { imageUrl, chatId } = upscaleRequestSchema.parse(body)
       console.log('🔍 Processing upscale request:', { imageUrl, chatId }) // Debug log
       return await handleUpscaleRequest(session, imageUrl, chatId ?? null)
+    }
+    
+    // Check if this is an enhance request
+    if (body.action === 'enhance') {
+      const { imageUrl, chatId } = enhanceRequestSchema.parse(body)
+      console.log('✨ Processing enhance request:', { imageUrl, chatId }) // Debug log
+      return await handleEnhanceRequest(session, imageUrl, chatId ?? null)
     }
     
     // Handle regular chat request
