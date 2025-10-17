@@ -1,7 +1,7 @@
 'use client'
 
 import { signOut, useSession } from 'next-auth/react'
-import { User, Settings, CreditCard, LogOut, Shield } from 'lucide-react'
+import { User, Settings, CreditCard, LogOut, Shield, Mail } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -73,6 +73,10 @@ export function UserMenu() {
         <DropdownMenuItem onClick={() => router.push('/pricing')} className="cursor-pointer">
           <CreditCard className="mr-2 h-4 w-4" />
           <span>Plans & Pricing</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push('/contact')} className="cursor-pointer">
+          <Mail className="mr-2 h-4 w-4" />
+          <span>Contact Us</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
