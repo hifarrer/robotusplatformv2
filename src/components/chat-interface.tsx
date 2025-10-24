@@ -871,7 +871,7 @@ export function ChatInterface() {
     }
   }
 
-  // ReImagine image with WAVESPEED.ai Soul model
+  // Hyper Real image with WAVESPEED.ai Soul model
   const reimagineImage = async (generation: any) => {
     // Get the image URL to reimagine
     const imageUrl = generation.resultUrls?.[0] || generation.resultUrl
@@ -906,7 +906,7 @@ export function ChatInterface() {
       
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || `ReImagine failed: ${response.status}`)
+        throw new Error(errorData.error || `Hyper Real failed: ${response.status}`)
       }
       
       const result = await response.json()
@@ -1809,10 +1809,7 @@ export function ChatInterface() {
                       <div className="mt-3 space-y-2">
                         {message.generations.map((generation) => (
                           <div key={generation.id} className="border border-gray-600 rounded p-2 w-full max-w-full overflow-hidden">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-gray-300">
-                                {generation.type.replace('_', ' ').toLowerCase()} - {generation.model}
-                              </span>
+                            <div className="flex items-center justify-end">
                               <span className={cn(
                                 "text-xs px-2 py-1 rounded",
                                 generation.status === 'COMPLETED' ? "bg-green-600" :
@@ -1915,7 +1912,7 @@ export function ChatInterface() {
                                   ))}
                                 </div>
                                 
-                                {/* Action buttons: New, Edit, ReImagine, Enhance, Upscale, Video */}
+                                {/* Action buttons: New, Edit, Hyper Real, Enhance, Upscale, Video */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -1950,7 +1947,7 @@ export function ChatInterface() {
                                       className="text-purple-400 border-purple-600 hover:bg-purple-500 hover:text-white text-xs sm:text-sm"
                                     >
                                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      ReImagine
+                                      Hyper Real
                                     </Button>
                                   )}
                                   {/* Show enhance button only for completed image generations */}
@@ -2080,7 +2077,7 @@ export function ChatInterface() {
                                   </Button>
                                 </div>
                                 
-                                {/* Action buttons: New, Edit, ReImagine, Enhance, Upscale, Video */}
+                                {/* Action buttons: New, Edit, Hyper Real, Enhance, Upscale, Video */}
                                 <div className="flex flex-wrap justify-center gap-2">
                                   <Button
                                     variant="outline"
@@ -2115,7 +2112,7 @@ export function ChatInterface() {
                                       className="text-purple-400 border-purple-600 hover:bg-purple-500 hover:text-white text-xs sm:text-sm"
                                     >
                                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                                      ReImagine
+                                      Hyper Real
                                     </Button>
                                   )}
                                   {/* Show enhance button only for completed image generations */}

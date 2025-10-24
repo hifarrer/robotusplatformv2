@@ -83,7 +83,7 @@ export function CreditsDisplay({ isMobile = false }: { isMobile?: boolean }) {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Credits: </span>
-                  <span className="font-semibold">{creditsData.plan?.credits || 120}</span>
+                  <span className="font-semibold">{creditsData.plan?.credits || 60}</span>
                 </div>
               </div>
             </div>

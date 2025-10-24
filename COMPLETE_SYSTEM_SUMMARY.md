@@ -9,7 +9,7 @@ This document provides a complete overview of all features implemented in the Ro
 ## 1️⃣ Credits & Plans System
 
 ### Pricing Tiers
-- **Free Plan**: $0 - 120 credits
+- **Free Plan**: $0 - 60 credits
 - **Basic Plan**: $15/month or $210/year - 500 credits  
 - **Premium Plan**: $29/month or $290/year - 1200 credits
 
@@ -273,7 +273,7 @@ npm run dev
 - **Admin Settings**: `/admin/settings`
 
 ### Default Users
-- **Regular Users**: Assigned to Free plan with 120 credits
+- **Regular Users**: Assigned to Free plan with 60 credits
 - **Admin User**: 
   - Email: `admin`
   - Password: `p@ssw0rd123`

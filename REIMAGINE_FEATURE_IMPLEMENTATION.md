@@ -1,7 +1,7 @@
-# ReImagine Feature Implementation Summary
+# Hyper Real Feature Implementation Summary
 
 ## Overview
-Implemented a new **ReImagine** feature that allows users to reimagine/recreate existing images using the WAVESPEED.ai Soul model (`higgsfield/soul/image-to-image`).
+Implemented a new **Hyper Real** feature that allows users to reimagine/recreate existing images using the WAVESPEED.ai Soul model (`higgsfield/soul/image-to-image`).
 
 ## Implementation Details
 
@@ -25,7 +25,7 @@ Implemented a new **ReImagine** feature that allows users to reimagine/recreate 
 
 ### 3. Credit System
 - **File**: `src/lib/credit-costs.ts`
-- Added `IMAGE_REIMAGINE` cost: **6 credits per image**
+- Added `IMAGE_REIMAGINE` cost: **5 credits per image**
 - Updated cost calculation and description functions
 
 ### 4. API Endpoint
@@ -48,7 +48,7 @@ Implemented a new **ReImagine** feature that allows users to reimagine/recreate 
 
 ### 5. User Interface
 - **File**: `src/components/my-images-view.tsx`
-- Added **ReImagine button** with Sparkles icon
+- Added **Hyper Real button** with Sparkles icon
 - Button appears in two locations:
   1. **Hover overlay** on image cards in the grid
   2. **Action buttons** in the image detail modal
@@ -82,9 +82,9 @@ Implemented a new **ReImagine** feature that allows users to reimagine/recreate 
 ### From the My Images Page:
 1. Navigate to `/my-images`
 2. Hover over any image in the grid
-3. Click the **Sparkles icon** (ReImagine button)
+3. Click the **Sparkles icon** (Hyper Real button)
 4. The image will be processed and a new reimagined version will be added to your library
-5. The operation costs **6 credits**
+5. The operation costs **5 credits**
 
 ### From the Chat Interface:
 Users can also request reimagining through chat by:
@@ -170,7 +170,7 @@ If you encounter any TypeScript errors related to the new `IMAGE_REIMAGINE` type
 - [ ] Test error handling (insufficient credits, API errors)
 
 ## Success Criteria
-✅ ReImagine button added to My Images view  
+✅ Hyper Real button added to My Images view  
 ✅ Button calls WAVESPEED.ai Soul model API  
 ✅ Always uses prompt "reimagine this picture"  
 ✅ Results checked using standard polling method  

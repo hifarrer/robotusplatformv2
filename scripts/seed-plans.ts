@@ -7,7 +7,7 @@ const plans = [
     name: 'Free',
     monthlyPrice: 0,
     yearlyPrice: 0,
-    credits: 120,
+    credits: 60,
     description: 'Perfect for getting started with AI content generation',
     isActive: true,
   },
@@ -65,7 +65,7 @@ async function main() {
       where: { id: user.id },
       data: {
         planId: freePlan.id,
-        credits: 120, // Set initial credits for Free plan
+        credits: 60, // Set initial credits for Free plan
       },
     })
     console.log(`✓ Assigned Free plan to user: ${user.email}`)

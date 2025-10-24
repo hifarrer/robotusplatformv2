@@ -356,7 +356,7 @@ export function MyImagesView() {
                         onClick={() => reimagineImage(image)}
                         disabled={reimagining === image.id}
                         className="text-purple-400 hover:bg-purple-500/20"
-                        title="ReImagine"
+                        title="Hyper Real"
                       >
                         {reimagining === image.id ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -516,7 +516,7 @@ export function MyImagesView() {
                     ) : (
                       <Sparkles className="w-4 h-4 mr-2" />
                     )}
-                    ReImagine
+                    Hyper Real
                   </Button>
                 </div>
                 

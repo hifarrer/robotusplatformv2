@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
         name: 'Free',
         monthlyPrice: 0,
         yearlyPrice: 0,
-        credits: 120,
+        credits: 60,
         description: 'Free plan with basic features',
         features: ['Basic AI generation', 'Limited credits'],
         isActive: true,

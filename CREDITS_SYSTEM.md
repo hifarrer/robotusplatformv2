@@ -7,7 +7,7 @@ The Robotus AI Platform uses a credit-based system for AI generation operations.
 ## Plans
 
 ### Free Plan - $0
-- **120 Credits** included
+- **60 Credits** included
 - Perfect for getting started with AI content generation
 
 ### Basic Plan - $15/month or $210/year
@@ -56,13 +56,13 @@ Get all available plans and user's current plan.
       "name": "Free",
       "monthlyPrice": 0,
       "yearlyPrice": 0,
-      "credits": 120,
+      "credits": 60,
       "description": "Perfect for getting started",
       "isActive": true
     }
   ],
   "currentPlan": { ... },
-  "currentCredits": 120
+  "currentCredits": 60
 }
 ```
 

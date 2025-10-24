@@ -42,10 +42,10 @@ async function main() {
       yearlyPrice: 0,
       stripeMonthlyPriceId: null,
       stripeYearlyPriceId: null,
-      credits: 120,
+      credits: 60,
       description: 'Perfect for getting started with AI content generation',
       features: [
-        '120 Credits',
+        '60 Credits',
         'All AI models',
         'Community support',
         'Basic features'

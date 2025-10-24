@@ -13,7 +13,7 @@
 Created three pricing tiers:
 
 **Free Plan** - $0
-- 120 Credits
+- 60 Credits
 - Perfect for getting started
 
 **Basic Plan** - $15/month, $210/year
@@ -155,7 +155,7 @@ Updated `src/types/index.ts` with:
 
 ### All Existing Users
 - ✅ Assigned to Free plan
-- ✅ Credited with 120 initial credits
+- ✅ Credited with 60 initial credits
 
 ## 🔧 Technical Details
 
@@ -262,7 +262,7 @@ if (!creditResult.success) {
 
 ## 📌 Important Notes
 
-1. All current users have been assigned to the Free plan with 120 credits
+1. All current users have been assigned to the Free plan with 60 credits
 2. Credit costs are calculated automatically based on generation type and duration
 3. Failed generations automatically trigger credit refunds
 4. All credit operations use database transactions for consistency
