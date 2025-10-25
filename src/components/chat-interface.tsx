@@ -36,7 +36,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
 import { HelpModal } from '@/components/help-modal'
+import { PromoBanner } from '@/components/promo-banner'
 import { useCredits } from '@/contexts/credits-context'
+import { usePromoBanner } from '@/hooks/use-promo-banner'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
 import { validateAndMapVideoDuration } from '@/lib/duration-utils'
 import { getRandomPrompt, getRandomVideoPrompt } from '@/lib/prompt-generator'
@@ -63,6 +65,7 @@ interface SavedImage {
 export function ChatInterface() {
   const { data: session } = useSession()
   const { refreshCredits } = useCredits()
+  const { isOpen: isPromoOpen, closeBanner: closePromoBanner, handleUpgrade } = usePromoBanner()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [files, setFiles] = useState<FileUpload[]>([])
@@ -146,7 +149,8 @@ export function ChatInterface() {
           // Refresh credits when generations complete
           const hasCompletedGenerations = result.generations.some((g: any) => g.status === 'COMPLETED')
           if (hasCompletedGenerations) {
-            refreshCredits()
+            // Defer credit refresh to avoid setState during render
+            setTimeout(() => refreshCredits(), 0)
           }
           
           const updatedMessages = prev.map(message => {
@@ -946,7 +950,7 @@ export function ChatInterface() {
       }
       
       // Refresh credits after reimagining
-      await refreshCredits()
+      setTimeout(() => refreshCredits(), 0)
     } catch (error: any) {
       console.error('❌ Error reimagining image:', error)
       
@@ -1042,7 +1046,7 @@ export function ChatInterface() {
       }
       
       // Refresh credits after enhancing
-      await refreshCredits()
+      setTimeout(() => refreshCredits(), 0)
     } catch (error: any) {
       console.error('Error enhancing image:', error)
       
@@ -2502,6 +2506,7 @@ export function ChatInterface() {
                   <span className="hidden sm:inline">Help Me</span>
                   <span className="sm:hidden">Help</span>
                 </Button>
+                
               </div>
 
               <Button
@@ -2781,6 +2786,13 @@ export function ChatInterface() {
         isOpen={showHelpModal}
         onClose={() => setShowHelpModal(false)}
         onPromptSelect={handleHelpPromptSelect}
+      />
+
+      {/* Promo Banner Modal */}
+      <PromoBanner
+        isOpen={isPromoOpen}
+        onClose={closePromoBanner}
+        onUpgrade={handleUpgrade}
       />
     </div>
   )

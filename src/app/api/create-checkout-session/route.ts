@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Parse request body
     console.log('📥 [API] Step 2: Parsing request body...')
-    const { planId, billingCycle } = await request.json()
-    console.log('📋 [API] Request data:', { planId, billingCycle })
+    const { planId, billingCycle, discountCode } = await request.json()
+    console.log('📋 [API] Request data:', { planId, billingCycle, discountCode })
 
     // Step 3: Validate request data
     console.log('✔️  [API] Step 3: Validating request data...')
@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       successUrl: `${baseUrl}/pricing?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${baseUrl}/pricing?canceled=true`,
+      discountCode,
     })
 
     console.log('✅ [API] Checkout session created successfully!')

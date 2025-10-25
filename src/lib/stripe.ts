@@ -48,12 +48,14 @@ export const createCheckoutSession = async ({
   email,
   successUrl,
   cancelUrl,
+  discountCode,
 }: {
   priceId: string
   userId: string
   email: string
   successUrl: string
   cancelUrl: string
+  discountCode?: string
 }) => {
   console.log('\n💳 [STRIPE] === Creating Checkout Session ===')
   console.log('📋 [STRIPE] Parameters:', {
@@ -61,7 +63,8 @@ export const createCheckoutSession = async ({
     userId,
     email,
     successUrl,
-    cancelUrl
+    cancelUrl,
+    discountCode
   })
 
   try {
@@ -88,6 +91,7 @@ export const createCheckoutSession = async ({
       metadata: {
         userId,
       },
+      ...(discountCode && { discounts: [{ promotion_code: discountCode }] }),
     }
     
     console.log('📤 [STRIPE] Session parameters:', JSON.stringify(sessionParams, null, 2))

@@ -50,6 +50,7 @@ export default function PricingPage() {
   const [isUpgrading, setIsUpgrading] = useState<string | null>(null)
   const [subscriptionStatus, setSubscriptionStatus] = useState<any>(null)
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(false)
+  const [discountCode, setDiscountCode] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -70,6 +71,12 @@ export default function PricingPage() {
     } else if (urlParams.get('canceled') === 'true') {
       alert('Payment was cancelled.')
       // Clean URL
+      window.history.replaceState({}, '', '/pricing')
+    } else if (urlParams.get('discount')) {
+      // Handle discount code from URL
+      const discount = urlParams.get('discount')
+      setDiscountCode(discount)
+      // Clean URL but keep discount code in state
       window.history.replaceState({}, '', '/pricing')
     }
   }, [])
@@ -170,8 +177,8 @@ export default function PricingPage() {
       }
 
       // For paid plans, use Stripe checkout
-      console.log('💳 [PRICING] Creating Stripe checkout session for:', { planId, billingCycle })
-      const requestBody = { planId, billingCycle }
+      console.log('💳 [PRICING] Creating Stripe checkout session for:', { planId, billingCycle, discountCode })
+      const requestBody = { planId, billingCycle, discountCode }
       console.log('📤 [PRICING] Request body:', JSON.stringify(requestBody))
       
       const response = await fetch('/api/create-checkout-session', {
@@ -437,6 +444,17 @@ export default function PricingPage() {
                     Current Plan: <strong>{plansData.currentPlan.name}</strong>
                   </span>
                   <Badge variant="secondary">{plansData.currentCredits} credits</Badge>
+                </div>
+              )}
+
+              {/* Discount Banner */}
+              {discountCode === 'WELCOME' && (
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg border border-green-400/30 animate-pulse">
+                  <Gift className="w-6 h-6 text-green-400" />
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">🎉 50% OFF Your First Month!</div>
+                    <div className="text-sm text-gray-300">Use code <span className="font-bold text-green-400 bg-green-500/20 px-2 py-1 rounded">WELCOME</span> for 50% discount</div>
+                  </div>
                 </div>
               )}
 
