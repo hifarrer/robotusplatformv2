@@ -20,7 +20,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { UserMenu } from '@/components/user-menu'
 import { Badge } from '@/components/ui/badge'
-import { PromoBanner } from '@/components/promo-banner'
 
 interface Plan {
   id: string
@@ -424,8 +423,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Promotional Banner */}
-        <PromoBanner />
 
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-6">
