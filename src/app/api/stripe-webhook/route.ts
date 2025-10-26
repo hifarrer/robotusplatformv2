@@ -108,6 +108,11 @@ async function handleCreditsPurchase(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId
   const priceId = session.metadata?.priceId
 
+  if (!userId) {
+    console.error('No userId found in session metadata for credits purchase')
+    return
+  }
+
   if (!priceId) {
     console.error('No priceId found in session metadata for credits purchase')
     return
