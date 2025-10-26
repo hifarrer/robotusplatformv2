@@ -54,10 +54,17 @@ interface DashboardStats {
   }>
 }
 
+interface Plan {
+  id: string
+  name: string
+}
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [plans, setPlans] = useState<Plan[]>([])
+  const [selectedPlanId, setSelectedPlanId] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -69,11 +76,19 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchStats()
+    fetchPlans()
   }, [])
+
+  useEffect(() => {
+    fetchStats()
+  }, [selectedPlanId])
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/admin/stats')
+      const url = selectedPlanId === 'all' 
+        ? '/api/admin/stats' 
+        : `/api/admin/stats?planId=${selectedPlanId}`
+      const response = await fetch(url)
       if (response.status === 403) {
         setError('Access denied. Admin privileges required.')
         return
@@ -89,6 +104,18 @@ export default function AdminDashboard() {
       setError('An error occurred while loading stats')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch('/api/admin/plans')
+      if (response.ok) {
+        const data = await response.json()
+        setPlans(data)
+      }
+    } catch (error) {
+      console.error('Error fetching plans:', error)
     }
   }
 
@@ -157,12 +184,27 @@ export default function AdminDashboard() {
         <div className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6">
             {/* Page Title */}
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-                <Shield className="w-8 h-8 text-red-500" />
-                Admin Dashboard
-              </h1>
-              <p className="text-gray-400">Monitor platform usage and manage users</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                  <Shield className="w-8 h-8 text-red-500" />
+                  Admin Dashboard
+                </h1>
+                <p className="text-gray-400">Monitor platform usage and manage users</p>
+              </div>
+              <div className="w-48">
+                <select
+                  value={selectedPlanId}
+                  onChange={(e) => setSelectedPlanId(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Plans</option>
+                  <option value="">No Plan</option>
+                  {plans.map((plan) => (
+                    <option key={plan.id} value={plan.id}>{plan.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Quick Actions */}
@@ -243,7 +285,7 @@ export default function AdminDashboard() {
                   <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-3xl font-bold text-white">${stats.totalRevenue}</p>
-                <p className="text-sm text-gray-400">Total Revenue</p>
+                <p className="text-sm text-gray-400">Monthly Revenue</p>
               </div>
 
               <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">

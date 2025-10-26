@@ -44,6 +44,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [plans, setPlans] = useState<Plan[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedPlanId, setSelectedPlanId] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [editForm, setEditForm] = useState({
@@ -65,9 +66,16 @@ export default function AdminUsersPage() {
     fetchPlans()
   }, [])
 
+  useEffect(() => {
+    fetchUsers()
+  }, [selectedPlanId])
+
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users')
+      const url = selectedPlanId === 'all' 
+        ? '/api/admin/users' 
+        : `/api/admin/users?planId=${selectedPlanId}`
+      const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
         setUsers(data)
@@ -212,15 +220,30 @@ export default function AdminUsersPage() {
               <Badge variant="secondary">{users.length} Total Users</Badge>
             </div>
 
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search users by email or name..."
-                className="pl-10 bg-gray-900 border-gray-800 text-white"
-              />
+            {/* Search and Filter */}
+            <div className="flex gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search users by email or name..."
+                  className="pl-10 bg-gray-900 border-gray-800 text-white"
+                />
+              </div>
+              <div className="w-48">
+                <select
+                  value={selectedPlanId}
+                  onChange={(e) => setSelectedPlanId(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Plans</option>
+                  <option value="">No Plan</option>
+                  {plans.map((plan) => (
+                    <option key={plan.id} value={plan.id}>{plan.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Users Table */}

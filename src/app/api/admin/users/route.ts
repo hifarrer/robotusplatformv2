@@ -1,12 +1,23 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAdmin()
 
+    // Get query parameters
+    const { searchParams } = new URL(request.url)
+    const planId = searchParams.get('planId')
+
+    // Build where clause for filtering
+    const whereClause: any = {}
+    if (planId && planId !== 'all') {
+      whereClause.planId = planId
+    }
+
     const users = await prisma.user.findMany({
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,

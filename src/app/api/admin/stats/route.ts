@@ -1,17 +1,30 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin-auth'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAdmin()
 
-    // Get total users
-    const totalUsers = await prisma.user.count()
+    // Get query parameters for filtering
+    const { searchParams } = new URL(request.url)
+    const planId = searchParams.get('planId')
 
-    // Get active users (users who have made at least one generation)
+    // Build where clause for filtering
+    const whereClause: any = {}
+    if (planId && planId !== 'all') {
+      whereClause.planId = planId
+    }
+
+    // Get total users (filtered by plan if specified)
+    const totalUsers = await prisma.user.count({
+      where: whereClause,
+    })
+
+    // Get active users (users who have made at least one generation, filtered by plan if specified)
     const activeUsers = await prisma.user.count({
       where: {
+        ...whereClause,
         isActive: true,
         OR: [
           {
@@ -43,25 +56,18 @@ export async function GET() {
       },
     })
 
-    // Calculate total revenue (sum of all PURCHASE transactions)
-    const purchases = await prisma.creditTransaction.findMany({
-      where: {
-        type: 'PURCHASE',
-      },
+    // Calculate total monthly revenue based on active subscriptions
+    const usersWithPlans = await prisma.user.findMany({
+      where: whereClause,
       include: {
-        user: {
-          include: {
-            plan: true,
-          },
-        },
+        plan: true,
       },
     })
 
     let totalRevenue = 0
-    for (const purchase of purchases) {
-      if (purchase.metadata && typeof purchase.metadata === 'object') {
-        const metadata = purchase.metadata as any
-        totalRevenue += metadata.price || 0
+    for (const user of usersWithPlans) {
+      if (user.plan && user.plan.monthlyPrice > 0) {
+        totalRevenue += user.plan.monthlyPrice
       }
     }
 
@@ -88,8 +94,9 @@ export async function GET() {
       },
     })
 
-    // Get plan distribution
+    // Get plan distribution (filtered by plan if specified)
     const users = await prisma.user.findMany({
+      where: whereClause,
       include: {
         plan: true,
       },
@@ -104,7 +111,7 @@ export async function GET() {
     const planDistribution = Object.entries(planCounts).map(([name, count]) => ({
       name,
       count,
-      percentage: (count / totalUsers) * 100,
+      percentage: totalUsers > 0 ? (count / totalUsers) * 100 : 0,
     }))
 
     // Get recent transactions
