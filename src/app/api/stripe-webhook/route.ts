@@ -182,6 +182,11 @@ async function handleSubscriptionPurchase(session: Stripe.Checkout.Session) {
   const subscriptionId = session.subscription as string
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   
+  if (!userId) {
+    console.error('No userId found in session metadata for subscription purchase')
+    return
+  }
+  
   // Get the price ID to find the corresponding plan
   const priceId = subscription.items.data[0]?.price.id
   
