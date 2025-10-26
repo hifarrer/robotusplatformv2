@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getStripeCustomerId } from '@/lib/stripe'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+import { getStripeCustomerId, stripe } from '@/lib/stripe'
 
 // Credit packages configuration
 const CREDIT_PACKAGES = {
