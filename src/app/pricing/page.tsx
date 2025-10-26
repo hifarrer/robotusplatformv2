@@ -50,6 +50,7 @@ export default function PricingPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<any>(null)
   const [isLoadingSubscription, setIsLoadingSubscription] = useState(false)
   const [discountCode, setDiscountCode] = useState<string | null>(null)
+  const [isPurchasingCredits, setIsPurchasingCredits] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -64,7 +65,16 @@ export default function PricingPage() {
     // Check for success/cancel query parameters
     const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.get('success') === 'true') {
-      alert('Payment successful! Your plan has been upgraded.')
+      const type = urlParams.get('type')
+      if (type === 'credits') {
+        alert('Payment successful! Your credits have been added to your account.')
+        // Refresh plans data to update credit balance
+        fetchPlans()
+      } else {
+        alert('Payment successful! Your plan has been upgraded.')
+        // Refresh plans data to update plan and credits
+        fetchPlans()
+      }
       // Clean URL
       window.history.replaceState({}, '', '/pricing')
     } else if (urlParams.get('canceled') === 'true') {
@@ -332,6 +342,68 @@ export default function PricingPage() {
       }
     } catch (error) {
       alert('An error occurred while opening the customer portal')
+    }
+  }
+
+  const handlePurchaseCredits = async (priceId: string, packageName: string) => {
+    console.log('💳 [PRICING] Starting credits purchase:', { priceId, packageName })
+    setIsPurchasingCredits(packageName)
+    
+    try {
+      const response = await fetch('/api/purchase-credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      })
+
+      console.log('📥 [PRICING] Response status:', response.status)
+      console.log('📥 [PRICING] Response ok:', response.ok)
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log('✅ [PRICING] Checkout session created:', data)
+        
+        if (!data.url) {
+          console.error('❌ [PRICING] No URL in response:', data)
+          alert('Failed to create checkout session: No redirect URL received')
+          return
+        }
+        
+        console.log('🔄 [PRICING] Redirecting to Stripe:', data.url)
+        
+        // Track conversion with gtag if available (don't wait for it)
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          try {
+            (window as any).gtag('event', 'conversion', {
+              'send_to': 'AW-17548478207/UEmACLiqy5kbEP-N4q9B',
+              'value': 1.0,
+              'currency': 'USD',
+              'transaction_id': '',
+            })
+            console.log('📊 [PRICING] Google Ads conversion tracked')
+          } catch (error) {
+            console.warn('⚠️ [PRICING] Failed to track conversion:', error)
+          }
+        } else {
+          console.log('ℹ️ [PRICING] Google Analytics not available, skipping conversion tracking')
+        }
+        
+        // Redirect immediately (don't wait for gtag callback)
+        console.log('🚀 [PRICING] Performing redirect now...')
+        window.location.href = data.url
+      } else {
+        const error = await response.json()
+        console.error('❌ [PRICING] Failed to create checkout session:', { 
+          status: response.status,
+          error 
+        })
+        alert(error.error || 'Failed to create checkout session')
+        setIsPurchasingCredits(null)
+      }
+    } catch (error) {
+      console.error('❌ [PRICING] Exception in handlePurchaseCredits:', error)
+      alert('An error occurred while processing your request')
+      setIsPurchasingCredits(null)
     }
   }
 
@@ -693,6 +765,88 @@ export default function PricingPage() {
                 </div>
               )}
             </div>
+
+            {/* Additional Credits Section - Only for paid plan users */}
+            {plansData.currentPlan && plansData.currentPlan.name !== 'Free' && (
+              <div className="bg-gray-900 rounded-2xl p-8 mt-12">
+                <h2 className="text-2xl font-bold text-white mb-6">Additional Credits</h2>
+                <p className="text-gray-400 mb-6">
+                  Need more credits? Purchase additional credits to boost your creative power.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* 250 Credits Package */}
+                  <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-colors">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold text-white">250 Credits</h3>
+                      <div className="bg-primary/10 rounded-full px-3 py-1">
+                        <span className="text-primary font-medium">$10</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Perfect for occasional content creators who need extra credits
+                    </p>
+                    <ul className="space-y-2 mb-6">
+                      <li className="flex items-center gap-2 text-sm text-gray-300">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>50 image generations</span>
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-300">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>10 short videos (5s)</span>
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-300">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>5 long videos (8-10s)</span>
+                      </li>
+                    </ul>
+                    <Button
+                      onClick={() => handlePurchaseCredits('price_1SMKAwFWpOHustkzTtdXKQU0', '250 Credits')}
+                      disabled={isPurchasingCredits === '250 Credits'}
+                      className="w-full bg-primary hover:bg-primary/90"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      {isPurchasingCredits === '250 Credits' ? 'Processing...' : 'Purchase 250 Credits'}
+                    </Button>
+                  </div>
+
+                  {/* 500 Credits Package */}
+                  <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-colors">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold text-white">500 Credits</h3>
+                      <div className="bg-primary/10 rounded-full px-3 py-1">
+                        <span className="text-primary font-medium">$20</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Best value for power users and content creators
+                    </p>
+                    <ul className="space-y-2 mb-6">
+                      <li className="flex items-center gap-2 text-sm text-gray-300">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>100 image generations</span>
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-300">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>20 short videos (5s)</span>
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-gray-300">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span>10 long videos (8-10s)</span>
+                      </li>
+                    </ul>
+                    <Button
+                      onClick={() => handlePurchaseCredits('price_1SMKBVFWpOHustkzvK0oLF2G', '500 Credits')}
+                      disabled={isPurchasingCredits === '500 Credits'}
+                      className="w-full bg-primary hover:bg-primary/90"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      {isPurchasingCredits === '500 Credits' ? 'Processing...' : 'Purchase 500 Credits'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Credit Costs Section */}
             <div className="bg-gray-900 rounded-2xl p-8 mt-12">

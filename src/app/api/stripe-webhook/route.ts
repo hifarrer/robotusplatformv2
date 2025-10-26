@@ -92,6 +92,88 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return
   }
 
+  // Check if this is a one-time payment for credits or a subscription
+  const paymentType = session.metadata?.type
+
+  if (paymentType === 'credits_purchase') {
+    // Handle one-time credit purchase
+    await handleCreditsPurchase(session)
+  } else {
+    // Handle subscription (existing logic)
+    await handleSubscriptionPurchase(session)
+  }
+}
+
+async function handleCreditsPurchase(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.userId
+  const priceId = session.metadata?.priceId
+
+  if (!priceId) {
+    console.error('No priceId found in session metadata for credits purchase')
+    return
+  }
+
+  // Credit packages configuration (same as in purchase-credits route)
+  const CREDIT_PACKAGES = {
+    'price_1SMKAwFWpOHustkzTtdXKQU0': {
+      credits: 250,
+      price: 10,
+      name: '250 Credits'
+    },
+    'price_1SMKBVFWpOHustkzvK0oLF2G': {
+      credits: 500,
+      price: 20,
+      name: '500 Credits'
+    }
+  } as const
+
+  const creditPackage = CREDIT_PACKAGES[priceId as keyof typeof CREDIT_PACKAGES]
+  
+  if (!creditPackage) {
+    console.error('Invalid priceId for credits purchase:', priceId)
+    return
+  }
+
+  // Get user and add credits
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  })
+
+  if (!user) {
+    console.error('User not found:', userId)
+    return
+  }
+
+  const newCredits = user.credits + creditPackage.credits
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      credits: newCredits,
+    },
+  })
+
+  // Create credit transaction record
+  await prisma.creditTransaction.create({
+    data: {
+      userId,
+      amount: creditPackage.credits,
+      balance: newCredits,
+      type: 'PURCHASE',
+      description: `Purchased ${creditPackage.name}`,
+      metadata: {
+        priceId,
+        packageName: creditPackage.name,
+        sessionId: session.id,
+      },
+    },
+  })
+
+  console.log(`User ${userId} purchased ${creditPackage.name} (${creditPackage.credits} credits)`)
+}
+
+async function handleSubscriptionPurchase(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.userId
   const subscriptionId = session.subscription as string
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   
