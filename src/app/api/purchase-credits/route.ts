@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getStripeCustomerId, stripe } from '@/lib/stripe'
+import Stripe from 'stripe'
 
 // Credit packages configuration
 const CREDIT_PACKAGES = {
