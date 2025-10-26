@@ -139,42 +139,72 @@ async function handleCreditsPurchase(session: Stripe.Checkout.Session) {
     return
   }
 
-  // Get user and add credits
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  })
-
-  if (!user) {
-    console.error('User not found:', userId)
-    return
-  }
-
-  const newCredits = user.credits + creditPackage.credits
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      credits: newCredits,
-    },
-  })
-
-  // Create credit transaction record
-  await prisma.creditTransaction.create({
-    data: {
-      userId,
-      amount: creditPackage.credits,
-      balance: newCredits,
-      type: 'PURCHASE',
-      description: `Purchased ${creditPackage.name}`,
-      metadata: {
-        priceId,
-        packageName: creditPackage.name,
-        sessionId: session.id,
+  try {
+    // Check if this transaction has already been processed
+    const existingTransaction = await prisma.creditTransaction.findFirst({
+      where: {
+        userId,
+        type: 'PURCHASE',
+        metadata: {
+          path: ['sessionId'],
+          equals: session.id,
+        },
       },
-    },
-  })
+    })
 
-  console.log(`User ${userId} purchased ${creditPackage.name} (${creditPackage.credits} credits)`)
+    if (existingTransaction) {
+      console.log(`Credits purchase for session ${session.id} already processed, skipping`)
+      return
+    }
+
+    // Use atomic transaction to ensure data consistency
+    await prisma.$transaction(async (tx) => {
+      // Get current user credits
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { credits: true },
+      })
+
+      if (!user) {
+        throw new Error(`User not found: ${userId}`)
+      }
+
+      const newCredits = user.credits + creditPackage.credits
+
+      // Update user credits
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          credits: newCredits,
+        },
+      })
+
+      // Create credit transaction record
+      await tx.creditTransaction.create({
+        data: {
+          userId,
+          amount: creditPackage.credits,
+          balance: newCredits,
+          type: 'PURCHASE',
+          description: `Purchased ${creditPackage.name}`,
+          metadata: {
+            priceId,
+            packageName: creditPackage.name,
+            sessionId: session.id,
+            paymentIntentId: session.payment_intent,
+            amountPaid: session.amount_total,
+            currency: session.currency,
+          },
+        },
+      })
+    })
+
+    console.log(`✅ User ${userId} successfully purchased ${creditPackage.name} (${creditPackage.credits} credits)`)
+  } catch (error) {
+    console.error(`❌ Error processing credits purchase for user ${userId}:`, error)
+    // In production, you might want to send an alert or retry mechanism here
+    throw error // Re-throw to ensure webhook retry
+  }
 }
 
 async function handleSubscriptionPurchase(session: Stripe.Checkout.Session) {
@@ -210,41 +240,72 @@ async function handleSubscriptionPurchase(session: Stripe.Checkout.Session) {
     return
   }
 
-  // Update user with new plan and add credits
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  })
-
-  if (!user) {
-    console.error('User not found:', userId)
-    return
-  }
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      planId: plan.id,
-      credits: user.credits + plan.credits,
-    },
-  })
-
-  // Create credit transaction record
-  await prisma.creditTransaction.create({
-    data: {
-      userId,
-      amount: plan.credits,
-      balance: user.credits + plan.credits,
-      type: 'PURCHASE',
-      description: `Subscribed to ${plan.name} plan`,
-      metadata: {
-        subscriptionId,
-        priceId,
-        planName: plan.name,
+  try {
+    // Check if this subscription has already been processed
+    const existingTransaction = await prisma.creditTransaction.findFirst({
+      where: {
+        userId,
+        type: 'PURCHASE',
+        metadata: {
+          path: ['subscriptionId'],
+          equals: subscriptionId,
+        },
       },
-    },
-  })
+    })
 
-  console.log(`User ${userId} subscribed to ${plan.name} plan`)
+    if (existingTransaction) {
+      console.log(`Subscription purchase for ${subscriptionId} already processed, skipping`)
+      return
+    }
+
+    // Use atomic transaction to ensure data consistency
+    await prisma.$transaction(async (tx) => {
+      // Get current user
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { credits: true },
+      })
+
+      if (!user) {
+        throw new Error(`User not found: ${userId}`)
+      }
+
+      const newCredits = user.credits + plan.credits
+
+      // Update user with new plan and add credits
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          planId: plan.id,
+          credits: newCredits,
+        },
+      })
+
+      // Create credit transaction record
+      await tx.creditTransaction.create({
+        data: {
+          userId,
+          amount: plan.credits,
+          balance: newCredits,
+          type: 'PURCHASE',
+          description: `Subscribed to ${plan.name} plan`,
+          metadata: {
+            subscriptionId,
+            priceId,
+            planName: plan.name,
+            sessionId: session.id,
+            amountPaid: session.amount_total,
+            currency: session.currency,
+          },
+        },
+      })
+    })
+
+    console.log(`✅ User ${userId} successfully subscribed to ${plan.name} plan`)
+  } catch (error) {
+    console.error(`❌ Error processing subscription purchase for user ${userId}:`, error)
+    throw error // Re-throw to ensure webhook retry
+  }
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
@@ -394,39 +455,71 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     return
   }
 
-  // Add credits for subscription renewal
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  })
-
-  if (!user) {
-    return
-  }
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      credits: user.credits + plan.credits,
-    },
-  })
-
-  await prisma.creditTransaction.create({
-    data: {
-      userId,
-      amount: plan.credits,
-      balance: user.credits + plan.credits,
-      type: 'PURCHASE',
-      description: `${plan.name} plan subscription renewal`,
-      metadata: {
-        subscriptionId,
-        priceId,
-        planName: plan.name,
-        invoiceId: invoice.id,
+  try {
+    // Check if this invoice has already been processed
+    const existingTransaction = await prisma.creditTransaction.findFirst({
+      where: {
+        userId,
+        type: 'PURCHASE',
+        metadata: {
+          path: ['invoiceId'],
+          equals: invoice.id,
+        },
       },
-    },
-  })
+    })
 
-  console.log(`User ${userId} subscription renewed for ${plan.name} plan`)
+    if (existingTransaction) {
+      console.log(`Invoice ${invoice.id} already processed, skipping`)
+      return
+    }
+
+    // Use atomic transaction to ensure data consistency
+    await prisma.$transaction(async (tx) => {
+      // Get current user credits
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { credits: true },
+      })
+
+      if (!user) {
+        throw new Error(`User not found: ${userId}`)
+      }
+
+      const newCredits = user.credits + plan.credits
+
+      // Update user credits
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          credits: newCredits,
+        },
+      })
+
+      // Create credit transaction record
+      await tx.creditTransaction.create({
+        data: {
+          userId,
+          amount: plan.credits,
+          balance: newCredits,
+          type: 'PURCHASE',
+          description: `${plan.name} plan subscription renewal`,
+          metadata: {
+            subscriptionId,
+            priceId,
+            planName: plan.name,
+            invoiceId: invoice.id,
+            amountPaid: invoice.amount_paid,
+            currency: invoice.currency,
+          },
+        },
+      })
+    })
+
+    console.log(`✅ User ${userId} subscription renewed for ${plan.name} plan`)
+  } catch (error) {
+    console.error(`❌ Error processing subscription renewal for user ${userId}:`, error)
+    throw error // Re-throw to ensure webhook retry
+  }
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
