@@ -8,29 +8,21 @@ export const CREATIVE_PROMPTS: PromptCategory[] = [
   {
     category: "ROBOTUS UGC Lifestyle",
     prompts: [
+      "Create an image of: A blonde woman elf wearing a t-shirt with the word \"ROBOTUS\" in Retro Font, UGC aesthetic, soft natural lighting.",
       "Create an image of: A young woman smiling while holding a luxury perfume bottle with the brand name \"ROBOTUS\" clearly on the label, UGC aesthetic, soft natural lighting.",
-      "Create an image of: A man sitting on a sofa casually trying on a stylish wristwatch, the watch dial engraved with \"ROBOTUS\", lifestyle UGC photo.",
       "Create an image of: A woman taking a selfie in the mirror while wearing a delicate gold necklace with a small pendant engraved \"ROBOTUS\", influencer-style photo.",
-      "Create an image of: A man pouring coffee into a branded thermos bottle that has the word \"ROBOTUS\" printed on the side, natural candid shot.",
-      "Create an image of: A woman outdoors holding a skincare serum bottle close to her face, the label reads \"ROBOTUS\", soft glow lighting, UGC style.",
       "Create an image of: A man holding wireless earbuds case near his ear with a casual smile, the case has the logo \"ROBOTUS\", modern lifestyle photo.",
       "A woman in a cozy living room applying lipstick, holding the lipstick tube with the brand name \"ROBOTUS\" visible, UGC photo.",
       "Create an image of: A man holding up a pair of running shoes while sitting on park stairs, the shoes show the logo \"ROBOTUS\" on the side, sporty UGC shot.",
-      "Create an image of: A woman with a towel on her head applying face cream from a jar labeled \"ROBOTUS\", bathroom background.",
       "Create an image of: A man working on his laptop while sipping from a coffee mug printed with the word \"ROBOTUS\", casual work-from-home UGC."
     ]
   },
   {
     category: "ROBOTUS Tech & Accessories",
     prompts: [
-      "Create an image of: A woman holding a scented candle close to her chest with a smile, the candle jar has the brand \"ROBOTUS\" on it, cozy aesthetic.",
-      "Create an image of: A man wearing sunglasses while adjusting them, the side of the glasses engraved with \"ROBOTUS\", outdoor lifestyle shot.",
       "Create an image of: A woman holding a branded handbag over her shoulder while looking at the camera, the handbag has \"ROBOTUS\" embossed on it, street-style UGC.",
-      "Create an image of: A man holding a smartwatch close to the camera, the screen displays the text \"ROBOTUS\", tech lifestyle UGC.",
       "Create an image of: A woman relaxing on her bed with headphones on, holding her phone with a case that reads \"ROBOTUS\", UGC style.",
-      "Create an image of: A man applying cologne spray on his neck, the cologne bottle label says \"ROBOTUS\", stylish close-up UGC shot.",
       "Create an image of: A woman holding a stainless steel water bottle at the gym, the bottle has the word \"ROBOTUS\" printed, natural influencer photo.",
-      "Create an image of: A man unboxing sneakers, the shoebox has a bold logo \"ROBOTUS\" on the lid, excited UGC photo.",
       "Create an image of: A woman holding mascara in one hand and smiling at the camera, the mascara tube has the brand \"ROBOTUS\", beauty UGC style.",
       "Create an image of: A man placing wireless speakers on a desk, the speaker grille has the logo \"ROBOTUS\" displayed, lifestyle tech UGC."
     ]
@@ -41,13 +33,7 @@ export const CREATIVE_PROMPTS: PromptCategory[] = [
       "Create an image of: A woman wearing earrings, with a jewelry box next to her labeled \"ROBOTUS\", lifestyle UGC photo.",
       "Create an image of: A man holding a cologne box in one hand, the box has the name \"ROBOTUS\" in bold letters, UGC style shot.",
       "Create an image of: A woman smiling while holding an eyeshadow palette, the palette cover printed with \"ROBOTUS\", lifestyle influencer photo.",
-      "Create an image of: A man outdoors adjusting his backpack straps, the backpack tag stitched with the name \"ROBOTUS\", candid UGC photo.",
-      "Create an image of: A woman at a vanity desk applying foundation with a brush, the foundation bottle shows the label \"ROBOTUS\".",
-      "Create an image of: A man sitting casually on a bench holding sunglasses, the case in his hand has the brand \"ROBOTUS\", lifestyle vibe.",
-      "Create an image of: A woman holding a smartphone with a branded case that reads \"ROBOTUS\" while sipping coffee.",
-      "Create an image of: A man adjusting headphones around his neck while holding the product box that says \"ROBOTUS\".",
-      "Create an image of: A woman relaxing on a sofa holding a glass perfume bottle labeled \"ROBOTUS\" close to her cheek, UGC aesthetic.",
-      "Create an image of: A man showing a leather wallet embossed with \"ROBOTUS\" while pulling out a credit card, lifestyle UGC shot."
+      "Create an image of: A blonde woman elf wearing a t-shirt with the word \"ROBOTUS\" in Retro Font, UGC aesthetic, soft natural lighting."
     ]
   },
   {

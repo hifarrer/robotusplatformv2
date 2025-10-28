@@ -2,6 +2,7 @@ import axios from 'axios'
 import { fal } from '@fal-ai/client'
 import {
   WavespeedTextToImageRequest,
+  WavespeedWanTextToImageRequest,
   WavespeedImageToImageRequest,
   WavespeedLipsyncRequest,
   WavespeedUpscaleRequest,
@@ -42,6 +43,21 @@ function aspectRatioToSize(aspectRatio: AspectRatio): string {
   }
 }
 
+function aspectRatioToWanSize(aspectRatio: AspectRatio): string {
+  switch (aspectRatio) {
+    case 'SQUARE':
+      return '1024*1024'
+    case 'PORTRAIT':
+      return '1024*1440'  // 3:4 ratio for WAN-2.5
+    case 'LANDSCAPE':
+      return '1440*1024'  // 4:3 ratio for WAN-2.5
+    case 'WIDE':
+      return '1920*1080'  // 16:9 ratio for WAN-2.5
+    default:
+      return '1024*1024'
+  }
+}
+
 function aspectRatioToVideoRatio(aspectRatio: AspectRatio): string {
   switch (aspectRatio) {
     case 'SQUARE':
@@ -63,6 +79,8 @@ function getTextToImageEndpoint(model: TextToImageModel): string {
       return '/bytedance/seedream-v4'
     case 'NANO_BANANA':
       return '/google/nano-banana/text-to-image'
+    case 'WAN_2_5_TEXT_TO_IMAGE':
+      return '/alibaba/wan-2.5/text-to-image'
     default:
       return '/bytedance/seedream-v4'
   }
@@ -94,18 +112,33 @@ function getVideoModel(model: VideoModel): string {
 export class WavespeedService {
   static async textToImage(
     prompt: string, 
-    model: TextToImageModel = 'SEEDREAM_V4',
+    model: TextToImageModel = 'WAN_2_5_TEXT_TO_IMAGE',
     aspectRatio: AspectRatio = 'SQUARE'
   ): Promise<string> {
     try {
-      const size = aspectRatioToSize(aspectRatio)
+      const size = model === 'WAN_2_5_TEXT_TO_IMAGE' 
+        ? aspectRatioToWanSize(aspectRatio) 
+        : aspectRatioToSize(aspectRatio)
       const endpoint = getTextToImageEndpoint(model)
       
-      const request: WavespeedTextToImageRequest = {
-        enable_base64_output: false,
-        enable_sync_mode: false,
-        prompt,
-        size,
+      let request: WavespeedTextToImageRequest | WavespeedWanTextToImageRequest
+      
+      if (model === 'WAN_2_5_TEXT_TO_IMAGE') {
+        // WAN-2.5 uses different request format
+        request = {
+          enable_prompt_expansion: false,
+          prompt,
+          seed: -1,
+          size,
+        } as WavespeedWanTextToImageRequest
+      } else {
+        // Other models use the standard format
+        request = {
+          enable_base64_output: false,
+          enable_sync_mode: false,
+          prompt,
+          size,
+        } as WavespeedTextToImageRequest
       }
 
       console.log('Sending text-to-image request to Wavespeed:', { endpoint, request, model, aspectRatio }) // Debug log

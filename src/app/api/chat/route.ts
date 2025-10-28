@@ -437,7 +437,7 @@ export async function POST(request: NextRequest) {
           id: 'default',
           userId: session.user.id,
           aspectRatio: 'SQUARE' as any,
-          textToImageModel: 'SEEDREAM_V4' as any,
+          textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
           videoModel: VideoModel.WAN_2_5,
           createdAt: new Date(),
@@ -467,7 +467,7 @@ export async function POST(request: NextRequest) {
           data: {
             userId: session.user.id,
             aspectRatio: 'PORTRAIT',
-            textToImageModel: 'SEEDREAM_V4',
+            textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
             videoModel: VideoModel.WAN_2_5,
           }
@@ -482,7 +482,7 @@ export async function POST(request: NextRequest) {
             id: 'default',
             userId: session.user.id,
             aspectRatio: 'PORTRAIT' as any,
-            textToImageModel: 'SEEDREAM_V4' as any,
+            textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE' as any,
             imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
             videoModel: VideoModel.WAN_2_5,
             createdAt: new Date(),
@@ -626,7 +626,7 @@ export async function POST(request: NextRequest) {
           })
           
           generations.push(generation)
-          response = `I'm creating an image based on your description: "${analysis.prompt}". This will take a few moments... (${imageCredits.cost} credits used)`
+          response = `I'm creating an image based on your description: "${message}". This will take a few moments... (${imageCredits.cost} credits used)`
         } catch (error: any) {
           console.error('Text-to-image generation error:', error)
           console.error('Error details:', error.response?.data) // More detailed error logging
@@ -685,7 +685,7 @@ export async function POST(request: NextRequest) {
             generations.push(generation)
             
             const imageSource = images.length > 0 ? 'uploaded images' : 'previous image'
-            response = `I'm editing your ${imageSource} based on: "${analysis.prompt}". This will take a few moments... (${imageEditCredits.cost} credits used)`
+            response = `I'm editing your ${imageSource} based on: "${message}". This will take a few moments... (${imageEditCredits.cost} credits used)`
           } catch (error: any) {
             console.error('Image-to-image generation error:', error)
             console.error('Error details:', error.response?.data) // More detailed error logging
@@ -713,7 +713,7 @@ export async function POST(request: NextRequest) {
           // Generate image using the user's video prompt
           const imageTaskId = await WavespeedService.textToImage(
             analysis.prompt,
-            userPreferences?.textToImageModel || 'SEEDREAM_V4',
+            userPreferences?.textToImageModel || 'WAN_2_5_TEXT_TO_IMAGE',
             userPreferences?.aspectRatio || 'WIDE'
           )
           
@@ -725,14 +725,14 @@ export async function POST(request: NextRequest) {
               status: 'PROCESSING',
               prompt: analysis.prompt,
               provider: 'wavespeed',
-              model: userPreferences?.textToImageModel || 'SEEDREAM_V4',
+              model: userPreferences?.textToImageModel || 'WAN_2_5_TEXT_TO_IMAGE',
               requestId: imageTaskId,
             },
           })
           
           generations.push(imageGeneration)
           
-          response = `For better video results, I will be creating an image first from your request: "${analysis.prompt}". Once the image is ready, you'll be able to generate a video from it.`
+          response = `For better video results, I will be creating an image first from your request: "${message}". Once the image is ready, you'll be able to generate a video from it.`
         } catch (error: any) {
           console.error('Error generating image for video request:', error)
           response = 'Sorry, I encountered an error while trying to create an image from your video request. Please try again.'
@@ -743,10 +743,10 @@ export async function POST(request: NextRequest) {
         // Check user's video model preference to determine available durations
         const videoModel = userPreferences?.videoModel || 'WAN_2_5'
         if (videoModel === 'VEO3_FAST') {
-          response = `I'd be happy to create a video with your prompt: "${analysis.prompt}"\n\nPlease choose the duration:\n\n**5 Seconds** | **8 Seconds**\n\nNote: Google VEO3-Fast supports 5-8 second videos.`
+          response = `I'd be happy to create a video with your prompt: "${message}"\n\nPlease choose the duration:\n\n**5 Seconds** | **8 Seconds**\n\nNote: Google VEO3-Fast supports 5-8 second videos.`
         } else {
           // Default to WAN-2.5 options
-          response = `I'd be happy to create a video with your prompt: "${analysis.prompt}"\n\nPlease choose the duration:\n\n**5 Seconds** | **10 Seconds**\n\nNote: Alibaba WAN-2.5 supports 5-10 second videos.`
+          response = `I'd be happy to create a video with your prompt: "${message}"\n\nPlease choose the duration:\n\n**5 Seconds** | **10 Seconds**\n\nNote: Alibaba WAN-2.5 supports 5-10 second videos.`
         }
         break
 
@@ -811,7 +811,7 @@ export async function POST(request: NextRequest) {
             generations.push(generation)
             
             const imageSource = images.length > 0 ? 'your images' : 'the previous image'
-            const baseResponse = `I'm creating a ${finalDuration}-second video from ${imageSource} based on: "${analysis.prompt}". This will take a few minutes... (${videoCredits.cost} credits used)`
+            const baseResponse = `I'm creating a ${finalDuration}-second video from ${imageSource} based on: "${message}". This will take a few minutes... (${videoCredits.cost} credits used)`
             
             // Add duration adjustment message if needed
             response = durationMessage ? `${durationMessage}\n\n${baseResponse}` : baseResponse

@@ -84,6 +84,13 @@ export interface WavespeedTextToImageRequest {
   size: string
 }
 
+export interface WavespeedWanTextToImageRequest {
+  enable_prompt_expansion: boolean
+  prompt: string
+  seed: number
+  size: string
+}
+
 export interface WavespeedImageToImageRequest {
   enable_base64_output: boolean
   enable_sync_mode: boolean
@@ -166,7 +173,7 @@ export interface FileUpload {
 
 // User Preferences Types
 export type AspectRatio = 'SQUARE' | 'PORTRAIT' | 'LANDSCAPE' | 'WIDE'
-export type TextToImageModel = 'SEEDREAM_V4' | 'NANO_BANANA'
+export type TextToImageModel = 'SEEDREAM_V4' | 'NANO_BANANA' | 'WAN_2_5_TEXT_TO_IMAGE'
 export type ImageToImageModel = 'SEEDREAM_V4_EDIT' | 'NANO_BANANA_EDIT'
 export type VideoModel = 'WAN_2_5' | 'VEO3_FAST'
 
@@ -204,7 +211,8 @@ export const ASPECT_RATIO_OPTIONS: ModelOption[] = [
 
 export const TEXT_TO_IMAGE_MODEL_OPTIONS: ModelOption[] = [
   { value: 'SEEDREAM_V4', label: 'Seedream V4', description: 'Fast and high quality' },
-  { value: 'NANO_BANANA', label: 'Google Nano-Banana', description: 'Google efficient AI model' }
+  { value: 'NANO_BANANA', label: 'Google Nano-Banana', description: 'Google efficient AI model' },
+  { value: 'WAN_2_5_TEXT_TO_IMAGE', label: 'Alibaba WAN-2.5 Text-to-Image', description: 'High quality text-to-image generation' }
 ]
 
 export const IMAGE_TO_IMAGE_MODEL_OPTIONS: ModelOption[] = [

@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 const preferencesUpdateSchema = z.object({
   aspectRatio: z.enum(['SQUARE', 'PORTRAIT', 'LANDSCAPE', 'WIDE']).optional(),
-  textToImageModel: z.enum(['SEEDREAM_V4', 'NANO_BANANA']).optional(),
+  textToImageModel: z.enum(['WAN_2_5_TEXT_TO_IMAGE', 'NANO_BANANA', 'SEEDREAM_V4']).optional(),
   imageToImageModel: z.enum(['SEEDREAM_V4_EDIT', 'NANO_BANANA_EDIT']).optional(),
   videoModel: z.enum(['WAN_2_5', 'VEO3_FAST']).optional(),
 })
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
           id: 'default',
           userId: session.user.id,
           aspectRatio: 'PORTRAIT' as any,
-          textToImageModel: 'SEEDREAM_V4' as any,
+          textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
           videoModel: 'WAN_2_5' as any,
           createdAt: new Date(),
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
           id: 'default',
           userId: session.user.id,
           aspectRatio: 'PORTRAIT' as any,
-          textToImageModel: 'SEEDREAM_V4' as any,
+          textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
           videoModel: 'WAN_2_5' as any,
           createdAt: new Date(),
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
           data: {
             userId: session.user.id,
             aspectRatio: 'PORTRAIT',
-            textToImageModel: 'SEEDREAM_V4',
+            textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
             videoModel: 'WAN_2_5',
           }
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
             id: 'default',
             userId: session.user.id,
             aspectRatio: 'PORTRAIT',
-            textToImageModel: 'SEEDREAM_V4',
+            textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
             videoModel: 'WAN_2_5',
             createdAt: new Date(),
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
             id: 'default',
             userId: session.user.id,
             aspectRatio: 'PORTRAIT',
-            textToImageModel: 'SEEDREAM_V4',
+            textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
             videoModel: 'WAN_2_5',
             createdAt: new Date(),
@@ -197,7 +197,7 @@ export async function PUT(request: NextRequest) {
         create: {
           userId: session.user.id,
           aspectRatio: updateData.aspectRatio || 'PORTRAIT',
-          textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
+          textToImageModel: updateData.textToImageModel || 'WAN_2_5_TEXT_TO_IMAGE',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
           videoModel: (updateData.videoModel || 'WAN_2_5') as any,
         }
@@ -216,7 +216,7 @@ export async function PUT(request: NextRequest) {
           id: 'default',
           userId: session.user.id,
           aspectRatio: updateData.aspectRatio || 'PORTRAIT',
-          textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
+          textToImageModel: updateData.textToImageModel || 'WAN_2_5_TEXT_TO_IMAGE',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
           videoModel: updateData.videoModel || 'WAN_2_5',
           createdAt: new Date(),
@@ -231,7 +231,7 @@ export async function PUT(request: NextRequest) {
           id: 'default',
           userId: session.user.id,
           aspectRatio: updateData.aspectRatio || 'PORTRAIT',
-          textToImageModel: updateData.textToImageModel || 'SEEDREAM_V4',
+          textToImageModel: updateData.textToImageModel || 'WAN_2_5_TEXT_TO_IMAGE',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
           videoModel: updateData.videoModel || 'WAN_2_5',
           createdAt: new Date(),

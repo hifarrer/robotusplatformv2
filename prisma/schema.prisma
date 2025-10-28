@@ -215,6 +215,7 @@ enum AspectRatio {
 enum TextToImageModel {
   SEEDREAM_V4
   NANO_BANANA
+  WAN_2_5_TEXT_TO_IMAGE
 }
 
 enum ImageToImageModel {

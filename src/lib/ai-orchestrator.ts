@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import { AIAnalysisResult } from '@/types'
+import { enhancePromptForRealism } from './prompt-enhancer'
 
 // Initialize OpenAI client only when needed (server-side)
 function getOpenAIClient() {
@@ -45,7 +46,7 @@ Keyword Guidelines:
 - Look for "speak", "talk", "lipsync", "voice", "saying", "talking" for lipsync requests
 - Look for "audio", "sound", "voice", "speak", "say" with text in quotes for audio requests
 - Look for "enhance", "enhancement", "better quality", "face details", "skin details", "improve face", "improve skin", "hyperreal", "hyper real", "hyper realistic", "hyperrealistic" for enhancement requests
-- Look for "reimagine", "reimagine this", "recreate", "new version", "different version", "variations", "rethink", "reinvent" for reimagine requests
+- Look for "reimagine", "reimagine this", "recreate", "new version", "different version", "variations", "rethink", "reinvent", "hyper real", "hyperreal", "realistic" for reimagine requests
 - If user wants audio but doesn't specify DETAILED voice characteristics, ask them to describe the voice they want
 - DETAILED voice characteristics include: accent (American/British/etc), age (young/adult), tone (deep/soft/loud/gentle/strong/smooth), style (professional/energetic/captivating)
 - Basic gender (male/female) alone is NOT sufficient - need additional characteristics for "text_to_audio"
@@ -71,10 +72,12 @@ Keyword Guidelines:
 - Video prompts with recent image context should use the most recent generated image for video creation
 - This handles cases where users edit video prompts or send new video prompts after generating images
 
+IMPORTANT: For text_to_image actions, the prompt will be automatically enhanced with hyper-realistic keywords (photo realistic, hyper realistic, skin details, etc.) unless the user specifies non-realistic styles like cartoon, 3d animated, or artistic styles. This ensures Robotus specializes in photo-realistic content.
+
 Return your analysis as JSON with:
 {
   "action": "text_to_image|image_to_image|text_to_video|image_to_video|lipsync|text_to_audio|image_enhancement|image_reimagine|chat|video_duration_selection",
-  "prompt": "cleaned and optimized prompt for the AI service",
+  "prompt": "cleaned and optimized prompt for the AI service (will be enhanced for realism if text_to_image)",
   "requiresImages": boolean,
   "requiresAudio": boolean (true for lipsync),
   "useRecentImage": boolean (true if should use recent generated image),
@@ -163,6 +166,20 @@ Analyze this request and determine the appropriate action. Pay special attention
       throw new Error('Invalid action returned')
     }
 
+    // Enhance prompt for realism if it's a text-to-image action
+    if (analysis.action === 'text_to_image') {
+      console.log('🎨 Enhancing prompt for realism...') // Debug log
+      const originalPrompt = analysis.prompt
+      analysis.prompt = enhancePromptForRealism(originalPrompt)
+      
+      if (analysis.prompt !== originalPrompt) {
+        console.log('🎨 Prompt enhanced for realism:', {
+          original: originalPrompt,
+          enhanced: analysis.prompt
+        }) // Debug log
+      }
+    }
+
     // Override logic: If there's recent image context and user wants video, check duration first
     if (analysis.action === 'text_to_video' && conversationContext?.hasRecentImageGeneration) {
       console.log('🔄 Overriding text_to_video due to recent image context')
@@ -226,7 +243,7 @@ Analyze this request and determine the appropriate action. Pay special attention
     const isEnhanceRequest = enhanceKeywords.some(keyword => lowerMessage.includes(keyword))
     
     // Check for reimagine keywords
-    const reimagineKeywords = ['reimagine', 'recreate', 'new version', 'different version', 'variations', 'rethink', 'reinvent']
+    const reimagineKeywords = ['reimagine', 'recreate', 'new version', 'different version', 'variations', 'rethink', 'reinvent', 'hyper real', 'hyperreal', 'realistic']
     const isReimagineRequest = reimagineKeywords.some(keyword => lowerMessage.includes(keyword))
     
     // Check for lipsync keywords
@@ -500,11 +517,11 @@ What kind of voice characteristics would you like for your audio?`,
       ) {
         const fallbackResult = {
           action: 'text_to_image' as const,
-          prompt: message,
+          prompt: enhancePromptForRealism(message), // Enhance prompt for realism
           requiresImages: false,
           useRecentImage: false,
           confidence: 0.7,
-          reasoning: 'Fallback: detected image creation request'
+          reasoning: 'Fallback: detected image creation request (enhanced for realism)'
         }
         console.log('🎯 Fallback result (text_to_image):', fallbackResult) // Debug log
         return fallbackResult
