@@ -4,6 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/components/auth-provider'
 import { CreditsProvider } from '@/contexts/credits-context'
 import { Toaster } from 'sonner'
+import { FlashyPromoPopupProvider } from '@/components/flashy-promo-popup-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <AuthProvider>
           <CreditsProvider>
             {children}
+            <FlashyPromoPopupProvider />
             <Toaster />
           </CreditsProvider>
         </AuthProvider>
