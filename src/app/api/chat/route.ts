@@ -1185,7 +1185,7 @@ export async function POST(request: NextRequest) {
             
             // Refund credits on error
             try {
-              await refundCredits(session.user.id, 'IMAGE_ENHANCEMENT')
+              await refundCredits(session.user.id, 8, 'Image enhancement failed')
               console.log('💳 Credits refunded due to enhancement error')
             } catch (refundError) {
               console.error('Error refunding credits:', refundError)
@@ -1260,7 +1260,7 @@ export async function POST(request: NextRequest) {
             
             // Refund credits on error
             try {
-              await refundCredits(session.user.id, 'IMAGE_REIMAGINE')
+              await refundCredits(session.user.id, 5, 'Image reimagining failed')
               console.log('💳 Credits refunded due to reimagining error')
             } catch (refundError) {
               console.error('Error refunding credits:', refundError)
