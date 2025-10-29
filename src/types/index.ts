@@ -184,6 +184,7 @@ export interface UserPreferences {
   textToImageModel: TextToImageModel
   imageToImageModel: ImageToImageModel
   videoModel: VideoModel
+  demoShown: boolean
   createdAt: Date
   updatedAt: Date
 }

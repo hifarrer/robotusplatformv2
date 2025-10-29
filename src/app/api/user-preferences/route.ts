@@ -9,6 +9,7 @@ const preferencesUpdateSchema = z.object({
   textToImageModel: z.enum(['WAN_2_5_TEXT_TO_IMAGE', 'NANO_BANANA', 'SEEDREAM_V4']).optional(),
   imageToImageModel: z.enum(['SEEDREAM_V4_EDIT', 'NANO_BANANA_EDIT']).optional(),
   videoModel: z.enum(['WAN_2_5', 'VEO3_FAST']).optional(),
+  demoShown: z.boolean().optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -64,6 +65,7 @@ export async function GET(request: NextRequest) {
           textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
           videoModel: 'WAN_2_5' as any,
+          demoShown: false,
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -79,6 +81,7 @@ export async function GET(request: NextRequest) {
           textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE' as any,
           imageToImageModel: 'SEEDREAM_V4_EDIT' as any,
           videoModel: 'WAN_2_5' as any,
+          demoShown: false,
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -98,6 +101,7 @@ export async function GET(request: NextRequest) {
             textToImageModel: 'WAN_2_5_TEXT_TO_IMAGE',
             imageToImageModel: 'SEEDREAM_V4_EDIT',
             videoModel: 'WAN_2_5',
+            demoShown: false,
           }
         })
         console.log('✅ Default preferences created')
@@ -200,6 +204,7 @@ export async function PUT(request: NextRequest) {
           textToImageModel: updateData.textToImageModel || 'WAN_2_5_TEXT_TO_IMAGE',
           imageToImageModel: updateData.imageToImageModel || 'SEEDREAM_V4_EDIT',
           videoModel: (updateData.videoModel || 'WAN_2_5') as any,
+          demoShown: updateData.demoShown || false,
         }
       })
     } catch (dbError) {

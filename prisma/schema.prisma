@@ -175,6 +175,7 @@ model UserPreferences {
   textToImageModel  TextToImageModel  @default(SEEDREAM_V4)
   imageToImageModel ImageToImageModel @default(SEEDREAM_V4_EDIT)
   videoModel        VideoModel        @default(WAN_2_5)
+  demoShown         Boolean           @default(false)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)

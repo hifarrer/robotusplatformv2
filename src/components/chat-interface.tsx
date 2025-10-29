@@ -37,6 +37,7 @@ import { PreferencesMenu } from '@/components/preferences-menu'
 import { GenderSelection } from '@/components/gender-selection'
 import { HelpModal } from '@/components/help-modal'
 import { PromoBanner } from '@/components/promo-banner'
+import { DemoModal } from '@/components/demo-modal'
 import { useCredits } from '@/contexts/credits-context'
 import { usePromoBanner } from '@/hooks/use-promo-banner'
 import { cn, isImageFile, isAudioFile, formatFileSize, generateId } from '@/lib/utils'
@@ -89,6 +90,7 @@ export function ChatInterface() {
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showTalkModal, setShowTalkModal] = useState(false)
   const [selectedImageForTalk, setSelectedImageForTalk] = useState<any>(null)
+  const [showDemoModal, setShowDemoModal] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const audioInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -636,6 +638,36 @@ export function ChatInterface() {
   const handlePreferencesChange = (preferences: UserPreferences) => {
     setUserPreferences(preferences)
     console.log('🎛️ User preferences updated:', preferences)
+    
+    // Check if demo should be shown for new users
+    if (preferences && !preferences.demoShown) {
+      setShowDemoModal(true)
+    }
+  }
+
+  // Mark demo as shown
+  const markDemoAsShown = async () => {
+    try {
+      const response = await fetch('/api/user-preferences', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          demoShown: true,
+        }),
+      })
+
+      if (response.ok) {
+        const updatedPreferences = await response.json()
+        setUserPreferences(updatedPreferences)
+        console.log('✅ Demo marked as shown')
+      } else {
+        console.error('❌ Failed to mark demo as shown')
+      }
+    } catch (error) {
+      console.error('❌ Error marking demo as shown:', error)
+    }
   }
 
   // Start new conversation
@@ -2793,6 +2825,12 @@ export function ChatInterface() {
         isOpen={isPromoOpen}
         onClose={closePromoBanner}
         onUpgrade={handleUpgrade}
+      />
+
+      <DemoModal
+        isOpen={showDemoModal}
+        onClose={() => setShowDemoModal(false)}
+        onMarkAsShown={markDemoAsShown}
       />
     </div>
   )

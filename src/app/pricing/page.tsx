@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { UserMenu } from '@/components/user-menu'
 import { Badge } from '@/components/ui/badge'
+import { TryRobotusBanner } from '@/components/tryrobotus-banner'
 
 interface Plan {
   id: string
@@ -85,6 +86,11 @@ export default function PricingPage() {
       // Handle discount code from URL
       const discount = urlParams.get('discount')
       setDiscountCode(discount)
+      // Clean URL but keep discount code in state
+      window.history.replaceState({}, '', '/pricing')
+    } else if (urlParams.get('tryrobotus') === 'true') {
+      // Handle TRYROBOTUS special offer
+      setDiscountCode('TRYROBOTUS')
       // Clean URL but keep discount code in state
       window.history.replaceState({}, '', '/pricing')
     }
@@ -499,6 +505,18 @@ export default function PricingPage() {
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-6xl mx-auto space-y-8">
+            {/* TryRobotus Banner */}
+            <TryRobotusBanner 
+              onUpgrade={() => {
+                // Find Basic plan and trigger upgrade with TRYROBOTUS coupon
+                const basicPlan = plansData?.plans?.find(plan => plan.name === 'Basic')
+                if (basicPlan) {
+                  setDiscountCode('TRYROBOTUS')
+                  handleUpgrade(basicPlan.id, basicPlan.name)
+                }
+              }}
+            />
+            
             {/* Page Title */}
             <div className="text-center space-y-4">
               <h1 className="text-4xl font-bold text-white">Choose Your Plan</h1>
@@ -523,6 +541,17 @@ export default function PricingPage() {
                   <div className="text-center">
                     <div className="text-lg font-bold text-white">🎉 50% OFF Your First Month!</div>
                     <div className="text-sm text-gray-300">Use code <span className="font-bold text-green-400 bg-green-500/20 px-2 py-1 rounded">WELCOME</span> for 50% discount</div>
+                  </div>
+                </div>
+              )}
+
+              {/* TRYROBOTUS Special Offer Banner */}
+              {discountCode === 'TRYROBOTUS' && (
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg border border-yellow-400/30 animate-pulse">
+                  <Crown className="w-6 h-6 text-yellow-400" />
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-white">🎉 Basic Plan for Just $1!</div>
+                    <div className="text-sm text-gray-300">Use code <span className="font-bold text-yellow-400 bg-yellow-500/20 px-2 py-1 rounded">TRYROBOTUS</span> - Limited time offer!</div>
                   </div>
                 </div>
               )}
@@ -622,6 +651,7 @@ export default function PricingPage() {
                 const isCurrentPlan = plansData?.currentPlan?.id === plan.id
                 const price = billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice
                 const isPremium = plan.name === 'Premium'
+                const isBasicWithCoupon = plan.name === 'Basic' && discountCode === 'TRYROBOTUS'
                 const isButtonDisabled = isCurrentPlan || isUpgrading === plan.name || (plan.name !== 'Free' && !plan.stripeMonthlyPriceId && !plan.stripeYearlyPriceId)
                 
                 // Log button state for debugging
@@ -643,14 +673,24 @@ export default function PricingPage() {
                   <div
                     key={plan.id}
                     className={`relative bg-gray-900 rounded-2xl p-8 border-2 transition-all hover:scale-105 ${
-                      isPremium 
+                      isBasicWithCoupon
+                        ? 'border-yellow-400 shadow-2xl shadow-yellow-400/30 animate-pulse'
+                        : isPremium 
                         ? 'border-primary shadow-lg shadow-primary/20' 
                         : isCurrentPlan
                         ? 'border-green-500'
                         : 'border-gray-800'
                     }`}
                   >
-                    {isPremium && (
+                    {isBasicWithCoupon && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-black animate-pulse">
+                          🎉 $1 OFFER! 🎉
+                        </Badge>
+                      </div>
+                    )}
+                    
+                    {isPremium && !isBasicWithCoupon && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                         <Badge className="bg-gradient-to-r from-purple-500 to-pink-600">
                           POPULAR
@@ -658,7 +698,7 @@ export default function PricingPage() {
                       </div>
                     )}
                     
-                    {isCurrentPlan && (
+                    {isCurrentPlan && !isBasicWithCoupon && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                         <Badge className="bg-green-500">
                           CURRENT PLAN
@@ -674,13 +714,30 @@ export default function PricingPage() {
                     <p className="text-gray-400 mb-4 min-h-[3rem]">{plan.description || 'No description available'}</p>
 
                     <div className="mb-6">
-                      <div className="flex items-baseline">
-                        <span className="text-5xl font-bold text-white">${price}</span>
-                        <span className="text-gray-400 ml-2">
-                          /{billingCycle === 'monthly' ? 'month' : 'year'}
-                        </span>
-                      </div>
-                      {billingCycle === 'yearly' && price > 0 && (
+                      {plan.name === 'Basic' && discountCode === 'TRYROBOTUS' ? (
+                        // Special pricing display for Basic plan with TRYROBOTUS coupon
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-3 mb-2">
+                            <span className="text-2xl text-gray-400 line-through">$15</span>
+                            <span className="text-5xl font-bold text-yellow-400 animate-pulse">$1</span>
+                            <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                              93% OFF
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-400">
+                            Use code <span className="font-bold text-green-400 bg-green-500/20 px-2 py-1 rounded">TRYROBOTUS</span>
+                          </p>
+                        </div>
+                      ) : (
+                        // Regular pricing display
+                        <div className="flex items-baseline">
+                          <span className="text-5xl font-bold text-white">${price}</span>
+                          <span className="text-gray-400 ml-2">
+                            /{billingCycle === 'monthly' ? 'month' : 'year'}
+                          </span>
+                        </div>
+                      )}
+                      {billingCycle === 'yearly' && price > 0 && plan.name !== 'Basic' && (
                         <p className="text-sm text-gray-400 mt-1">
                           ${(price / 12).toFixed(2)}/month when billed annually
                         </p>

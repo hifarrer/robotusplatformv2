@@ -1091,6 +1091,186 @@ export async function POST(request: NextRequest) {
         }
         break
 
+      case 'image_enhancement':
+        // Handle image enhancement - requires images
+        const enhancementImageToUse = images.length > 0 
+          ? images[0]  // Use first uploaded image
+          : (analysis.useRecentImage && conversationContext?.recentImageUrl) 
+            ? conversationContext.recentImageUrl 
+            : null
+            
+        if (!enhancementImageToUse) {
+          response = 'To enhance an image, I need an image to work with. Please upload an image or select one from your library.'
+        } else {
+          try {
+            console.log('✨ Starting image enhancement for:', enhancementImageToUse)
+            
+            // Check and deduct credits
+            const enhanceCredits = await checkAndDeductCreditsForGeneration(
+              session.user.id,
+              'IMAGE_ENHANCEMENT'
+            )
+            
+            if (!enhanceCredits.success) {
+              response = `Sorry, you don't have enough credits to enhance images. You need ${enhanceCredits.cost} credits. Please upgrade your plan to continue.`
+              break
+            }
+            
+            console.log(`💳 Credits deducted for enhancement: ${enhanceCredits.cost}`)
+            
+            // Create generation record
+            const generation = await prisma.generation.create({
+              data: {
+                messageId: userMessage.id,
+                type: 'IMAGE_ENHANCEMENT',
+                status: 'PROCESSING',
+                prompt: analysis.prompt,
+                provider: 'fal',
+                model: 'topaz/upscale/image',
+                requestId: `enhance_${Date.now()}`,
+                metadata: { creditsUsed: enhanceCredits.cost }
+              },
+            })
+            
+            generations.push(generation)
+            
+            // Call FAL.ai service to enhance the image
+            console.log('🎨 Starting image enhancement with FAL.ai...')
+            const enhancedImageUrl = await FalService.enhanceImage(enhancementImageToUse)
+            console.log('✅ Image enhanced successfully:', enhancedImageUrl)
+            
+            // Update generation with result
+            await prisma.generation.update({
+              where: { id: generation.id },
+              data: {
+                status: 'COMPLETED',
+                resultUrl: enhancedImageUrl,
+                resultUrls: [enhancedImageUrl]
+              }
+            })
+            
+            // Save enhanced image to user's collection
+            try {
+              const imageResponse = await fetch(enhancedImageUrl)
+              if (imageResponse.ok) {
+                const imageBuffer = await imageResponse.arrayBuffer()
+                const fileName = `enhanced_${Date.now()}.jpg`
+                const { saveFile } = await import('@/lib/media-storage')
+                const localPath = await saveFile(imageBuffer, fileName, 'image')
+                
+                await prisma.savedImage.create({
+                  data: {
+                    userId: session.user.id,
+                    title: `Enhanced Image`,
+                    prompt: analysis.prompt,
+                    originalUrl: enhancedImageUrl,
+                    localPath: localPath,
+                    fileName: fileName,
+                    fileSize: imageBuffer.byteLength,
+                    mimeType: 'image/jpeg',
+                    generationId: generation.id
+                  }
+                })
+              }
+            } catch (saveError) {
+              console.error('Error saving enhanced image:', saveError)
+              // Don't fail the whole request if saving fails
+            }
+            
+            const imageSource = images.length > 0 ? 'your image' : 'the previous image'
+            response = `✨ I've enhanced ${imageSource} with improved face and skin details! The enhanced image is ready. (${enhanceCredits.cost} credits used)`
+          } catch (error: any) {
+            console.error('Image enhancement error:', error)
+            console.error('Error details:', error.response?.data)
+            
+            // Refund credits on error
+            try {
+              await refundCredits(session.user.id, 'IMAGE_ENHANCEMENT')
+              console.log('💳 Credits refunded due to enhancement error')
+            } catch (refundError) {
+              console.error('Error refunding credits:', refundError)
+            }
+            
+            response = 'Sorry, I encountered an error while trying to enhance your image. Please try again.'
+          }
+        }
+        break
+
+      case 'image_reimagine':
+        // Handle image reimagining - requires images
+        const reimagineImageToUse = images.length > 0 
+          ? images[0]  // Use first uploaded image
+          : (analysis.useRecentImage && conversationContext?.recentImageUrl) 
+            ? conversationContext.recentImageUrl 
+            : null
+            
+        if (!reimagineImageToUse) {
+          response = 'To reimagine an image, I need an image to work with. Please upload an image or select one from your library.'
+        } else {
+          try {
+            console.log('🎨 Starting image reimagining for:', reimagineImageToUse)
+            
+            // Check and deduct credits
+            const reimagineCredits = await checkAndDeductCreditsForGeneration(
+              session.user.id,
+              'IMAGE_REIMAGINE'
+            )
+            
+            if (!reimagineCredits.success) {
+              response = `Sorry, you don't have enough credits to reimagine images. You need ${reimagineCredits.cost} credits. Please upgrade your plan to continue.`
+              break
+            }
+            
+            console.log(`💳 Credits deducted for reimagining: ${reimagineCredits.cost}`)
+            
+            // Create generation record
+            const generation = await prisma.generation.create({
+              data: {
+                messageId: userMessage.id,
+                type: 'IMAGE_REIMAGINE',
+                status: 'PROCESSING',
+                prompt: analysis.prompt,
+                provider: 'wavespeed',
+                model: 'higgsfield/soul/image-to-image',
+                requestId: `reimagine_${Date.now()}`,
+                metadata: { creditsUsed: reimagineCredits.cost }
+              },
+            })
+            
+            generations.push(generation)
+            
+            // Call WavespeedService to reimagine the image
+            console.log('🎨 Starting image reimagining with WAVESPEED.ai...')
+            const requestId = await WavespeedService.reimagineImage(reimagineImageToUse)
+            console.log('✅ Image reimagining started, request ID:', requestId)
+            
+            // Update generation with request ID
+            await prisma.generation.update({
+              where: { id: generation.id },
+              data: {
+                requestId: requestId
+              }
+            })
+            
+            const imageSource = images.length > 0 ? 'your image' : 'the previous image'
+            response = `🎨 I'm reimagining ${imageSource} with AI variations! This will take a few moments... (${reimagineCredits.cost} credits used)`
+          } catch (error: any) {
+            console.error('Image reimagining error:', error)
+            console.error('Error details:', error.response?.data)
+            
+            // Refund credits on error
+            try {
+              await refundCredits(session.user.id, 'IMAGE_REIMAGINE')
+              console.log('💳 Credits refunded due to reimagining error')
+            } catch (refundError) {
+              console.error('Error refunding credits:', refundError)
+            }
+            
+            response = 'Sorry, I encountered an error while trying to reimagine your image. Please try again.'
+          }
+        }
+        break
+
       case 'chat':
       default:
         // Use the specific prompt from AI orchestrator if it's a detailed response

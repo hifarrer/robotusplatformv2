@@ -16,7 +16,10 @@ import {
   Palette,
   Camera,
   Film,
-  Volume2
+  Volume2,
+  Play,
+  Pause,
+  VolumeX
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -168,6 +171,7 @@ const promptExamples: PromptExample[] = [
 ]
 
 const categories = [
+  { id: 'demo', name: 'Demo', icon: <Play className="w-4 h-4" /> },
   { id: 'all', name: 'All Examples', icon: <Sparkles className="w-4 h-4" /> },
   { id: 'Image Generation', name: 'Images', icon: <ImageIcon className="w-4 h-4" /> },
   { id: 'Video Generation', name: 'Videos', icon: <Video className="w-4 h-4" /> },
@@ -176,12 +180,43 @@ const categories = [
 ]
 
 export function HelpModal({ isOpen, onClose, onPromptSelect }: HelpModalProps) {
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState('demo')
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const [videoLoaded, setVideoLoaded] = useState(false)
 
   const filteredExamples = selectedCategory === 'all' 
     ? promptExamples 
     : promptExamples.filter(example => example.category === selectedCategory)
+
+  const handlePlayPause = () => {
+    const video = document.querySelector('video') as HTMLVideoElement
+    if (video) {
+      if (isPlaying) {
+        video.pause()
+      } else {
+        video.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const handleMuteToggle = () => {
+    const video = document.querySelector('video') as HTMLVideoElement
+    if (video) {
+      video.muted = !isMuted
+      setIsMuted(!isMuted)
+    }
+  }
+
+  const handleVideoEnd = () => {
+    setIsPlaying(false)
+  }
+
+  const handleVideoLoad = () => {
+    setVideoLoaded(true)
+  }
 
   const handleCopyPrompt = async (prompt: string) => {
     try {
@@ -241,71 +276,165 @@ export function HelpModal({ isOpen, onClose, onPromptSelect }: HelpModalProps) {
 
           {/* Examples Grid */}
           <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredExamples.map((example) => (
-                <div
-                  key={example.id}
-                  className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-750/50 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      {example.icon}
-                      <h3 className="font-semibold text-white">{example.title}</h3>
-                    </div>
-                    <Badge className={getDifficultyColor(example.difficulty)}>
-                      {example.difficulty}
-                    </Badge>
-                  </div>
-                  
-                  <p className="text-gray-400 text-sm mb-3">{example.description}</p>
-                  
-                  <div className="bg-gray-900/50 border border-gray-600 rounded p-3 mb-3">
-                    <p className="text-gray-200 text-sm font-mono leading-relaxed">
-                      {example.prompt}
-                    </p>
-                  </div>
-                  
-                  {example.tips && example.tips.length > 0 && (
-                    <div className="mb-3">
-                      <p className="text-xs text-gray-500 mb-1">💡 Tips:</p>
-                      <ul className="text-xs text-gray-400 space-y-1">
-                        {example.tips.map((tip, index) => (
-                          <li key={index}>• {tip}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handleUsePrompt(example.prompt)}
-                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+            {selectedCategory === 'demo' ? (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-white mb-2">Welcome to Robotus! 🎉</h2>
+                  <p className="text-gray-300 mb-6">
+                    Watch this demo to see how Robotus can help you create amazing AI-generated content!
+                  </p>
+                </div>
+                
+                <div className="relative bg-black rounded-lg overflow-hidden">
+                  <div className="relative aspect-video bg-gray-900">
+                    <video
+                      className="w-full h-full object-contain"
+                      onEnded={handleVideoEnd}
+                      onLoadedData={handleVideoLoad}
+                      muted={isMuted}
+                      preload="metadata"
                     >
-                      Use This Prompt
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleCopyPrompt(example.prompt)}
-                      className="px-3"
-                    >
-                      {copiedPrompt === example.prompt ? (
-                        <Check className="w-4 h-4 text-green-400" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
+                      <source 
+                        src="https://res.cloudinary.com/dqemas8ht/video/upload/v1761696641/RobotusDemo2_h1ce7e.mp4" 
+                        type="video/mp4" 
+                      />
+                      Your browser does not support the video tag.
+                    </video>
+                    
+                    {/* Video Controls Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {!videoLoaded && (
+                        <div className="text-white text-lg">Loading video...</div>
                       )}
-                    </Button>
+                      {videoLoaded && !isPlaying && (
+                        <Button
+                          onClick={handlePlayPause}
+                          className="bg-white/20 hover:bg-white/30 text-white border-0 rounded-full p-4"
+                          size="lg"
+                        >
+                          <Play className="h-8 w-8 ml-1" />
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {/* Bottom Controls */}
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          onClick={handlePlayPause}
+                          variant="ghost"
+                          size="sm"
+                          className="text-white hover:bg-white/20"
+                        >
+                          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                        </Button>
+                        <Button
+                          onClick={handleMuteToggle}
+                          variant="ghost"
+                          size="sm"
+                          className="text-white hover:bg-white/20"
+                        >
+                          {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+                
+                <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">What You Can Do with Robotus:</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-3">
+                      <ImageIcon className="w-5 h-5 text-pink-500" />
+                      <span className="text-gray-300">Generate stunning images from text</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Video className="w-5 h-5 text-purple-500" />
+                      <span className="text-gray-300">Create videos from images or text</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Music className="w-5 h-5 text-blue-500" />
+                      <span className="text-gray-300">Generate professional voiceovers</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Mic className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-300">Make images speak with lipsync</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredExamples.map((example) => (
+                  <div
+                    key={example.id}
+                    className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-750/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {example.icon}
+                        <h3 className="font-semibold text-white">{example.title}</h3>
+                      </div>
+                      <Badge className={getDifficultyColor(example.difficulty)}>
+                        {example.difficulty}
+                      </Badge>
+                    </div>
+                    
+                    <p className="text-gray-400 text-sm mb-3">{example.description}</p>
+                    
+                    <div className="bg-gray-900/50 border border-gray-600 rounded p-3 mb-3">
+                      <p className="text-gray-200 text-sm font-mono leading-relaxed">
+                        {example.prompt}
+                      </p>
+                    </div>
+                    
+                    {example.tips && example.tips.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-500 mb-1">💡 Tips:</p>
+                        <ul className="text-xs text-gray-400 space-y-1">
+                          {example.tips.map((tip, index) => (
+                            <li key={index}>• {tip}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleUsePrompt(example.prompt)}
+                        className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                      >
+                        Use This Prompt
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPrompt(example.prompt)}
+                        className="px-3"
+                      >
+                        {copiedPrompt === example.prompt ? (
+                          <Check className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Footer */}
           <div className="mt-4 pt-4 border-t border-gray-700">
             <div className="flex items-center justify-between text-sm text-gray-400">
-              <p>💡 Click "Use This Prompt" to add it to your chat, or copy to clipboard</p>
+              <p>
+                {selectedCategory === 'demo' 
+                  ? '🎬 Watch the demo to see Robotus in action!' 
+                  : '💡 Click "Use This Prompt" to add it to your chat, or copy to clipboard'
+                }
+              </p>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 Close
               </Button>

@@ -91,7 +91,11 @@ export const createCheckoutSession = async ({
       metadata: {
         userId,
       },
-      ...(discountCode && { discounts: [{ promotion_code: discountCode }] }),
+      ...(discountCode && { 
+        discounts: [{ 
+          promotion_code: discountCode 
+        }] 
+      }),
     }
     
     console.log('📤 [STRIPE] Session parameters:', JSON.stringify(sessionParams, null, 2))
