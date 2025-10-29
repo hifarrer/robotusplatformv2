@@ -95,7 +95,7 @@ export function TryRobotusBanner({ onUpgrade, onClose }: TryRobotusBannerProps) 
                 <span className="text-xl font-bold text-white">Use Code: TRYROBOTUS</span>
               </div>
               <p className="text-sm text-gray-200">
-                Get 100 credits + all premium features for just $1!
+                Get 500 credits + all premium features for just $1!
               </p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export function TryRobotusBanner({ onUpgrade, onClose }: TryRobotusBannerProps) 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="flex items-center gap-3 bg-white/5 rounded-lg p-3">
             <Zap className="h-5 w-5 text-yellow-400" />
-            <span className="text-white font-medium">100 Credits</span>
+            <span className="text-white font-medium">500 Credits</span>
           </div>
           <div className="flex items-center gap-3 bg-white/5 rounded-lg p-3">
             <Star className="h-5 w-5 text-yellow-400" />

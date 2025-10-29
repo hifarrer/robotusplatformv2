@@ -107,7 +107,7 @@ export function FlashyPromoPopup({ isVisible, onUpgrade, onClose }: FlashyPromoP
                   <span className="text-sm font-bold text-white">Code: TRYROBOTUS</span>
                 </div>
                 <p className="text-xs text-gray-200">
-                  100 credits + premium features!
+                  500 credits + premium features!
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export function FlashyPromoPopup({ isVisible, onUpgrade, onClose }: FlashyPromoP
           <div className="grid grid-cols-2 gap-2 mb-4">
             <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
               <Zap className="h-4 w-4 text-yellow-400" />
-              <span className="text-white text-xs font-medium">100 Credits</span>
+              <span className="text-white text-xs font-medium">500 Credits</span>
             </div>
             <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2">
               <Star className="h-4 w-4 text-yellow-400" />
